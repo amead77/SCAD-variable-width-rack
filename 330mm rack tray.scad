@@ -1,6 +1,9 @@
 include <330mm rack defines.scad>;
 include <330mm rack posts.scad>;
 
+// AUTO-V
+version = "v0.1-2026/05/04r00";
+
 module blank_1U_front_panel(holes = front_panel_hole_count) {
     difference() {
         union() {

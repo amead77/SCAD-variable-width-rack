@@ -9,12 +9,14 @@
 // 
 // This is 330mm from the left edge of the left post, to the right edge of the right post, assuming single posts.
 
+// AUTO-V
+version = "v0.1-2026/05/04r00";
 
 
 include <330mm rack posts.scad>;
 include <330mm rack tray.scad>;
 include <330mm rack defines.scad>; //some of these are overrode below.
-
+include <330mm rack custom tray 01.scad>;
 
 part = 0; // 0 = assembly, 1 = posts, 2 = trays, 3 = feet, 4 = base joiner, 5 = top joiner, 6 = 2U tray
 
@@ -166,7 +168,8 @@ module assembly() {
             }
         }
 
-        // the trays. These are just for demo purposes
+        // the trays. These are just for demo purposes. there is a 0.5U one, a 1U one, a 2U one and a variable one.
+        // use what you want, the variable one is the better, but the hole spacing for larger sizes can be more annoying
         
         translate([0, -front_panel_thickness, 0]) {
         //    blank_1U_front_panel(holes = 3);
@@ -200,21 +203,7 @@ module assembly() {
         }
         translate([0, -front_panel_thickness, u_height * 5]) {
             color("green") {
-                blank_variable_tray(
-                    panel_u_size = 1,
-                    tray_u_size = 0.5,
-                    holes = 2,
-                    // Known-good logo test: centered and embossed so it is easy to verify visibility.
-                    import_file = "raspberry-pi.svg",
-                    import_type = "svg",
-                    import_width = 16,
-                    import_height = 20,
-                    import_depth = 0.2,
-                    import_offset_x = 140,
-                    import_offset_z = 0,
-                    import_mode = "emboss", // emboss, change to "engrave" after confirming alignment
-                    side_support = 1
-                );
+                custom_tray_01();
             }
         }
     }

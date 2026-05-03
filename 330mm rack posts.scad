@@ -1,4 +1,6 @@
 include <330mm rack defines.scad>;
+// AUTO-V
+version = "v0.1-2026/05/04r00";
 
 
 module post(slide_side = 0, doublewide = 0) {

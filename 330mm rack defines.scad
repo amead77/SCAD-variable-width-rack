@@ -51,6 +51,6 @@ beam_thickness = 4; //this is used internally
 
 // the next 2 lines are used by my version script which is called by 'run on save'
 // AUTO-V
-version = "v0.1-2026/05/03r270";
+version = "v0.1-2026/05/04r00";
 
 
