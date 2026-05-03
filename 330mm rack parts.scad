@@ -7,6 +7,7 @@
 //
 // (c) 2026 Adam Mead.
 // 
+// This is 330mm from the left edge of the left post, to the right edge of the right post, assuming single posts.
 
 hole_clearance = 0.3; //mm clearance around the 'oles
 rack_width = 330;
@@ -27,8 +28,8 @@ post_slide_width = 3.0; //this is the width of the cutout for the trays to slide
 post_slide_cutout = 3.2; //this is the height of the cutout for the trays to slide into
 
 post_sliders = 1; //1= add sliders, 0 = no sliders.
-
-VERSION = "2026-05-03r0";
+// AUTO-V
+version = "v0.1-2026/05/03r03";
 
 module post(slide_side) {
     cube([post_width, post_width, u_height]);
@@ -132,15 +133,49 @@ module assembly() {
             rotate([0,0,180]) {
                 rail_1u_holes(1);
             }
-        translate([rack_width - post_width, 0, 0]) {
-            rotate([0,0,180]) {
-                rail_1u_holes(0);
+            translate([rack_width - post_width, 0, 0]) {
+                rotate([0,0,180]) {
+                    rail_1u_holes(0);
+                }
             }
         }
+
+        translate([0,-3, 0]) {
+            blank_1U_front_panel(holes = 2, rounded = 1);
         }
+
     }
 }
 
 
+module blank_1U_front_panel(holes = 2, rounded = 0) {
+
+    difference() {
+        cube([rack_width, 2, u_height]);
+        translate([post_width/2, ((post_width)-post_width/2 ), hole_offset_z/2]) {
+            rotate([90,0,0]) {
+                cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+            }
+        }
+
+        if (holes == 3 ) {
+            translate([post_width/2, ((post_width)-post_width/2 ), (hole_offset_z/2) + hole_spacing]) {
+                rotate([90,0,0]) {
+                    cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+                }
+            }
+        }
+
+        translate([post_width/2, ((post_width)-post_width/2 ), (hole_offset_z/2)+ (hole_spacing*2)]) {
+            rotate([90,0,0]) {
+                cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+            }
+        }
+    }
+
+
+
+
+}
 
 assembly();
