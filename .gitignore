@@ -1,0 +1,12 @@
+# Ignore everything by default
+*
+
+# Keep directories traversable
+!*/
+
+# Keep the ignore rules file itself
+!.gitignore
+
+# Allow only source/design files
+!*.scad
+!*.svg
