@@ -16,17 +16,17 @@ include <330mm rack tray.scad>;
 include <330mm rack defines.scad>; //some of these are overrode below.
 
 
-part = 0; // 0 = assembly, 1 = posts, 2 = trays, 3 = feet, 4 = base joiner, 5 = top joiner.
+part = 0; // 0 = assembly, 1 = posts, 2 = trays, 3 = feet, 4 = base joiner, 5 = top joiner, 6 = 2U tray
 
 
 
 
 
 // these are the basic setup for the posts.
-post_u_height = 3; //how many UI high
-post_doublewide = 0; // 1 for double wide, 0 for single wide. This is used by the post module, and the rail_1u_holes_segment module, which calls the post module. The post module is used by the assembly module, which is what is rendered when part = 0. So changing this will change the posts in the assembly render, but not if you render just the posts by setting part = 1.
+post_u_height = 6; //how many U high
+post_doublewide = 1; // 1 for double wide, 0 for single wide. This is used by the post module, and the rail_1u_holes_segment module, which calls the post module. The post module is used by the assembly module, which is what is rendered when part = 0. So changing this will change the posts in the assembly render, but not if you render just the posts by setting part = 1.
 
-slide_side = 1; //0 = none, 1 = left, 2 = right, 3 = both.
+slide_side = 0; //0 = none, 1 = left, 2 = right, 3 = both.
 cones = 1; //this is for joining rails
 hole_clearance = 0.3; //mm clearance around the 'oles
 hole_d = 6.0 + hole_clearance; //screw holes dia
@@ -36,14 +36,14 @@ nut_thickness = 6.0 + hole_clearance; //5mm for m6
 //these are the basic setup for the front panel.
 front_panel_edge_radius = 2.0;
 front_panel_thickness = 3.0;
-front_panel_hole_count = 2; //this is per side. 2 or 3.
+front_panel_hole_count = 2; //this is per side. 2 or 3 or 4 or 6.
 
 //these are the basic setup for the trays, the trays also use the defines from the front panel.
 tray_thickness = 3.0; // this is not affected by post_slide_cutout, as it sits inside
 tray_post_clearance = 0.5; //clearance between trays and posts. added to BOTH sides.
 tray_side_thickness = 2.0;
 tray_slide_thickness = post_slide_cutout - hole_clearance;
-tray_side_height = 3; //this is in hole spacing, 1 = 1 hole up, 2 = 2 holes up etc.
+tray_side_height = 2; //this is in hole spacing, 1 = 1 hole up, 2 = 2 holes up etc.
 
 tray_slide_out = 60; //this is just for the assembly demo.
 
@@ -110,33 +110,50 @@ module assembly() {
                     blank_05U_front_panel();
                 }
             }
+            //also put on on the rear, for added support
+             translate([rack_width, rack_width+front_panel_thickness, -hole_offset_z*2]) {
+                rotate([0,0,180]) {
+                    color("orange") {
+                        blank_05U_front_panel();
+                    }
+                }
+            }
+
         }
 
         if (top_join == 1) {
             if (post_doublewide == 0) {
-                translate([0, 0, post_height]) {
+                translate([0, 0, u_height*post_u_height]) {
                     base_joiner(doublewide = post_doublewide, bottom = 0);
                 }
-                translate([rack_width - post_width, 0, post_height]) {
+                translate([rack_width - post_width, 0, u_height*post_u_height]) {
                     base_joiner(doublewide = post_doublewide, bottom = 0);
                 }
             } else {
-                translate([-post_width, 0, post_height]) {
+                translate([-post_width, 0, u_height*post_u_height]) {
                     base_joiner(doublewide = post_doublewide, bottom = 0);
                 }
-                translate([rack_width - post_width, 0, post_height]) {
+                translate([rack_width - post_width, 0, u_height*post_u_height]) {
                     base_joiner(doublewide = post_doublewide, bottom = 0);
                 }
              }
         }
 
         if (top_panel == 1) {
-            translate([0, -front_panel_thickness, (post_height)]) {
+            translate([0, -front_panel_thickness, (u_height*post_u_height)]) {
                 color("orange") {
                     blank_05U_front_panel();
                 }
             }
-         }
+        }
+        //also put on on the rear, for added support
+         translate([rack_width, rack_width+front_panel_thickness, (u_height*post_u_height)]) {
+            rotate([0,0,180]) {
+                color("orange") {
+                    blank_05U_front_panel();
+                }
+            }
+        }
 
         translate([0, -front_panel_thickness, 0]) {
         //    blank_1U_front_panel(holes = 3);
@@ -157,6 +174,13 @@ module assembly() {
         //}
             color("cyan") {
                 blank_1U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
+            }
+        }
+        translate([0, -front_panel_thickness, u_height * 3]) {
+        //    blank_1U_front_panel(holes = 3);
+        //}
+            color("orange") {
+                blank_2U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
             }
         }
     }
@@ -207,3 +231,9 @@ if (part == 5) {
         }
     }
 }
+
+if (part == 6) {
+    render() {
+        blank_2U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
+    }
+} 

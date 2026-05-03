@@ -44,12 +44,12 @@ header_include = 1; // set to 0 to not include the header, 1 to include it. The 
 
 // the next 2 lines are used for creating joining beams for the front and rear of the rack, connecting the posts.
 // they are the same connector apart as the footer/header.
-header_top_beam_thickness = 5.0; // the top beam for connecting 2 posts/rails together, front to rear.
+header_top_beam_thickness = 10.0; // the top beam for connecting 2 posts/rails together, front to rear.
 footer_base_beam_thickness = 5.0; // the base beam for connecting 2 posts/rails together, front to rear.
-
+beam_thickness = 4; //this is used internally
 
 // the next 2 lines are used by my version script which is called by 'run on save'
 // AUTO-V
-version = "v0.1-2026/05/03r259";
+version = "v0.1-2026/05/03r269";
 
 

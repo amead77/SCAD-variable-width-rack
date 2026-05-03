@@ -167,6 +167,7 @@ module base_joiner_block(doublewide = 0) {
 }
 
 module base_joiner_core(doublewide = 0, bottom = 1) {
+    beam_thickness = (bottom == 1) ? footer_base_beam_thickness : header_top_beam_thickness;
     union() {
         base_joiner_block(doublewide);
         translate([0, rack_width-post_width, 0]) {
@@ -191,16 +192,16 @@ module base_joiner_core(doublewide = 0, bottom = 1) {
         } else {
             base_joiner_block(doublewide);
         }
-        translate([0, 0, -((footer_height * 2)+footer_base_beam_thickness)]) {
+        translate([0, 0, -((footer_height * 2)+beam_thickness)]) {
             if (doublewide == 0) {
-                cube([post_width, rack_width, footer_base_beam_thickness]);
+                cube([post_width, rack_width, beam_thickness]);
             }
 
             if (doublewide == 0) {
-                cube([post_width, rack_width, footer_base_beam_thickness]);
+                cube([post_width, rack_width, beam_thickness]);
             }
             if (doublewide == 1) {
-                cube([post_width * 2, rack_width, footer_base_beam_thickness]);
+                cube([post_width * 2, rack_width, beam_thickness]);
             }
         }
 
