@@ -34,6 +34,7 @@ tray_thickness = 3.0; // this is not affected by post_slide_cutout, as it sits i
 tray_post_clearance = 0.5; //clearance between trays and posts. added to BOTH sides.
 tray_side_thickness = 2.0;
 tray_slide_thickness = post_slide_cutout - hole_clearance;
+tray_to_panel_support_distance = 30.0; //this is the distance the front panel support reaches back to the side slides.
 
 footer_height = 12.7;
 footer_width = 1; //this is in POST WIDTHS, not mm.
@@ -50,6 +51,6 @@ beam_thickness = 4; //this is used internally
 
 // the next 2 lines are used by my version script which is called by 'run on save'
 // AUTO-V
-version = "v0.1-2026/05/03r269";
+version = "v0.1-2026/05/03r270";
 
 

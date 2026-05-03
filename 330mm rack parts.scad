@@ -57,6 +57,9 @@ top_panel = 1; //a blanking panel and reinforcement. 0.5U high
 module assembly() {
 // this is used to render/see all the bits together, as an example.
     render() {
+
+        //the posts
+
         if (post_doublewide == 0) {
         rail_1u_holes(slide_side = 1, doublewide = post_doublewide,  post_u_height, cones);
         } else {
@@ -88,6 +91,8 @@ module assembly() {
             }
 
         }
+
+        // the base joins
 
         if (base_join == 1) {
             if (post_doublewide == 0) {
@@ -121,6 +126,8 @@ module assembly() {
 
         }
 
+        // the top joins
+
         if (top_join == 1) {
             if (post_doublewide == 0) {
                 translate([0, 0, u_height*post_u_height]) {
@@ -139,6 +146,8 @@ module assembly() {
              }
         }
 
+        // the top panel, to join the top of post to bracket
+
         if (top_panel == 1) {
             translate([0, -front_panel_thickness, (u_height*post_u_height)]) {
                 color("orange") {
@@ -146,7 +155,9 @@ module assembly() {
                 }
             }
         }
+        
         //also put on on the rear, for added support
+        
          translate([rack_width, rack_width+front_panel_thickness, (u_height*post_u_height)]) {
             rotate([0,0,180]) {
                 color("orange") {
@@ -155,11 +166,15 @@ module assembly() {
             }
         }
 
+        // the trays. These are just for demo purposes
+        
         translate([0, -front_panel_thickness, 0]) {
         //    blank_1U_front_panel(holes = 3);
         //}
             color("cyan") {
-                blank_1U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
+                blank_variable_tray(1, 0.6, 2);
+
+                //blank_1U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
             }
         }
         translate([0, -front_panel_thickness-tray_slide_out, u_height]) {
@@ -181,6 +196,25 @@ module assembly() {
         //}
             color("orange") {
                 blank_2U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
+            }
+        }
+        translate([0, -front_panel_thickness, u_height * 5]) {
+            color("green") {
+                blank_variable_tray(
+                    panel_u_size = 1,
+                    tray_u_size = 0.5,
+                    holes = 2,
+                    // Known-good logo test: centered and embossed so it is easy to verify visibility.
+                    import_file = "raspberry-pi.svg",
+                    import_type = "svg",
+                    import_width = 16,
+                    import_height = 20,
+                    import_depth = 0.2,
+                    import_offset_x = 140,
+                    import_offset_z = 0,
+                    import_mode = "emboss", // emboss, change to "engrave" after confirming alignment
+                    side_support = 1
+                );
             }
         }
     }
@@ -237,3 +271,9 @@ if (part == 6) {
         blank_2U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
     }
 } 
+
+if (part == 7) {
+    render() {
+        blank_variable_tray(2, 0.6, 2);
+    }
+}
