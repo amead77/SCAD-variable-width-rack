@@ -28,8 +28,14 @@ post_slide_width = 3.0; //this is the width of the cutout for the trays to slide
 post_slide_cutout = 3.2; //this is the height of the cutout for the trays to slide into
 
 post_sliders = 1; //1= add sliders, 0 = no sliders.
+
+front_panel_thickness = 2.0;
+front_panel_undersizing = 0.1; // this is how many mm to undersize the front panel, for better fitting. it affects x and z and is applied to both edges, not just one
+front_panel_edge_radius = 0.0; // this is the radius of the rounded edges on the front panel. Set to 0 for square edges.
+
+// the next 2 lines are used by my version script which is called by 'run on save'
 // AUTO-V
-version = "v0.1-2026/05/03r03";
+version = "v0.1-2026/05/03r24";
 
 module post(slide_side) {
     cube([post_width, post_width, u_height]);
@@ -71,20 +77,38 @@ module post_slider_right() {
     }
 }
 
+module holes(holes = 2) {
+    translate([post_width/2, ((post_width)-post_width/2 ), hole_offset_z/2]) {
+        rotate([90,0,0]) {
+            cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+        }
+    }
+
+    if (holes == 3 ) {
+        translate([post_width/2, ((post_width)-post_width/2 ), (hole_offset_z/2) + hole_spacing]) {
+            rotate([90,0,0]) {
+                cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+            }
+        }
+    }
+
+    translate([post_width/2, ((post_width)-post_width/2 ), (hole_offset_z/2)+ (hole_spacing*2)]) {
+        rotate([90,0,0]) {
+            cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+        }
+    }
+
+}
 
 module rail_1u_holes_segment(slide_side) {
 // i've bashed this together rather than math it.
 
     difference() {
         post(slide_side);
+        holes(holes = 3); //1u sections have 3 holes per standard.
         translate([post_width/2, ((post_width)-nut_thickness/2 ), hole_offset_z/2]) {
             rotate([90,0,0]) {
                 cylinder(d=nut_diameter_point, h=nut_thickness, center=true, $fn=6);
-            }
-        }
-        translate([post_width/2, ((post_width)-post_width/2 ), hole_offset_z/2]) {
-            rotate([90,0,0]) {
-                cylinder(d=hole_d, h=post_width, center=true, $fn=32);
             }
         }
 
@@ -93,20 +117,10 @@ module rail_1u_holes_segment(slide_side) {
                 cylinder(d=nut_diameter_point, h=nut_thickness, center=true, $fn=6);
             }
         }
-        translate([post_width/2, ((post_width)-post_width/2 ), (hole_offset_z/2) + hole_spacing]) {
-            rotate([90,0,0]) {
-                cylinder(d=hole_d, h=post_width, center=true, $fn=32);
-            }
-        }
 
         translate([post_width/2, ((post_width)-nut_thickness/2 ), (hole_offset_z/2)+ (hole_spacing*2)]) {
             rotate([90,0,0]) {
                 cylinder(d=nut_diameter_point, h=nut_thickness, center=true, $fn=6);
-            }
-        }
-        translate([post_width/2, ((post_width)-post_width/2 ), (hole_offset_z/2)+ (hole_spacing*2)]) {
-            rotate([90,0,0]) {
-                cylinder(d=hole_d, h=post_width, center=true, $fn=32);
             }
         }
     }
@@ -141,35 +155,32 @@ module assembly() {
         }
 
         translate([0,-3, 0]) {
-            blank_1U_front_panel(holes = 2, rounded = 1);
+            blank_1U_front_panel(holes = 3);
         }
 
     }
 }
 
 
-module blank_1U_front_panel(holes = 2, rounded = 0) {
+module blank_1U_front_panel(holes = 2) {
 
     difference() {
-        cube([rack_width, 2, u_height]);
-        translate([post_width/2, ((post_width)-post_width/2 ), hole_offset_z/2]) {
-            rotate([90,0,0]) {
-                cylinder(d=hole_d, h=post_width, center=true, $fn=32);
-            }
-        }
-
-        if (holes == 3 ) {
-            translate([post_width/2, ((post_width)-post_width/2 ), (hole_offset_z/2) + hole_spacing]) {
+        if (front_panel_edge_radius > 0) {
+            minkowski() {
+                cube([rack_width - (front_panel_undersizing*2), front_panel_thickness, u_height - (front_panel_undersizing*2)]);
                 rotate([90,0,0]) {
-                    cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+                    cylinder(r=front_panel_edge_radius, h=front_panel_thickness, center=true, $fn=32);
                 }
             }
-        }
-
-        translate([post_width/2, ((post_width)-post_width/2 ), (hole_offset_z/2)+ (hole_spacing*2)]) {
-            rotate([90,0,0]) {
-                cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+        } else {
+            translate([front_panel_undersizing, 0, front_panel_undersizing]) {
+                cube([rack_width - (front_panel_undersizing*2), front_panel_thickness, u_height - (front_panel_undersizing*2)]);
             }
+        }
+        
+        holes(holes);
+        translate([rack_width - post_width, 0, 0]) {
+            holes(holes);
         }
     }
 
