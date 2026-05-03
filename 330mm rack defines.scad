@@ -14,7 +14,7 @@ hole_spacing = 15.875; //rail hole spacing
 
 nut_diameter = 10.0 + hole_clearance; //10mm for m6
 nut_diameter_point = nut_diameter / cos(30); // diameter of the hexagon nut point to point
-nut_thickness = 5.0 + hole_clearance; //5mm for m6
+nut_thickness = 6.0 + hole_clearance; //5mm for m6 - CONSIDER YOUR SCREW DEPTH AND PANEL THICKNESS HERE (my screws didn't reach far enough, so increased depth to counter)
 
 post_slide_width = 3.0; //this is the width of the cutout for the trays to slide into.
 post_slide_cutout = 3.2; //this is the height of the cutout for the trays to slide into
@@ -35,12 +35,21 @@ tray_post_clearance = 0.5; //clearance between trays and posts. added to BOTH si
 tray_side_thickness = 2.0;
 tray_slide_thickness = post_slide_cutout - hole_clearance;
 
-footer_height = 10.0;
+footer_height = 12.7;
 footer_width = 1; //this is in POST WIDTHS, not mm.
+footer_include = 1; // set to 0 to not include the footer, 1 to include it. The footer is a small piece at the bottom of the rack
+header_height = 12.7;
+header_width = 1; //this is in POST WIDTHS, not mm.
+header_include = 1; // set to 0 to not include the header, 1 to include it. The header is a small piece at the top of the rack
+
+// the next 2 lines are used for creating joining beams for the front and rear of the rack, connecting the posts.
+// they are the same connector apart as the footer/header.
+header_top_beam_thickness = 5.0; // the top beam for connecting 2 posts/rails together, front to rear.
+footer_base_beam_thickness = 5.0; // the base beam for connecting 2 posts/rails together, front to rear.
 
 
 // the next 2 lines are used by my version script which is called by 'run on save'
 // AUTO-V
-version = "v0.1-2026/05/03r246";
+version = "v0.1-2026/05/03r258";
 
 

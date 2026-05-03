@@ -9,17 +9,30 @@ module post(slide_side = 0, doublewide = 0) {
                 cube([post_width, post_width, u_height]);
             }
         }
-        if (post_sliders == 1) {
-            if (slide_side == 0) {
+        if (doublewide == 0) {
+            if ((slide_side == 1) || (slide_side == 3)) {
                 post_slider_left();
-            } else {
-                if (doublewide == 1) {
-                    translate([post_width, 0, 0]) {
-                        post_slider_left();
-                    }
-                }
+            } 
+            if ((slide_side == 2) || (slide_side == 3)) {
                 post_slider_right();
             }
+        } else {
+            // doublewide
+            if ((slide_side == 1) || (slide_side == 3)) {
+                // Left sliders on both posts
+                post_slider_left();
+                translate([post_width, 0, 0]) {
+                    post_slider_left();
+                }
+            } 
+            if ((slide_side == 2) || (slide_side == 3)) {
+                // Right sliders on both posts
+                post_slider_right();
+                translate([post_width, 0, 0]) {
+                    post_slider_right();
+                }
+            } 
+ 
         }
     }
 }
@@ -70,7 +83,194 @@ module rail_1u_holes_segment(slide_side, doublewide = 0) {
 }
 
 
-module rail_1u_holes(slide_side, doublewide = 0, post_height = v_post_height, v_post_cones = post_cones) {
+module footer_body(doublewide = 0) {
+    translate([0, 0, -footer_height]) {
+        cube([post_width, post_width, footer_height]);
+    }
+    if (doublewide == 1) {
+        translate([post_width, 0, -footer_height]) {
+            cube([post_width, post_width, footer_height]);
+        }
+    }
+}
+
+module footer_hole_and_nut() {
+    // Place one footer hole 0.5U below the first post hole center.
+    translate([post_width/2, ((post_width)-post_width/2 ), -(hole_offset_z/2)]) {
+        rotate([90,0,0]) {
+            cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+        }
+    }
+    translate([post_width/2, ((post_width)-nut_thickness/2 ), -(hole_offset_z/2)]) {
+        rotate([90,0,0]) {
+            cylinder(d=nut_diameter_point, h=nut_thickness, center=true, $fn=6);
+        }
+    }
+}
+
+module header_body(post_height, doublewide = 0) {
+    translate([0, 0, u_height * post_height]) {
+        cube([post_width, post_width, header_height]);
+    }
+    if (doublewide == 1) {
+        translate([post_width, 0, u_height * post_height]) {
+            cube([post_width, post_width, header_height]);
+        }
+    }
+}
+
+module header_hole_and_nut(post_height) {
+    // Place one header hole 0.5U above the top of the posts.
+    translate([post_width/2, ((post_width)-post_width/2 ), u_height * post_height + (hole_offset_z/2)]) {
+        rotate([90,0,0]) {
+            cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+        }
+    }
+    translate([post_width/2, ((post_width)-nut_thickness/2 ), u_height * post_height + (hole_offset_z/2)]) {
+        rotate([90,0,0]) {
+            cylinder(d=nut_diameter_point, h=nut_thickness, center=true, $fn=6);
+        }
+    }
+}
+
+
+module base_joiner_hole_and_nut() {
+    // Place one footer hole 0.5U below the first post hole center.
+    translate([post_width/2, ((post_width)-post_width/2 ), (hole_offset_z/2)]) {
+        rotate([90,0,0]) {
+            cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+        }
+    }
+    translate([post_width/2, ((post_width)-nut_thickness/2 ), (hole_offset_z/2)]) {
+        rotate([90,0,0]) {
+            cylinder(d=nut_diameter_point, h=nut_thickness, center=true, $fn=6);
+        }
+    }
+}
+
+module base_joiner_block(doublewide = 0) {
+    translate([0, 0, -(footer_height*2)]) {
+        difference() {
+            cube([post_width, post_width, footer_height]);
+            base_joiner_hole_and_nut();
+        }
+    }
+    if (doublewide == 1) {
+        translate([post_width, 0, -(footer_height*2)]) {
+            difference() {
+                cube([post_width, post_width, footer_height]);
+                base_joiner_hole_and_nut();
+            }
+        }
+    }
+
+}
+
+module base_joiner_core(doublewide = 0, bottom = 1) {
+    union() {
+        base_joiner_block(doublewide);
+        translate([0, rack_width-post_width, 0]) {
+            if (doublewide == 1) {
+                translate([post_width*2, post_width, 0]) {
+                    rotate([0,0,180]) {
+                            base_joiner_block(doublewide);
+                    }
+                }
+            } else {
+                translate([post_width, post_width, 0]) {
+                    rotate([0,0,180]) {
+                        base_joiner_block(doublewide);
+                    }
+                }
+            }
+        }
+        if (doublewide == 1) {
+            translate([0/*-post_width*/, 0, 0]) {
+                base_joiner_block(doublewide);
+            }
+        } else {
+            base_joiner_block(doublewide);
+        }
+        translate([0, 0, -((footer_height * 2)+footer_base_beam_thickness)]) {
+            if (doublewide == 0) {
+                cube([post_width, rack_width, footer_base_beam_thickness]);
+            }
+
+            if (doublewide == 0) {
+                cube([post_width, rack_width, footer_base_beam_thickness]);
+            }
+            if (doublewide == 1) {
+                cube([post_width * 2, rack_width, footer_base_beam_thickness]);
+            }
+        }
+
+        // Top cones on front joiner block(s) — mate with footer bottom cone sockets
+        if (bottom == 1) {
+            translate([post_width/2, post_width/2, -footer_height]) {
+                cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
+            }
+            if (doublewide == 1) {
+                translate([post_width + post_width/2, post_width/2, -footer_height]) {
+                    cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
+                }
+            }
+
+            // Top cones on rear joiner block(s)
+            translate([post_width/2, rack_width - post_width/2, -footer_height]) {
+                cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
+            }
+            if (doublewide == 1) {
+                translate([post_width + post_width/2, rack_width - post_width/2, -footer_height]) {
+                    cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
+                }
+            }
+        }    
+    }
+}
+
+module base_joiner(doublewide = 0, bottom = 1) {
+    if (bottom == 1) {
+        base_joiner_core(doublewide, bottom);
+    } else {
+        // Top joiner: flip Z and invert cones to sockets so header top cones lock in.
+        difference() {
+            mirror([0, 0, 1]) {
+                base_joiner_core(doublewide, bottom);
+            }
+
+            // Front socket(s)
+            translate([post_width/2, post_width/2, header_height]) {
+                rotate([0,0,0]) {
+                    cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
+                }
+            }
+            if (doublewide == 1) {
+                translate([post_width + post_width/2, post_width/2, header_height]) {
+                    rotate([0,0,0]) {
+                        cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
+                    }
+                }
+            }
+
+            // Rear socket(s)
+            translate([post_width/2, rack_width - post_width/2, header_height]) {
+                rotate([0,0,0]) {
+                    cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
+                }
+            }
+            if (doublewide == 1) {
+                translate([post_width + post_width/2, rack_width - post_width/2, header_height]) {
+                    rotate([0,0,0]) {
+                        cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+module rail_1u_holes(slide_side, doublewide = 0, post_height = v_post_height, v_post_cones = post_cones, include_footer = footer_include, include_header = header_include) {
     difference()  {
         union() {
             for (z = [0:post_height-1]) {
@@ -78,33 +278,78 @@ module rail_1u_holes(slide_side, doublewide = 0, post_height = v_post_height, v_
                     rail_1u_holes_segment(slide_side, doublewide);
                 }
             }
+            if (include_footer == 1) {
+                footer_body(doublewide);
+            }
+            if (include_header == 1) {
+                header_body(post_height, doublewide);
+            }
             if (v_post_cones == 1) { //top cones for joining rails
-                translate([post_width/2, post_width/2, u_height * post_height]) {
-                    rotate([0,0,0]) {
+                if (include_header == 1) {
+                    translate([post_width/2, post_width/2, u_height * post_height + header_height]) {
                         cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
                     }
-                }
-                if (doublewide == 1) {
-                    translate([post_width + post_width/2, post_width/2, u_height * post_height]) {
+                    if (doublewide == 1) {
+                        translate([post_width + post_width/2, post_width/2, u_height * post_height + header_height]) {
+                            cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
+                        }
+                    }
+                } else {
+                    translate([post_width/2, post_width/2, u_height * post_height]) {
                         rotate([0,0,0]) {
                             cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
                         }
                     }
+                    if (doublewide == 1) {
+                        translate([post_width + post_width/2, post_width/2, u_height * post_height]) {
+                            rotate([0,0,0]) {
+                                cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
+                            }
+                        }
+                    }
                 }
-
             }
         }
-        if (v_post_cones == 1) { //bottom cones
-            translate([post_width/2, post_width/2, 0]) {
-                cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
-            }
+
+        if (include_header == 1) {
+            header_hole_and_nut(post_height);
             if (doublewide == 1) {
-                translate([post_width + post_width/2, post_width/2, 0]) {
+                translate([post_width, 0, 0]) {
+                    header_hole_and_nut(post_height);
+                }
+            }
+        }
+
+        if (include_footer == 1) {
+            footer_hole_and_nut();
+            if (doublewide == 1) {
+                translate([post_width, 0, 0]) {
+                    footer_hole_and_nut();
+                }
+            }
+        }
+
+        if (v_post_cones == 1) { //bottom cones
+            if (include_footer == 1) {
+                translate([post_width/2, post_width/2, -footer_height]) {
                     cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
                 }
+                if (doublewide == 1) {
+                    translate([post_width + post_width/2, post_width/2, -footer_height]) {
+                        cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
+                    }
+                }
+            } else {
+                translate([post_width/2, post_width/2, 0]) {
+                    cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
+                }
+                if (doublewide == 1) {
+                    translate([post_width + post_width/2, post_width/2, 0]) {
+                        cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
+                    }
+                }
             }
         }
-
     }
 }
 

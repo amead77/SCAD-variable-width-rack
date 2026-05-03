@@ -29,6 +29,56 @@ module blank_1U_front_panel(holes = front_panel_hole_count) {
     }
 }
 
+
+module blank_05U_front_panel() {
+    // 0.5U panel: height = hole_offset_z (12.7mm), one hole per side centred at hole_offset_z/2
+    half_u = hole_offset_z * 2;
+    difference() {
+        union() {
+            if (front_panel_edge_radius > 0) {
+                translate([front_panel_undersizing + front_panel_edge_radius, 0, front_panel_undersizing + front_panel_edge_radius]) {
+                    minkowski() {
+                        cube([rack_width - (front_panel_undersizing*2) - (front_panel_edge_radius*2), front_panel_thickness, half_u - (front_panel_undersizing*2) - (front_panel_edge_radius*2)]);
+                        rotate([90,0,0]) {
+                            cylinder(r=front_panel_edge_radius, h=0.01, center=true, $fn=32);
+                        }
+                    }
+                }
+            } else {
+                translate([front_panel_undersizing, 0, front_panel_undersizing]) {
+                    cube([rack_width - (front_panel_undersizing*2), front_panel_thickness, half_u - (front_panel_undersizing*2)]);
+                }
+            }
+        }
+
+        // 2 holes per side, centred vertically in the 0.5U panel
+        translate([0, -1, 0]) {
+            translate([post_width/2, post_width/2, hole_offset_z/2]) {
+                rotate([90,0,0]) {
+                    cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+                }
+            }
+            translate([post_width/2, post_width/2, hole_offset_z*3/2]) {
+                rotate([90,0,0]) {
+                    cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+                }
+            }
+
+
+            translate([rack_width - post_width/2, post_width/2, hole_offset_z/2]) {
+                rotate([90,0,0]) {
+                    cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+                }
+            }
+            translate([rack_width - post_width/2, post_width/2, hole_offset_z*3/2]) {
+                rotate([90,0,0]) {
+                    cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+                }
+            }
+        }
+    }
+}
+
 module side_slide(count = 3, side = 0) {
     union() {
         if (side == 0) {
@@ -37,8 +87,8 @@ module side_slide(count = 3, side = 0) {
                     cube([tray_side_thickness, rack_width, u_height - hole_spacing * 2]);
                 } else if (count == 2) {
                     cube([tray_side_thickness, rack_width, u_height - hole_spacing]);
-                } else if (count == 3) {
-                cube([tray_side_thickness, rack_width, u_height]);
+                } else if (count >= 3) {
+                cube([tray_side_thickness, rack_width, u_height-1]);
                 }
             }
             if (count >= 1) {
@@ -62,8 +112,8 @@ module side_slide(count = 3, side = 0) {
                     cube([tray_side_thickness, rack_width, u_height - hole_spacing * 2]);
                 } else if (count == 2) {
                     cube([tray_side_thickness, rack_width, u_height - hole_spacing]);
-                } else if (count == 3) {
-                    cube([tray_side_thickness, rack_width, u_height]);
+                } else if (count >= 3) {
+                    cube([tray_side_thickness, rack_width, u_height-1]);
                 }
             }
             if (count >= 1) {

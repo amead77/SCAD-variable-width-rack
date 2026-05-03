@@ -16,22 +16,22 @@ include <330mm rack tray.scad>;
 include <330mm rack defines.scad>; //some of these are overrode below.
 
 
-part = 0; // 0 = assembly, 1 = posts, 2 = trays, 3 = feet.
+part = 0; // 0 = assembly, 1 = posts, 2 = trays, 3 = feet, 4 = base joiner, 5 = top joiner.
 
 
 
 
 
 // these are the basic setup for the posts.
-post_u_height = 1; //how many UI high
+post_u_height = 3; //how many UI high
 post_doublewide = 0; // 1 for double wide, 0 for single wide. This is used by the post module, and the rail_1u_holes_segment module, which calls the post module. The post module is used by the assembly module, which is what is rendered when part = 0. So changing this will change the posts in the assembly render, but not if you render just the posts by setting part = 1.
-post_slider = 1;
-post_sliders = 1; //1= add sliders, 0 = no sliders.
+
+slide_side = 1; //0 = none, 1 = left, 2 = right, 3 = both.
 cones = 1; //this is for joining rails
 hole_clearance = 0.3; //mm clearance around the 'oles
 hole_d = 6.0 + hole_clearance; //screw holes dia
 nut_diameter = 10.0 + hole_clearance; //10mm for m6
-nut_thickness = 5.0 + hole_clearance; //5mm for m6
+nut_thickness = 6.0 + hole_clearance; //5mm for m6
 
 //these are the basic setup for the front panel.
 front_panel_edge_radius = 2.0;
@@ -43,29 +43,100 @@ tray_thickness = 3.0; // this is not affected by post_slide_cutout, as it sits i
 tray_post_clearance = 0.5; //clearance between trays and posts. added to BOTH sides.
 tray_side_thickness = 2.0;
 tray_slide_thickness = post_slide_cutout - hole_clearance;
-tray_side_height = 2;
+tray_side_height = 3; //this is in hole spacing, 1 = 1 hole up, 2 = 2 holes up etc.
 
 tray_slide_out = 60; //this is just for the assembly demo.
+
+footer_include = 1; // set to 0 to not include the footer, 1 to include it. The footer is a small piece at the bottom of the rack
+header_include = 1;
+base_join = 1;
+top_join = 1;
+base_panel = 1; //a blanking panel and reinforcement. 0.5U high
+top_panel = 1; //a blanking panel and reinforcement. 0.5U high
 
 module assembly() {
 // this is used to render/see all the bits together, as an example.
     render() {
-        rail_1u_holes(slide_side = 0, doublewide = 0,  post_u_height, cones);
-
+        if (post_doublewide == 0) {
+        rail_1u_holes(slide_side = 1, doublewide = post_doublewide,  post_u_height, cones);
+        } else {
+            translate([-post_width, 0, 0]) {
+                rail_1u_holes(slide_side = 1, doublewide = post_doublewide, post_u_height, cones);
+            }
+        }
         translate([rack_width - post_width, 0, 0]) {
-            rail_1u_holes(slide_side = 1, doublewide = 0, post_u_height, cones);
+            rail_1u_holes(slide_side = 2, doublewide = post_doublewide, post_u_height, cones);
         }
         
         translate([post_width, rack_width, 0]) {        
             rotate([0,0,180]) {
-                rail_1u_holes(1, 0, post_u_height, cones);
+                rail_1u_holes(2, post_doublewide, post_u_height, cones);
             }
-            translate([rack_width - post_width, 0, 0]) {
-                rotate([0,0,180]) {
-                    rail_1u_holes(0, 0, post_u_height, cones);
+            
+            if (post_doublewide == 0) {
+                translate([rack_width - post_width, 0, 0]) {
+                    rotate([0,0,180]) {
+                        rail_1u_holes(1, post_doublewide, post_u_height, cones);
+                    }
+                }
+            } else {
+                translate([rack_width, 0, 0]) {
+                    rotate([0,0,180]) {
+                        rail_1u_holes(1, post_doublewide, post_u_height, cones);
+                    }
+                }
+            }
+
+        }
+
+        if (base_join == 1) {
+            if (post_doublewide == 0) {
+                base_joiner(doublewide = post_doublewide);
+                translate([rack_width - post_width, 0, 0]) {
+                    base_joiner(doublewide = post_doublewide);
+                }
+            } else {
+                translate([-post_width, 0, 0]) {
+                    base_joiner(doublewide = post_doublewide);
+                }
+                translate([rack_width - post_width, 0, 0]) {
+                    base_joiner(doublewide = post_doublewide);
                 }
             }
         }
+        if (base_panel == 1) {
+            translate([0, -front_panel_thickness, -hole_offset_z*2]) {
+                color("orange") {
+                    blank_05U_front_panel();
+                }
+            }
+        }
+
+        if (top_join == 1) {
+            if (post_doublewide == 0) {
+                translate([0, 0, post_height]) {
+                    base_joiner(doublewide = post_doublewide, bottom = 0);
+                }
+                translate([rack_width - post_width, 0, post_height]) {
+                    base_joiner(doublewide = post_doublewide, bottom = 0);
+                }
+            } else {
+                translate([-post_width, 0, post_height]) {
+                    base_joiner(doublewide = post_doublewide, bottom = 0);
+                }
+                translate([rack_width - post_width, 0, post_height]) {
+                    base_joiner(doublewide = post_doublewide, bottom = 0);
+                }
+             }
+        }
+
+        if (top_panel == 1) {
+            translate([0, -front_panel_thickness, (post_height)]) {
+                color("orange") {
+                    blank_05U_front_panel();
+                }
+            }
+         }
 
         translate([0, -front_panel_thickness, 0]) {
         //    blank_1U_front_panel(holes = 3);
@@ -93,23 +164,45 @@ module assembly() {
 
 
 if (part == 0) {
-
     assembly();
-} else {
-    if (part == 1) {
-        render() {
-            rail_1u_holes(slide_side = post_slider, doublewide = post_doublewide, post_u_height, cones);
-        }
-    } else {
-        if (part == 2) {
-            render() {
-                blank_1U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
-            }
+}
+
+if (part == 1) {
+    render() {
+        rail_1u_holes(slide_side = slide_side, doublewide = post_doublewide, post_u_height, cones);
+    }
+}
+
+if (part == 2) {
+    render() {
+        blank_1U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
+    }
+} 
+
+if (part == 3) {
+    render() {
+        footer();
+    }
+}
+if (part == 4) {
+    render() {
+        if (post_doublewide == 0) {
+            base_joiner(doublewide = post_doublewide);
         } else {
-            if (part == 3) {
-        render() {
-            footer();
+            translate([-post_width, 0, 0]) {
+                base_joiner(doublewide = post_doublewide);
+            }
         }
+    }
+}
+
+if (part == 5) {
+    render() {
+        if (post_doublewide == 0) {
+            base_joiner(doublewide = post_doublewide, bottom = 0);
+        } else {
+            translate([-post_width, 0, 0]) {
+                base_joiner(doublewide = post_doublewide, bottom = 0);
             }
         }
     }
