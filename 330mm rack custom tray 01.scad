@@ -1,5 +1,8 @@
 include <330mm rack tray.scad>;
 
+// AUTO-V
+version = "v0.1-2026/05/04r00";
+
 
 module rpi5_io_cutout_left(
     cutout_x = post_width + 8,
