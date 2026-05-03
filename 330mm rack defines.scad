@@ -50,6 +50,6 @@ footer_base_beam_thickness = 5.0; // the base beam for connecting 2 posts/rails 
 
 // the next 2 lines are used by my version script which is called by 'run on save'
 // AUTO-V
-version = "v0.1-2026/05/03r258";
+version = "v0.1-2026/05/03r259";
 
 
