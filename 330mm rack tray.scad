@@ -5,7 +5,7 @@ include <330mm rack posts.scad>;
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/04r60";
+version = "v0.1-2026/05/04r63";
 */
 
 
@@ -168,6 +168,35 @@ module blank_05U_front_panel() {
             translate([rack_width - post_width/2, post_width/2, hole_offset_z*3/2]) {
                 rotate([90,0,0]) {
                     cylinder(d=hole_d, h=post_width, center=true, $fn=32);
+                }
+            }
+        }
+    }
+}
+
+
+// post_base_join_panel(doublewide, thickness)
+// Public — compact panel to join one post footprint (or two for doublewide) to a base joiner using 2 holes per post.
+// doublewide: 0=single post width, 1=double post width. thickness: panel thickness in mm.
+// e.g. post_base_join_panel();
+// e.g. post_base_join_panel(doublewide=1, thickness=4);
+module post_base_join_panel(doublewide = 0, thickness = front_panel_thickness) {
+    panel_width = (doublewide == 1) ? (post_width * 2) : post_width;
+    panel_height = hole_offset_z * 2;
+
+    difference() {
+        cube([panel_width, thickness, panel_height]);
+
+        // Two-hole pattern per post footprint, matching the 0.5U vertical spacing.
+        for (x_pos = (doublewide == 1) ? [post_width/2, post_width + post_width/2] : [post_width/2]) {
+            translate([x_pos, thickness/2, hole_offset_z/2]) {
+                rotate([90,0,0]) {
+                    cylinder(d=hole_d, h=thickness + 2, center=true, $fn=32);
+                }
+            }
+            translate([x_pos, thickness/2, hole_offset_z*3/2]) {
+                rotate([90,0,0]) {
+                    cylinder(d=hole_d, h=thickness + 2, center=true, $fn=32);
                 }
             }
         }

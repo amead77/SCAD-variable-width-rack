@@ -33,7 +33,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/04r59";
+version = "v0.1-2026/05/04r70";
 */
 
 include <330mm rack posts.scad>;
@@ -42,7 +42,7 @@ include <330mm rack defines.scad>; //some of these are overrode below.
 include <330mm rack custom tray 01.scad>;
 
 // Chose the part to make, or assembly to see all
-part = "assembly"; // [assembly, post, base joiner, top joiner, 1U tray, 2U tray, variable tray, halfUpanel, 1U panel, 2U panel, variable panel]
+part = "assembly"; // [assembly, post, base joiner, top joiner, 1U tray, 2U tray, variable tray, halfUpanel, 1U panel, 2U panel, variable panel, post joins]
 
 
 // ** these are the basic setup for the posts.
@@ -120,6 +120,15 @@ tray_y = 0.99;
 //this is just for the assembly demo. has no other function other than to show a tray partially slid out.
 tray_slide_out = 60; 
 
+//this is how many supports the base and top joins have. you can have more than just the 4 corners.
+base_support_count = 2;
+
+// the top beam for connecting 2 posts/rails together, front to rear.
+header_top_beam_thickness = 10.0;
+// the base beam for connecting 2 posts/rails together, front to rear.
+footer_base_beam_thickness = 5.0; 
+
+
 
 base_join = 1;
 top_join = 1;
@@ -131,54 +140,43 @@ module assembly() {
 // this is used to render/see all the bits together, as an example.
     render() {
 
-        //the posts
+        //POST CREATION
+        support_count = (base_support_count < 2) ? 2 : base_support_count;
+        for (i = [0:support_count-1]) {
+            y_pos = i * (rack_width - post_width) / (support_count - 1);
 
-        if (post_doublewide == 0) {
-        rail_1u_holes(slide_side = 1, doublewide = post_doublewide,  post_u_height, cones);
-        } else {
-            translate([-post_width, 0, 0]) {
-                rail_1u_holes(slide_side = 1, doublewide = post_doublewide, post_u_height, cones);
-            }
-        }
-        translate([rack_width - post_width, 0, 0]) {
-            rail_1u_holes(slide_side = 2, doublewide = post_doublewide, post_u_height, cones);
-        }
-        
-        translate([post_width, rack_width, 0]) {        
-            rotate([0,0,180]) {
-                rail_1u_holes(2, post_doublewide, post_u_height, cones);
-            }
-            
+            // Left-side post at this support position
             if (post_doublewide == 0) {
-                translate([rack_width - post_width, 0, 0]) {
-                    rotate([0,0,180]) {
-                        rail_1u_holes(1, post_doublewide, post_u_height, cones);
-                    }
+                translate([0, y_pos, 0]) {
+                    rail_1u_holes(slide_side = 1, doublewide = post_doublewide, post_u_height, cones);
                 }
             } else {
-                translate([rack_width, 0, 0]) {
-                    rotate([0,0,180]) {
-                        rail_1u_holes(1, post_doublewide, post_u_height, cones);
-                    }
+                translate([-post_width, y_pos, 0]) {
+                    rail_1u_holes(slide_side = 1, doublewide = post_doublewide, post_u_height, cones);
                 }
             }
 
+            // Right-side post at this support position
+            translate([rack_width - post_width, y_pos, 0]) {
+                rail_1u_holes(slide_side = 2, doublewide = post_doublewide, post_u_height, cones);
+            }
         }
+        //END POST CREATION
 
         // the base joins
 
         if (base_join == 1) {
             if (post_doublewide == 0) {
-                base_joiner(doublewide = post_doublewide);
+                base_joiner(doublewide = post_doublewide, supports = base_support_count, bottom = 1, beam_thickness = footer_base_beam_thickness);
                 translate([rack_width - post_width, 0, 0]) {
-                    base_joiner(doublewide = post_doublewide);
+                    base_joiner(doublewide = post_doublewide, supports = base_support_count, bottom = 1, beam_thickness = footer_base_beam_thickness);
                 }
             } else {
                 translate([-post_width, 0, 0]) {
-                    base_joiner(doublewide = post_doublewide);
+                    base_joiner(doublewide = post_doublewide, supports = base_support_count, bottom = 1, beam_thickness = footer_base_beam_thickness);
                 }
                 translate([rack_width - post_width, 0, 0]) {
-                    base_joiner(doublewide = post_doublewide);
+                    base_joiner(doublewide = post_doublewide, supports = base_support_count, bottom = 1, beam_thickness = footer_base_beam_thickness);
                 }
             }
         }
@@ -204,17 +202,17 @@ module assembly() {
         if (top_join == 1) {
             if (post_doublewide == 0) {
                 translate([0, 0, u_height*post_u_height]) {
-                    base_joiner(doublewide = post_doublewide, bottom = 0);
+                    base_joiner(doublewide = post_doublewide, bottom = 0, supports = base_support_count, beam_thickness = header_top_beam_thickness);
                 }
                 translate([rack_width - post_width, 0, u_height*post_u_height]) {
-                    base_joiner(doublewide = post_doublewide, bottom = 0);
+                    base_joiner(doublewide = post_doublewide, bottom = 0, supports = base_support_count, beam_thickness = header_top_beam_thickness);
                 }
             } else {
                 translate([-post_width, 0, u_height*post_u_height]) {
-                    base_joiner(doublewide = post_doublewide, bottom = 0);
+                    base_joiner(doublewide = post_doublewide, bottom = 0, supports = base_support_count, beam_thickness = header_top_beam_thickness);
                 }
                 translate([rack_width - post_width, 0, u_height*post_u_height]) {
-                    base_joiner(doublewide = post_doublewide, bottom = 0);
+                    base_joiner(doublewide = post_doublewide, bottom = 0, supports = base_support_count, beam_thickness = header_top_beam_thickness);
                 }
              }
         }
@@ -246,7 +244,7 @@ module assembly() {
         //    blank_1U_front_panel(holes = 3);
         //}
             color("cyan") {
-                blank_variable_tray(1, 0.6, 2, back_panel = tray_back_panel);
+                blank_variable_tray(1, 0.6, 1, back_panel = tray_back_panel);
 
                 //blank_1U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
             }
@@ -294,10 +292,10 @@ if (part == "post") {
 if (part == "base joiner") {
     render() {
         if (post_doublewide == 0) {
-            base_joiner(doublewide = post_doublewide);
+            base_joiner(doublewide = post_doublewide, supports = base_support_count, bottom = 1, beam_thickness = footer_base_beam_thickness);
         } else {
             translate([-post_width, 0, 0]) {
-                base_joiner(doublewide = post_doublewide);
+                base_joiner(doublewide = post_doublewide, supports = base_support_count, bottom = 1, beam_thickness = footer_base_beam_thickness);
             }
         }
     }
@@ -306,10 +304,10 @@ if (part == "base joiner") {
 if (part == "top joiner") {
     render() {
         if (post_doublewide == 0) {
-            base_joiner(doublewide = post_doublewide, bottom = 0);
+            base_joiner(doublewide = post_doublewide, bottom = 0, supports = base_support_count, beam_thickness = header_top_beam_thickness);
         } else {
             translate([-post_width, 0, 0]) {
-                base_joiner(doublewide = post_doublewide, bottom = 0);
+                base_joiner(doublewide = post_doublewide, bottom = 0, supports = base_support_count, beam_thickness = header_top_beam_thickness);
             }
         }
     }
@@ -357,4 +355,16 @@ if (part == "variable panel") {
     color("orange") {
         blank_variable_front_panel(u_size = front_panel_height, holes = front_panel_hole_count);
     }
+}
+
+/*
+// post_base_join_panel(doublewide, thickness)
+// Public — compact panel to join one post footprint (or two for doublewide) to a base joiner using 2 holes per post.
+// doublewide: 0=single post width, 1=double post width. thickness: panel thickness in mm.
+// e.g. post_base_join_panel();
+// e.g. post_base_join_panel(doublewide=1, thickness=4);
+module post_base_join_panel(doublewide = 0, thickness = front_panel_thickness) {
+*/
+if (part == "post joins") {
+    post_base_join_panel(doublewide = post_doublewide, thickness = front_panel_thickness);
 }

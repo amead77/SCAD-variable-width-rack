@@ -3,7 +3,7 @@ include <330mm rack defines.scad>;
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/04r57";
+version = "v0.1-2026/05/04r66";
 */
 
 
@@ -204,11 +204,14 @@ module base_joiner_block(doublewide = 0) {
 
 }
 
-// base_joiner_core(doublewide, bottom)
+// base_joiner_core(doublewide, bottom, supports, beam_thickness)
 // Internal helper — builds the full joiner body (blocks + beam + alignment cones).
 // doublewide: 0=single, 1=double. bottom: 1=base joiner, 0=top joiner.
-module base_joiner_core(doublewide = 0, bottom = 1) {
-    beam_thickness = (bottom == 1) ? footer_base_beam_thickness : header_top_beam_thickness;
+// supports: minimum 2 (front + rear); >2 adds equally-spaced intermediate support blocks.
+// beam_thickness: override the beam thickness; defaults to footer_base_beam_thickness or header_top_beam_thickness.
+module base_joiner_core(doublewide = 0, bottom = 1, supports = 2, beam_thickness = 5.0) {
+    //_beam_thickness = (beam_thickness >= 0) ? beam_thickness : ((bottom == 1) ? footer_base_beam_thickness : header_top_beam_thickness);
+    _beam_thickness = beam_thickness;
     union() {
         base_joiner_block(doublewide);
         translate([0, rack_width-post_width, 0]) {
@@ -233,16 +236,20 @@ module base_joiner_core(doublewide = 0, bottom = 1) {
         } else {
             base_joiner_block(doublewide);
         }
-        translate([0, 0, -((footer_height * 2)+beam_thickness)]) {
-            if (doublewide == 0) {
-                cube([post_width, rack_width, beam_thickness]);
+        // Intermediate support blocks, equally spaced between front and rear
+        if (supports > 2) {
+            for (i = [1:supports-2]) {
+                translate([0, i * (rack_width - post_width) / (supports - 1), 0]) {
+                    base_joiner_block(doublewide);
+                }
             }
-
+        }
+        translate([0, 0, -((footer_height * 2)+_beam_thickness)]) {
             if (doublewide == 0) {
-                cube([post_width, rack_width, beam_thickness]);
+                cube([post_width, rack_width, _beam_thickness]);
             }
             if (doublewide == 1) {
-                cube([post_width * 2, rack_width, beam_thickness]);
+                cube([post_width * 2, rack_width, _beam_thickness]);
             }
         }
 
@@ -266,49 +273,73 @@ module base_joiner_core(doublewide = 0, bottom = 1) {
                     cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
                 }
             }
+
+            // Top cones on intermediate support block(s)
+            if (supports > 2) {
+                for (i = [1:supports-2]) {
+                    translate([post_width/2, i * (rack_width - post_width) / (supports - 1) + post_width/2, -footer_height]) {
+                        cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
+                    }
+                    if (doublewide == 1) {
+                        translate([post_width + post_width/2, i * (rack_width - post_width) / (supports - 1) + post_width/2, -footer_height]) {
+                            cylinder(h=post_cone_height, r1=(post_cone_base_diameter/2)-post_top_cone_clearance, r2=(post_cone_top_diameter/2)-post_top_cone_clearance, center=false, $fn=32);
+                        }
+                    }
+                }
+            }
         }    
     }
 }
 
-// base_joiner(doublewide, bottom)
+// base_joiner(doublewide, bottom, supports, beam_thickness)
 // Horizontal joiner that connects a front and rear post pair via the footer/header.
 // doublewide: 0=single, 1=double. bottom: 1=base/footer joiner (default), 0=top/header joiner.
-// e.g. base_joiner(doublewide=0);            // base joiner, single wide
-// e.g. base_joiner(doublewide=0, bottom=0);  // top joiner, single wide
-module base_joiner(doublewide = 0, bottom = 1) {
+// supports: min 2 (front + rear end blocks); >2 adds equally-spaced intermediate tray support blocks.
+// beam_thickness: override beam thickness; defaults to footer_base_beam_thickness or header_top_beam_thickness.
+// e.g. base_joiner(doublewide=0);                           // base joiner, single wide
+// e.g. base_joiner(doublewide=0, bottom=0);                 // top joiner, single wide
+// e.g. base_joiner(doublewide=0, supports=4);               // base joiner with 2 extra intermediate supports
+// e.g. base_joiner(doublewide=0, beam_thickness=8);         // base joiner with custom beam thickness
+module base_joiner(doublewide = 0, bottom = 1, supports = 2, beam_thickness = 5.0) {
     if (bottom == 1) {
-        base_joiner_core(doublewide, bottom);
+        base_joiner_core(doublewide, bottom, supports, beam_thickness);
     } else {
         // Top joiner: flip Z and invert cones to sockets so header top cones lock in.
         difference() {
             mirror([0, 0, 1]) {
-                base_joiner_core(doublewide, bottom);
+                base_joiner_core(doublewide, bottom, supports, beam_thickness);
             }
 
             // Front socket(s)
             translate([post_width/2, post_width/2, header_height]) {
-                rotate([0,0,0]) {
-                    cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
-                }
+                cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
             }
             if (doublewide == 1) {
                 translate([post_width + post_width/2, post_width/2, header_height]) {
-                    rotate([0,0,0]) {
-                        cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
-                    }
+                    cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
                 }
             }
 
             // Rear socket(s)
             translate([post_width/2, rack_width - post_width/2, header_height]) {
-                rotate([0,0,0]) {
-                    cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
-                }
+                cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
             }
             if (doublewide == 1) {
                 translate([post_width + post_width/2, rack_width - post_width/2, header_height]) {
-                    rotate([0,0,0]) {
+                    cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
+                }
+            }
+
+            // Intermediate socket(s)
+            if (supports > 2) {
+                for (i = [1:supports-2]) {
+                    translate([post_width/2, i * (rack_width - post_width) / (supports - 1) + post_width/2, header_height]) {
                         cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
+                    }
+                    if (doublewide == 1) {
+                        translate([post_width + post_width/2, i * (rack_width - post_width) / (supports - 1) + post_width/2, header_height]) {
+                            cylinder(h=post_cone_height-post_top_cone_clearance, r1=(post_cone_base_diameter/2), r2=(post_cone_top_diameter/2), center=false, $fn=32);
+                        }
                     }
                 }
             }

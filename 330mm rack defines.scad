@@ -12,7 +12,7 @@ hole_offset_x = post_width/2 + hole_d/2; //should be central
 hole_offset_z = 12.7; // standard spacing. half this for between 1U sections.
 hole_spacing = 15.875; //rail hole spacing
 
-nut_diameter = 10.0 + hole_clearance; //10mm for m6
+nut_diameter = 10.0 + hole_clearance; //10mm for m6 THIS IS ACROSS THE FLATS, not point to point.
 nut_diameter_point = nut_diameter / cos(30); // diameter of the hexagon nut point to point
 nut_thickness = 6.0 + hole_clearance; //5mm for m6 - CONSIDER YOUR SCREW DEPTH AND PANEL THICKNESS HERE (my screws didn't reach far enough, so increased depth to counter)
 
@@ -45,6 +45,7 @@ header_include = 1; // set to 0 to not include the header, 1 to include it. The 
 
 // the next 2 lines are used for creating joining beams for the front and rear of the rack, connecting the posts.
 // they are the same connector apart as the footer/header.
+// deprecated. These are now specified when calling the function.
 header_top_beam_thickness = 10.0; // the top beam for connecting 2 posts/rails together, front to rear.
 footer_base_beam_thickness = 5.0; // the base beam for connecting 2 posts/rails together, front to rear.
 beam_thickness = 4; //this is used internally, do not adjust.
@@ -52,7 +53,7 @@ beam_thickness = 4; //this is used internally, do not adjust.
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/04r57";
+version = "v0.1-2026/05/04r59";
 */
 
 

@@ -12,6 +12,8 @@ A parametric, 3D-printable rack system designed for larger-format printers such 
 
 ![Rear view of assembly](overview-rearish.png)
 
+![Assembly with 8 legs](overview-8_legs.png)
+
 ---
 
 ## Design Goals
@@ -26,7 +28,7 @@ A parametric, 3D-printable rack system designed for larger-format printers such 
 
 ### Posts
 
-Posts are the vertical rails of the rack. They are generated in configurable U heights and can be single or double wide. A slide channel can be added to the left side, right side, both sides, or neither.
+Posts are the vertical rails of the rack. They are generated in configurable U heights and can be single or double wide. A slide channel can be added to the left side, right side, both sides, or neither. 
 
 ![Post](post.png)
 
@@ -56,6 +58,7 @@ Optional pieces added to the top and bottom of posts. They provide an attachment
 ### Joiners (Base / Top)
 
 Optional horizontal joiners that connect the front posts to the rear posts via the footer/header. 
+You can have more than just 4 posts. The joiners can have 2+ supports, by increasing the number and printing more posts, you can have greater supports
 
 ![Top joiner](top-joiner.png)
 
