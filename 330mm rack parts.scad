@@ -33,7 +33,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/04r58";
+version = "v0.1-2026/05/04r59";
 */
 
 include <330mm rack posts.scad>;
@@ -113,6 +113,9 @@ tray_side_height = 1.25;
 
 // set to 0 for no rear panel, 1 for a rear panel. this creates a drawer
 tray_back_panel = 0;
+
+// how far back the tray projects
+tray_y = 0.99;
 
 //this is just for the assembly demo. has no other function other than to show a tray partially slid out.
 tray_slide_out = 60; 
@@ -326,7 +329,7 @@ if (part == "2U tray") {
 
 if (part == "variable tray") {
     render() {
-        blank_variable_tray(panel_u_size = front_panel_height, tray_u_size = tray_side_height, holes = front_panel_hole_count, back_panel = tray_back_panel);
+        blank_variable_tray(panel_u_size = front_panel_height, tray_u_size = tray_side_height, holes = front_panel_hole_count, back_panel = tray_back_panel, tray_depth_scale = tray_y);
     }
 }
 

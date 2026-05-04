@@ -32,9 +32,14 @@ Posts are the vertical rails of the rack. They are generated in configurable U h
 
 ### Trays
 
-Trays are available in fixed sizes (1U, 2U) or a fully variable size. The variable tray accepts a `tray_back_panel` flag to add a rear panel, turning it into a drawer. Trays slide into the post's rear slot for easy removal.
+Trays are available in fixed sizes (1U, 2U) or a fully variable size. The variable tray accepts a `tray_back_panel` flag to add a rear panel, turning it into a drawer. Trays slide into the post's rear slot for easy removal. Trays also don't need to be full length, defining 0.25 will make a quarter depth tray (y axis)
 
 ![Variable tray](vari-tray.png)
+
+
+
+![Part Tray](tray-part_depth.png)
+
 
 ### Panels (Blanking Panels)
 
