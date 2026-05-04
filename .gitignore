@@ -10,3 +10,5 @@
 # Allow only source/design files
 !*.scad
 !*.svg
+!*.png
+!*.md

@@ -1,8 +1,11 @@
 include <330mm rack defines.scad>;
-// AUTO-V
-version = "v0.1-2026/05/04r00";
 
 
+
+// post(slide_side, doublewide)
+// Builds a single 1U post body with optional slide channel(s).
+// slide_side: 0=none, 1=left, 2=right, 3=both. doublewide: 0=single, 1=double.
+// e.g. post(slide_side=1, doublewide=0);
 module post(slide_side = 0, doublewide = 0) {
     union() {
         cube([post_width, post_width, u_height]);
@@ -40,6 +43,9 @@ module post(slide_side = 0, doublewide = 0) {
 }
 
 
+// post_slides()
+// Internal helper — generates the slide rail geometry that attaches to a post side.
+// Not called directly; used by post_slider_left() and post_slider_right().
 module post_slides() {
     difference() {
         cube([post_slide_width, post_width, u_height]);    
@@ -55,6 +61,8 @@ module post_slides() {
     }
 }
 
+// post_slider_left()
+// Internal helper — attaches a slide rail to the left side of a post.
 module post_slider_left() {
     translate([post_width, 0, 0]) {
         post_slides();
@@ -62,12 +70,17 @@ module post_slider_left() {
 }
 
 
+// post_slider_right()
+// Internal helper — attaches a slide rail to the right side of a post.
 module post_slider_right() {
     translate([-post_slide_width, 0, 0]) {
         post_slides();
     }
 }
 
+// rail_1u_holes_segment(slide_side, doublewide)
+// Internal helper — one 1U post segment with screw holes and nut traps subtracted.
+// slide_side: 0=none, 1=left, 2=right, 3=both. doublewide: 0=single, 1=double.
 module rail_1u_holes_segment(slide_side, doublewide = 0) {
 // i've bashed this together rather than math it.
 
@@ -85,6 +98,9 @@ module rail_1u_holes_segment(slide_side, doublewide = 0) {
 }
 
 
+// footer_body(doublewide)
+// Internal helper — solid block at the bottom of the post for the footer attachment.
+// doublewide: 0=single, 1=double.
 module footer_body(doublewide = 0) {
     translate([0, 0, -footer_height]) {
         cube([post_width, post_width, footer_height]);
@@ -96,6 +112,8 @@ module footer_body(doublewide = 0) {
     }
 }
 
+// footer_hole_and_nut()
+// Internal helper — subtracts the screw hole and nut trap from the footer body.
 module footer_hole_and_nut() {
     // Place one footer hole 0.5U below the first post hole center.
     translate([post_width/2, ((post_width)-post_width/2 ), -(hole_offset_z/2)]) {
@@ -110,6 +128,9 @@ module footer_hole_and_nut() {
     }
 }
 
+// header_body(post_height, doublewide)
+// Internal helper — solid block at the top of the post for the header attachment.
+// post_height: number of U units. doublewide: 0=single, 1=double.
 module header_body(post_height, doublewide = 0) {
     translate([0, 0, u_height * post_height]) {
         cube([post_width, post_width, header_height]);
@@ -121,6 +142,9 @@ module header_body(post_height, doublewide = 0) {
     }
 }
 
+// header_hole_and_nut(post_height)
+// Internal helper — subtracts the screw hole and nut trap from the header body.
+// post_height: number of U units the post is tall.
 module header_hole_and_nut(post_height) {
     // Place one header hole 0.5U above the top of the posts.
     translate([post_width/2, ((post_width)-post_width/2 ), u_height * post_height + (hole_offset_z/2)]) {
@@ -136,6 +160,8 @@ module header_hole_and_nut(post_height) {
 }
 
 
+// base_joiner_hole_and_nut()
+// Internal helper — subtracts the screw hole and nut trap from a joiner block.
 module base_joiner_hole_and_nut() {
     // Place one footer hole 0.5U below the first post hole center.
     translate([post_width/2, ((post_width)-post_width/2 ), (hole_offset_z/2)]) {
@@ -150,6 +176,9 @@ module base_joiner_hole_and_nut() {
     }
 }
 
+// base_joiner_block(doublewide)
+// Internal helper — one joiner mounting block with hole and nut trap.
+// doublewide: 0=single, 1=double.
 module base_joiner_block(doublewide = 0) {
     translate([0, 0, -(footer_height*2)]) {
         difference() {
@@ -168,6 +197,9 @@ module base_joiner_block(doublewide = 0) {
 
 }
 
+// base_joiner_core(doublewide, bottom)
+// Internal helper — builds the full joiner body (blocks + beam + alignment cones).
+// doublewide: 0=single, 1=double. bottom: 1=base joiner, 0=top joiner.
 module base_joiner_core(doublewide = 0, bottom = 1) {
     beam_thickness = (bottom == 1) ? footer_base_beam_thickness : header_top_beam_thickness;
     union() {
@@ -231,6 +263,11 @@ module base_joiner_core(doublewide = 0, bottom = 1) {
     }
 }
 
+// base_joiner(doublewide, bottom)
+// Horizontal joiner that connects a front and rear post pair via the footer/header.
+// doublewide: 0=single, 1=double. bottom: 1=base/footer joiner (default), 0=top/header joiner.
+// e.g. base_joiner(doublewide=0);            // base joiner, single wide
+// e.g. base_joiner(doublewide=0, bottom=0);  // top joiner, single wide
 module base_joiner(doublewide = 0, bottom = 1) {
     if (bottom == 1) {
         base_joiner_core(doublewide, bottom);
@@ -273,6 +310,15 @@ module base_joiner(doublewide = 0, bottom = 1) {
 }
 
 
+// rail_1u_holes(slide_side, doublewide, post_height, v_post_cones, include_footer, include_header)
+// Main public module — generates a complete post of post_height U units with holes, nut traps,
+// optional slide rails, optional footer/header blocks, and optional alignment cones.
+// slide_side: 0=none, 1=left, 2=right, 3=both.
+// doublewide: 0=single, 1=double.
+// post_height: number of U units (default v_post_height from defines).
+// v_post_cones: 1=add alignment cones for stacking (default post_cones from defines).
+// include_footer/include_header: 1=include attachment block (default from defines).
+// e.g. rail_1u_holes(slide_side=1, doublewide=0, post_height=6, v_post_cones=1);
 module rail_1u_holes(slide_side, doublewide = 0, post_height = v_post_height, v_post_cones = post_cones, include_footer = footer_include, include_header = header_include) {
     difference()  {
         union() {
@@ -356,6 +402,8 @@ module rail_1u_holes(slide_side, doublewide = 0, post_height = v_post_height, v_
     }
 }
 
+// holes(holes)
+// Internal helper — subtracts M6 screw holes through a post face. holes: 2 or 3 per 1U segment.
 module holes(holes = 2) {
     translate([post_width/2, ((post_width)-post_width/2 ), hole_offset_z/2]) {
         rotate([90,0,0]) {
@@ -379,6 +427,8 @@ module holes(holes = 2) {
 }
 
 
+// nut_holes(holes)
+// Internal helper — subtracts M6 hex nut traps from the rear of a post face. holes: 2 or 3.
 module nut_holes(holes = 2) {
 
         translate([post_width/2, ((post_width)-nut_thickness/2 ), hole_offset_z/2]) {

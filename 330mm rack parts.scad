@@ -1,13 +1,18 @@
 //
+// ***************************************************************************************
+// ***    This is the main file for creating parts, use the customiser in OpenSCAD.    ***
+// *** To create custom trays, look at "330mm rack custom tray 01.scad" for an example ***
+// ***************************************************************************************
+//
 // 330mm / 13 inch rack parts. This is for larger format printers, such as Creality K2 plus, Prusa XL etc
-// 
+// This is 330mm from the left edge of the left post, to the right edge of the right post, assuming single posts.
+//
 // I designed this specifically to allow the rear of the tray to slide into the post.
 // This is for added support on the rear, and because other designs with front and rear attachment
 // required dismantling the rack to take out a tray with front and rear attachments.
 //
-// (c) 2026 Adam Mead.
+// (c) 2026 Adam Mead. But go nuts with it. GPLv3
 // 
-// This is 330mm from the left edge of the left post, to the right edge of the right post, assuming single posts.
 //
 // The parts...
 // Posts. These are in 1U segments. They can be single or double wide. They can also have a slide on one or both sides, for guiding and supporting trays.
@@ -16,9 +21,16 @@
 // Footer/Header. These are added to the post to allow joining the front/rear posts together using the joiner. (optional)
 // Joiners. The attach to the footer/header and span the gap between front and rear posts. (optional)
 //
+// The front panels/trays can have a logo embossed/etched. This is built into the function. See the custom tray for example. "330mm rack custom tray 01.scad".
+//
+// AI use notes: The variable size tray/panel is AI created. The rest was 99% me, with some help from AI when getting stuck. I should probably go through and comment my code better :S
+// AI is not good at 3d design (yet), so if you want to create custom parts using AI, at least get the basic design done by hand, then get AI to assist with bits you're stuck on.
+// I was going to up to github, then realised I had only commented a small part, so AI did ~70% of the comments.
 
+
+// next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/04r32";
+version = "v0.1-2026/05/04r54";
 
 
 include <330mm rack posts.scad>;
@@ -28,10 +40,6 @@ include <330mm rack custom tray 01.scad>;
 
 // Chose the part to make, or assembly to see all
 part = "assembly"; // [assembly, post, base joiner, top joiner, 1U tray, 2U tray, variable tray, halfUpanel, 1U panel, 2U panel, variable panel]
-
-
-
-
 
 
 // ** these are the basic setup for the posts.
@@ -46,43 +54,66 @@ post_doublewide = 0; // [0, 1]
 slide_side = 0; 
 
 
-cones = 1; //this is for joining rails
+//this is for joining rails or header/footer joins. creates a cone on the top of the post, and a matching cone on the bottom of the joiner, to allow them to slot together for easier assembly
+cones = 1; 
+
 // set to 0 to not include the footer, 1 to include it. The footer is a small piece at the bottom of the rack
 footer_include = 1; 
+
 // if you include the header and or footer, this adds a single extra piece to top and bottom of the posts, which is for the joiner to attach to
 header_include = 1; 
 
-hole_clearance = 0.3; //mm clearance around the 'oles
-hole_d = 6.0 + hole_clearance; //screw holes dia
-nut_diameter = 10.0 + hole_clearance; //10mm for m6
-nut_thickness = 6.0 + hole_clearance; //5mm for m6
+//mm clearance around the 'oles
+hole_clearance = 0.3; 
+
+//screw holes dia
+hole_d = 6.0 + hole_clearance; 
+
+//10mm for m6
+nut_diameter = 10.0 + hole_clearance; 
+
+//5mm for m6 ** I increased this from 5 to 6 because my screws are a bit stumpy. extra 1mm embeds it deeper. (that's what she said)
+nut_thickness = 6.0 + hole_clearance; 
 
 
 // ** these are the basic setup for the front panel.
 
-front_panel_edge_radius = 2.0;
-front_panel_thickness = 3.0;
-front_panel_hole_count = 2; //this is per side. 2 or 3 or 4 or 6.
-front_panel_height = 1.5; // in U. 1 = 1U high, 2 = 2U high etc.
+// [[the 2.01 and 2.99 values are because of OpenSCAD customiser, if i put 2.0, it will not allow you to use decimal values, so 2, 3, 4
+// is accepted, but 2.5 will not be enterable]
+
+// rounding of the front panel edges. set to 0 for square edges.
+front_panel_edge_radius = 2.01; //should be 2.0, but customiser...
+
+// how thick the front panel is, go too thick and your screws might not reach.
+front_panel_thickness = 2.99; //should be 3.0
+
+//this is per side. 2 or 3 or 4 or 6. for certain panels and hole spacing just play with this.
+front_panel_hole_count = 2; 
+
+// this is how many U high the front panel is. 1 = 1U high, 2 = 2U high etc.
+front_panel_height = 1.5;
 
 // ** these are the basic setup for the trays, the trays also use the defines from the front panel.
 
-tray_thickness = 5.0; // this is not affected by post_slide_cutout, as it sits inside
+// how thick the tray base is.
+tray_thickness = 5.0; 
 
 //clearance between trays and posts. added to BOTH sides.
 tray_post_clearance = 0.5; 
-// thickness of the side of the tray
+
+// thickness of the side of the tray, the wall.
 tray_side_thickness = 2.5;
 tray_slide_thickness = post_slide_cutout - hole_clearance;
 
-//this is in hole spacing, 1 = 1 hole up, 2 = 2 holes up etc.
+//this is in hole spacing, 1 = 1 hole up, 2 = 2 holes up etc. 0.25 for a low profile tray. Experiment with the sizes.
 tray_side_height = 1.25; 
 
 // set to 0 for no rear panel, 1 for a rear panel. this creates a drawer
 tray_back_panel = 0;
 
-//this is just for the assembly demo.
+//this is just for the assembly demo. has no other function other than to show a tray partially slid out.
 tray_slide_out = 60; 
+
 
 base_join = 1;
 top_join = 1;
@@ -209,7 +240,7 @@ module assembly() {
         //    blank_1U_front_panel(holes = 3);
         //}
             color("cyan") {
-                blank_variable_tray(1, 0.6, 2);
+                blank_variable_tray(1, 0.6, 2, back_panel = tray_back_panel);
 
                 //blank_1U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
             }
