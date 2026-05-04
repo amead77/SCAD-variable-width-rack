@@ -2,7 +2,7 @@ AI wrote most of this readme, because I am a forklift operator, not a novelist. 
 
 If you like the design, you're welcome to buy me a coffee:
 
-[![Buy Me a Coffee](bmc-button.png)](https://buymeacoffee.com/amead77)
+<a href="https://buymeacoffee.com/amead77"><img src="bmc-button.png" alt="Buy Me a Coffee" width="50%" /></a>
 
 # 330mm / 13-Inch Rack System (OpenSCAD)
 
@@ -109,7 +109,7 @@ The design is based on **M6 screws** with **M6 hex nuts** (10mm across-flats, 5m
 
 ## Requirements
 
-- [OpenSCAD](https://openscad.org/) 2021.01 or later
+- [OpenSCAD](https://openscad.org/) the releases are ancient, use the nightlies instead.
 - A printer with at least 330mm on one axis (e.g. Creality K2 Plus, Prusa XL)
 
 ---
