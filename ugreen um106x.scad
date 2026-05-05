@@ -9,11 +9,12 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/05r110";
+version = "v0.1-2026/05/05r115";
 */
 
 include <330mm blank variable tray.scad>;
 
+ug_tray_support_oversize = 0.1; // this is how much larger the switch support is than the switch itself.
 
 ug_tray_fit_wall_thickness = 4.0;
 ug_tray_thickness = 4.0;
@@ -39,10 +40,10 @@ ug_power_port_stickout = 30;
 ug_power_port_xpos = 27.0;
 ug_power_port_zpos = 7.5;
 ug_power_port_width = 9.0;
-ug_power_port_height = 11.0;
+ug_power_port_height = ug_height - ug_power_port_zpos; //this has been done to create a larger cutout
 
-ug_tray_fit_width = ug_width + (2* ug_tray_fit_wall_thickness)+ 0.1;
-ug_tray_fit_depth = ug_depth + 0.1;
+ug_tray_fit_width = ug_width + (2* ug_tray_fit_wall_thickness)+ ug_tray_support_oversize;
+ug_tray_fit_depth = ug_depth + ug_tray_support_oversize;
 ug_tray_fit_height = ug_height / 3;
 ug_tray_fit_height_rear = ug_height;
 
@@ -139,14 +140,19 @@ module ug_um106x_tray() {
             translate([32+ug_tray_cutout_lip, -0.1, ug_tray_thickness+ug_tray_cutout_lip]) { //pushed out to view the structure, when complete it will be pushed back to position.
                 ug_um106x_front_panel();
             }
+
+            translate([32, ug_tray_front_panel_thickness, ug_tray_thickness]) {
+                ug_um106x();
+            }
         } //difference
 
 
-        translate([32, ug_tray_front_panel_thickness, ug_tray_thickness]) { //pushed out to view the structure, when complete it will be pushed back to position.
-
+        //these next 3 lines are for visualisation of the switch in the tray.
+        translate([32, ug_tray_front_panel_thickness, ug_tray_thickness]) { 
             // COMMENT OUT THE NEXT LINE TO VIEW THE TRAY WITHOUT THE SWITCH MODEL
             ug_um106x();
         }
+
 
 
 
