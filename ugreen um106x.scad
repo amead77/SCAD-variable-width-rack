@@ -93,7 +93,7 @@ module ug_um106x_tray_fit() {
 
 
 module ug_um106x_tray() {
-    blank_variable_tray(panel_u_size=1, tray_u_size=0.5, tray_depth_scale=0.5, holes=4, back_panel=0, tray_thickness = 4.0);
+    blank_variable_tray(panel_u_size=1, tray_u_size=0.5, tray_depth_scale=0.5, holes=4, back_panel=0, tray_thickness = 4.0, front_panel_thickness = ug_tray_front_panel_thickness);
     translate([28, 0, 4.0]) {
         ug_um106x_tray_fit();
     }

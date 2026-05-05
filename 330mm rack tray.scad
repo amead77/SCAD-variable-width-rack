@@ -5,7 +5,7 @@ include <330mm rack posts.scad>;
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/05r05";
+version = "v0.1-2026/05/05r07";
 */
 
 
@@ -429,9 +429,9 @@ module front_panel_variable_holes(panel_height, holes = front_panel_hole_count) 
 }
 
 
-// variable_front_panel_body(panel_height)
+// variable_front_panel_body(panel_height, front_panel_thickness)
 // Internal helper — generates the solid panel body at the given height in mm, with edge rounding applied.
-module variable_front_panel_body(panel_height) {
+module variable_front_panel_body(panel_height, front_panel_thickness = front_panel_thickness) {
     if (front_panel_edge_radius > 0) {
         translate([front_panel_undersizing + front_panel_edge_radius, 0, front_panel_undersizing + front_panel_edge_radius]) {
             minkowski() {
@@ -517,10 +517,11 @@ module variable_front_panel_face_import(
 }
 
 
-// blank_variable_front_panel(u_size, holes, import_file, import_type, import_width, import_height, import_depth, import_offset_x, import_offset_z, import_mode)
+// blank_variable_front_panel(u_size, holes, import_file, import_type, import_width, import_height, import_depth, import_offset_x, import_offset_z, import_mode, front_panel_thickness)
 // Public — generates a variable-height blanking front panel, optionally with an embossed or engraved logo/image.
 // u_size: panel height in U units (can be fractional, e.g. 1.5). holes: mounting holes per side.
 // import_file: path to SVG or STL file. import_type: "svg", "stl", or "none". import_mode: "emboss" or "engrave".
+// front_panel_thickness: panel depth (Y) in mm. Default: front_panel_thickness from defines.
 // e.g. blank_variable_front_panel(u_size=1.5, holes=2);
 // e.g. blank_variable_front_panel(u_size=2, holes=4, import_file="logo.svg", import_type="svg", import_mode="emboss");
 module blank_variable_front_panel(
@@ -533,13 +534,14 @@ module blank_variable_front_panel(
     import_depth = 0.8,
     import_offset_x = 0,
     import_offset_z = 0,
-    import_mode = "emboss"
+    import_mode = "emboss",
+    front_panel_thickness = front_panel_thickness
 ) {
     panel_height = u_height * u_size;
 
     difference() {
         union() {
-            variable_front_panel_body(panel_height);
+            variable_front_panel_body(panel_height, front_panel_thickness);
             if (import_mode != "engrave") {
                 variable_front_panel_face_import(
                     panel_height,
@@ -576,11 +578,11 @@ module blank_variable_front_panel(
 }
 
 
-// side_slide_variable(tray_u_size, side, tray_depth)
+// side_slide_variable(tray_u_size, side, tray_depth, front_panel_thickness)
 // Internal helper — builds side wall and slide tabs for a variable-height tray.
 // tray_u_size: side wall height in U units (can be fractional). side: 0=left, 1=right.
 // tray_depth: tray projection depth in mm along Y axis.
-module side_slide_variable(tray_u_size = 1, side = 0, tray_depth = rack_width) {
+module side_slide_variable(tray_u_size = 1, side = 0, tray_depth = rack_width, front_panel_thickness = front_panel_thickness) {
     tray_height = max((u_height * tray_u_size) - 1, post_slide_cutout-hole_clearance);
     tab_height = post_slide_cutout-hole_clearance;
     z_base = (hole_offset_z/2)-(post_slide_cutout/2.1);
@@ -618,11 +620,11 @@ module side_slide_variable(tray_u_size = 1, side = 0, tray_depth = rack_width) {
 }
 
 
-// variable_tray_front_gusset(panel_u_size, tray_u_size, side, support_back, support_thickness)
+// variable_tray_front_gusset(panel_u_size, tray_u_size, side, support_back, support_thickness, front_panel_thickness)
 // Internal helper — adds a triangular gusset between the front panel and the tray side wall when the panel is taller than the side.
 // panel_u_size: front panel height in U. tray_u_size: side wall height in U. side: 0=left, 1=right.
 // support_back: how far back the gusset extends (mm). support_thickness: gusset thickness (mm).
-module variable_tray_front_gusset(panel_u_size = 1, tray_u_size = 1, side = 0, support_back = 20, support_thickness = tray_side_thickness) {
+module variable_tray_front_gusset(panel_u_size = 1, tray_u_size = 1, side = 0, support_back = 20, support_thickness = tray_side_thickness, front_panel_thickness = front_panel_thickness) {
     panel_top = (u_height * panel_u_size) - 1;
     tray_top = max((u_height * tray_u_size) - 1, post_slide_cutout-hole_clearance);
     x0 = (side == 0)
@@ -701,13 +703,14 @@ module blank_variable_tray(
         import_depth,
         import_offset_x,
         import_offset_z,
-        import_mode
+        import_mode,
+        front_panel_thickness
     );
     translate([tray_x0, 0, front_panel_undersizing]) {
         cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
     }
-    side_slide_variable(tray_u_size, side = 0, tray_depth = tray_depth);
-    side_slide_variable(tray_u_size, side = 1, tray_depth = tray_depth);
+    side_slide_variable(tray_u_size, side = 0, tray_depth = tray_depth, front_panel_thickness = front_panel_thickness);
+    side_slide_variable(tray_u_size, side = 1, tray_depth = tray_depth, front_panel_thickness = front_panel_thickness);
 
     if (back_panel == 1) {
         // Rear wall to connect side panels, matching tray side height.
@@ -717,7 +720,7 @@ module blank_variable_tray(
     }
 
     if (side_support == 1) {
-        variable_tray_front_gusset(panel_u_size, tray_u_size, side = 0, support_back = side_support_back, support_thickness = side_support_thickness);
-        variable_tray_front_gusset(panel_u_size, tray_u_size, side = 1, support_back = side_support_back, support_thickness = side_support_thickness);
+        variable_tray_front_gusset(panel_u_size, tray_u_size, side = 0, support_back = side_support_back, support_thickness = side_support_thickness, front_panel_thickness = front_panel_thickness);
+        variable_tray_front_gusset(panel_u_size, tray_u_size, side = 1, support_back = side_support_back, support_thickness = side_support_thickness, front_panel_thickness = front_panel_thickness);
     }
 }
