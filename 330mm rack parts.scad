@@ -33,7 +33,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/05r01";
+version = "v0.1-2026/05/05r03";
 */
 
 include <330mm rack posts.scad>;
