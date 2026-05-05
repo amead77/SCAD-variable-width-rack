@@ -33,16 +33,17 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/04r70";
+version = "v0.1-2026/05/05r01";
 */
 
 include <330mm rack posts.scad>;
 include <330mm rack tray.scad>;
 include <330mm rack defines.scad>; //some of these are overrode below.
 include <330mm rack custom tray 01.scad>;
+include <ugreen um106x.scad>; // switch dimensions
 
 // Chose the part to make, or assembly to see all
-part = "assembly"; // [assembly, post, base joiner, top joiner, 1U tray, 2U tray, variable tray, halfUpanel, 1U panel, 2U panel, variable panel, post joins]
+part = "assembly"; // [assembly, post, base joiner, top joiner, 1U tray, 2U tray, variable tray, halfUpanel, 1U panel, 2U panel, variable panel, post joins, um106x]
 
 
 // ** these are the basic setup for the posts.
@@ -367,4 +368,10 @@ module post_base_join_panel(doublewide = 0, thickness = front_panel_thickness) {
 */
 if (part == "post joins") {
     post_base_join_panel(doublewide = post_doublewide, thickness = front_panel_thickness);
+}
+
+if (part == "um106x") {
+    render() {
+        ug_um106x_tray();
+    }
 }
