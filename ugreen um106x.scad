@@ -1,6 +1,12 @@
-// dimensions and part for fit testing a U-Green UM106X 5 port 2.5gbe switch.
 //
-// go to the end of the file to see the tray assembly with switch model, comment out the model line for just the tray.
+//
+// U-Green UM106X 5 port 2.5gbe switch Tray.
+//
+//
+//************************************************************************
+// go to the end of the file to see the tray assembly with switch model **
+// comment out the model line for just the tray.                        **
+//************************************************************************
 //
 //
 
@@ -9,7 +15,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/05r115";
+version = "v0.1-2026/05/05r128";
 */
 
 include <330mm blank variable tray.scad>;
@@ -52,6 +58,9 @@ ug_tray_cutout_width = ug_width - 4.0;
 ug_tray_cutout_height = ug_height - 4.0;
 ug_tray_cutout_lip = 2.0; //this is based on 4.0mm above.
 ug_tray_front_panel_thickness = 4.0;
+
+//keystone for the tray, for routing cables from switch to stuff in the back.
+
 
 module ug_um106x() {
     color("gray") {
@@ -118,12 +127,13 @@ module tray_assembly() {
     union() {
         blank_variable_tray(
             panel_u_size = 1,
-            tray_u_size = 0.5,
-            tray_depth_scale = 0.5,
+            tray_u_size = 0.6,
+            tray_depth_scale = 0.33,
             holes = 4,
             back_panel = 0,
             tray_thickness = ug_tray_thickness,
-            front_panel_thickness = ug_tray_front_panel_thickness
+            front_panel_thickness = ug_tray_front_panel_thickness,
+            side_support = 2
         );
         translate([28, ug_tray_front_panel_thickness, ug_tray_thickness]) { //pushed out to view the structure, when complete it will be pushed back to position.
             ug_um106x_tray_internal_support();
@@ -136,24 +146,22 @@ module ug_um106x_tray() {
     render() {
         difference() {
             tray_assembly();
-            //difference
             translate([32+ug_tray_cutout_lip, -0.1, ug_tray_thickness+ug_tray_cutout_lip]) { //pushed out to view the structure, when complete it will be pushed back to position.
                 ug_um106x_front_panel();
             }
-
+            // the next bit is for subtracting the switch power port from the tray.
             translate([32, ug_tray_front_panel_thickness, ug_tray_thickness]) {
                 ug_um106x();
             }
-        } //difference
+        } 
 
-
-        //these next 3 lines are for visualisation of the switch in the tray.
+        //*************************************************************************
+        //** these next 3 lines are for visualisation of the switch in the tray. **
+        //*************************************************************************
         translate([32, ug_tray_front_panel_thickness, ug_tray_thickness]) { 
-            // COMMENT OUT THE NEXT LINE TO VIEW THE TRAY WITHOUT THE SWITCH MODEL
+            // COMMENT OUT THE NEXT LINE TO VIEW THE TRAY WITHOUT THE SWITCH MODEL. ALSO FOR PRINTING
             ug_um106x();
         }
-
-
 
 
     }
