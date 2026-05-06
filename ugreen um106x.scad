@@ -15,7 +15,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/05r128";
+version = "v0.1-2026/05/06r00";
 */
 
 include <330mm blank variable tray.scad>;
@@ -60,6 +60,12 @@ ug_tray_cutout_lip = 2.0; //this is based on 4.0mm above.
 ug_tray_front_panel_thickness = 4.0;
 
 //keystone for the tray, for routing cables from switch to stuff in the back.
+
+ks_width = 14.580;
+ks_height = 16.10;
+ks_depth = 30.0;
+
+
 
 
 module ug_um106x() {

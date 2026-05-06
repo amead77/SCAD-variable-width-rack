@@ -124,7 +124,9 @@ The design is based on **M6 screws** with **M6 hex nuts** (10mm across-flats, 5m
 
 ## License
 
-This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.  
-See [https://www.gnu.org/licenses/gpl-3.0.html](https://www.gnu.org/licenses/gpl-3.0.html) for the full licence text.
+This project is licensed under the **Creative Commons - Attribution (CC BY)** for all the parts and **Creative Commons - Attribution - Non-Commercial (CC BY-NC)** for the specifications.
+
+In simpler terms, you can remix and do whatever you want with making parts or modifying the parts, including selling. But the design spec, that is 330mm dimension and guide slots, is the same terms but non-commercial use. This is specifically aimed at companies making 13"/330mm racks using my design, not someone who makes some mods or addons and sells them.
+
 
 &copy; 2026 Adam Mead
