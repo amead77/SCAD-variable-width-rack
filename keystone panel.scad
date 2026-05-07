@@ -7,7 +7,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/07r52";
+version = "v0.1-2026/05/07r102";
 */
 
 ks_width = 15.0; //14.58
@@ -26,19 +26,28 @@ ks_side_lip_width = (16.16 - ks_width) / 2;
 //there is also a bottom lip, but the catch on top will squish and clip into the case, making the bottom lip a front stopper.
 //using this keystone means the front panel is max 2mm thick.
 
-//the panel recess for the keystones, this is because the keystones will otherwise protrude from the front panel.
+//the panel recess for the keystones, this is because the keystones will otherwise protrude from the front panel. below is for single, not entirely used now.
 ks_recess_height = ks_height + ks_catch_height + 6.0; //this is the overall height of the recess in the front panel.
 ks_recess_width = ks_width + 10.0; //the overall width of the recess, for multiple this will need adjusting.
-ks_recess_depth = ks_side_lip_depth; //how far to recess the keystone into the front panel.
+ks_recess_depth = 0;//ks_side_lip_depth; //how far to recess the keystone into the front panel.
 ks_recess_wall_thickness = 2.0; //this is limited by the (ks_catch_ypos+ks_catch_edge_depth)-ks_side_lip_ypos. as the front panel needs to fit between them,
+
+ks_panel_cutout_width = 105; //(ks_recess_width * 5)+(ks_recess_wall_thickness * 2);
+ks_panel_cutout_height = ks_recess_height+(ks_recess_wall_thickness * 2);
+
+ks_num_keystones = 4;
+
+
 
 module keystone_panel_recess() {
     difference() {
-        cube([ks_recess_width+(ks_recess_wall_thickness * 2), ks_recess_depth+ks_recess_wall_thickness, ks_recess_height+(ks_recess_wall_thickness * 2)]);
+        cube([(ks_recess_width * 6)+(ks_recess_wall_thickness * 2), ks_recess_depth+ks_recess_wall_thickness, ks_recess_height+(ks_recess_wall_thickness * 2)]);
         translate([ks_recess_wall_thickness, 0, ks_recess_wall_thickness]) {
-            cube([ks_recess_width, ks_recess_depth, ks_recess_height]);
+            cube([ks_recess_width * 6, ks_recess_depth, ks_recess_height]);
         }
     }
+
+    //taking a different approach. Doesn't need to be complicated.
 }
 
 
@@ -76,11 +85,18 @@ module keystone() {
 
 }
 
-render() {
-    //difference() {
-        translate([-(ks_width/2), ks_side_lip_ypos-(ks_recess_depth+ks_recess_wall_thickness), -4]) {
-            keystone_panel_recess();
-        }
-        keystone();
-    //}
+
+module keystone_panel() {
+//    difference() {
+        //multiply by 5 for side by side keystones
+//        keystone_panel_recess();
+//        translate([7, 0, 0]) {
+            for (i = [0:ks_num_keystones-1]) {
+                translate([i*(ks_width+10), (-ks_side_lip_ypos)+ks_recess_depth+ks_recess_wall_thickness, 4]) {
+                    //translate([-((ks_width/2)-0.5), (-ks_side_lip_ypos)+ks_recess_depth+ks_recess_wall_thickness, -4]) {
+                    keystone();
+                }
+            }
+//        }
+//    }
 }

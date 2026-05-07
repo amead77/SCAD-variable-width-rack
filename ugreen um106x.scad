@@ -15,12 +15,13 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/07r10";
+version = "v0.1-2026/05/07r49";
 */
 
 include <330mm blank variable tray.scad>;
+include <keystone panel.scad>;
 
-ug_tray_support_oversize = 0.5; // this is how much larger the switch support is than the switch itself.
+ug_tray_support_oversize = 1.0; // this is how much larger the switch support is than the switch itself.
 
 ug_tray_fit_wall_thickness = 3.0;
 ug_tray_thickness = 4.0;
@@ -61,6 +62,8 @@ ug_tray_cutout_height = ug_height - 4.0;
 ug_tray_cutout_lip = 2.0; //this is based on 4.0mm above.
 ug_tray_front_panel_thickness = 4.0;
 
+ug_tray_keystone_panel_x = 200;
+ug_tray_keystone_panel_z = 6;
 
 
 
@@ -149,25 +152,41 @@ module tray_assembly() {
 
 module ug_um106x_tray() {
     render() {
-        difference() {
-            tray_assembly();
-            translate([32+ug_tray_cutout_lip, -0.1, ug_tray_thickness+ug_tray_cutout_lip]) { //pushed out to view the structure, when complete it will be pushed back to position.
-                ug_um106x_front_panel();
-            }
-            // the next bit is for subtracting the switch power port from the tray.
-            translate([32, ug_tray_front_panel_thickness, ug_tray_thickness]) {
-                ug_um106x();
-            }
-        } 
+        difference() { //1
+            union() {
+                difference() { //2
+                    tray_assembly();
+                    translate([32+ug_tray_cutout_lip, -0.1, ug_tray_thickness+ug_tray_cutout_lip]) { //pushed out to view the structure, when complete it will be pushed back to position.
+                        ug_um106x_front_panel();
+                    }
+                    // the next bit is for subtracting the switch power port from the tray.
+                    translate([32, ug_tray_front_panel_thickness, ug_tray_thickness]) {
+                        ug_um106x();
+                    }
+                    //remove the area for the keystone panel
+                    translate([ug_tray_keystone_panel_x, -0.1, ug_tray_keystone_panel_z]) {
+                        cube([ks_panel_cutout_width, ug_tray_front_panel_thickness+0.2, ks_panel_cutout_height]);
+                    }
+                } //difference 2
+                
+                //make a new panel, as it needs to be 2mm thick
+                translate([ug_tray_keystone_panel_x, 0, ug_tray_keystone_panel_z]) {
+                    cube([ks_panel_cutout_width, 2.0, ks_panel_cutout_height]);
+                }
 
-        //*************************************************************************
-        //** these next 3 lines are for visualisation of the switch in the tray. **
-        //*************************************************************************
-        translate([32, ug_tray_front_panel_thickness, ug_tray_thickness]) { 
-            // COMMENT OUT THE NEXT LINE TO VIEW THE TRAY WITHOUT THE SWITCH MODEL. ALSO FOR PRINTING
-            ug_um106x();
-        }
+                //*************************************************************************
+                //** these next 3 lines are for visualisation of the switch in the tray. **
+                //*************************************************************************
+                translate([32, ug_tray_front_panel_thickness, ug_tray_thickness]) { 
+                    // *** COMMENT OUT THE NEXT LINE TO VIEW THE TRAY WITHOUT THE SWITCH MODEL. ALSO FOR PRINTING ***
+                    //ug_um106x();
+                }
+            } //union
 
+            translate([ug_tray_keystone_panel_x+7, ug_tray_front_panel_thickness-4.0, ug_tray_keystone_panel_z+1]) {
+                keystone_panel();
+            }
+        } //difference 1
 
     }
 }
