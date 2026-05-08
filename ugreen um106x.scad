@@ -15,7 +15,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/07r49";
+version = "v0.1-2026/05/07r66";
 */
 
 include <330mm blank variable tray.scad>;
@@ -25,7 +25,7 @@ ug_tray_support_oversize = 1.0; // this is how much larger the switch support is
 
 ug_tray_fit_wall_thickness = 3.0;
 ug_tray_thickness = 4.0;
-ug_tray_back_panel_height = 2.0;
+ug_tray_back_panel_height = 0.3; //in U
 
 ug_width = 160.0;
 ug_height = 27.78;
@@ -54,13 +54,13 @@ ug_power_port_height = ug_height - ug_power_port_zpos; //this has been done to c
 ug_tray_fit_width = ug_width + (2* ug_tray_fit_wall_thickness)+ ug_tray_support_oversize;
 ug_tray_fit_depth = ug_depth + ug_tray_support_oversize;
 ug_tray_fit_height = ug_height / 3;
-ug_tray_fit_height_rear = ug_height;
+ug_tray_fit_height_rear = ug_height / 2;
 
 //the front panel cutout for the switch. 4mm = 2mm all round. this is so the switch cannot pull out the front of the tray.
 ug_tray_cutout_width = ug_width - 4.0;
 ug_tray_cutout_height = ug_height - 4.0;
 ug_tray_cutout_lip = 2.0; //this is based on 4.0mm above.
-ug_tray_front_panel_thickness = 4.0;
+ug_tray_front_panel_thickness = 3.0;
 
 ug_tray_keystone_panel_x = 200;
 ug_tray_keystone_panel_z = 6;
@@ -138,10 +138,10 @@ module tray_assembly() {
             holes = 4,
             back_panel = 1,
             back_panel_height = 0.2, //U height
-            side_support_back = ug_tray_back_panel_height,
+            //side_support_back = 100,
             tray_thickness = ug_tray_thickness,
             front_panel_thickness = ug_tray_front_panel_thickness,
-            side_support = 2
+            side_support = 1
         );
         translate([28, ug_tray_front_panel_thickness, ug_tray_thickness]) { //pushed out to view the structure, when complete it will be pushed back to position.
             ug_um106x_tray_internal_support();
@@ -183,7 +183,7 @@ module ug_um106x_tray() {
                 }
             } //union
 
-            translate([ug_tray_keystone_panel_x+7, ug_tray_front_panel_thickness-4.0, ug_tray_keystone_panel_z+1]) {
+            translate([ug_tray_keystone_panel_x+7, ug_tray_front_panel_thickness-3.0, ug_tray_keystone_panel_z+1]) {
                 keystone_panel();
             }
         } //difference 1
