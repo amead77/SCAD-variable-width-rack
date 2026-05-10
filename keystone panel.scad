@@ -7,13 +7,13 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/07r102";
+version = "v0.1-2026/05/10r00";
 */
 
-ks_width = 15.0; //14.58
-ks_height = 18.0; //16.10 //17.7
+ks_width = 14.8;//15.0; //15 is correct for 0.4mm nozzle //14.58
+ks_height = 17.5;//18.0; //18 is correct for 0.4mm nozzle, comes out too large for 0.6mm nozzle. //16.10 //17.7
 ks_depth = 30.0;
-ks_catch_height = 3.0; //3.70
+ks_catch_height = 2.5;//3.0; //3.0 for 0.4mm Noz//3.70
 ks_catch_width = 9.3;
 ks_catch_depth = 13.9;
 ks_catch_ypos = 5.0;

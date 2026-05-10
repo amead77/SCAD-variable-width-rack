@@ -33,7 +33,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/05r03";
+version = "v0.1-2026/05/10r02";
 */
 
 include <330mm rack posts.scad>;
@@ -41,9 +41,10 @@ include <330mm rack tray.scad>;
 include <330mm rack defines.scad>; //some of these are overrode below.
 include <330mm rack custom tray 01.scad>;
 include <ugreen um106x.scad>; // switch dimensions
+include <rpi5.scad>;
 
 // Chose the part to make, or assembly to see all
-part = "assembly"; // [assembly, post, base joiner, top joiner, 1U tray, 2U tray, variable tray, halfUpanel, 1U panel, 2U panel, variable panel, post joins, um106x]
+part = "assembly"; // [assembly, post, base joiner, top joiner, 1U tray, 2U tray, variable tray, halfUpanel, 1U panel, 2U panel, variable panel, post joins, um106x, rpi5]
 
 
 // ** these are the basic setup for the posts.
@@ -373,5 +374,11 @@ if (part == "post joins") {
 if (part == "um106x") {
     render() {
         ug_um106x_tray();
+    }
+}
+
+if (part == "rpi5") {
+    render() {
+        rpi5_tray();
     }
 }
