@@ -3,7 +3,7 @@ include <330mm blank variable tray.scad>;
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/05r01";
+version = "v0.1-2026/05/15r00";
 */
 
 
@@ -76,6 +76,7 @@ module rpi5_standoffs_left(
 // side_support, back_panel: structural options.
 // import_file and import dimensions/offsets/mode: front face emboss/engrave.
 // e.g. custom_tray_01();
+/**
 module custom_tray_01(
     panel_u_size = 1,
     tray_u_size = 0.75,
@@ -151,3 +152,4 @@ module custom_tray_01(
         }
     }
 }
+**/

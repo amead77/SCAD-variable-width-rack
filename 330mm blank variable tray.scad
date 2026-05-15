@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/07r15";
+version = "v0.1-2026/05/15r03";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -200,6 +200,8 @@ module variable_side_slide(
     tray_u_size           = 1,
     side                  = 0,
     tray_depth            = 330,
+    tray_x0               = undef,
+    tray_w                = undef,
     front_panel_thickness = 3.0,
     u_height              = 44.5,
     post_slide_cutout     = 3.2,
@@ -217,29 +219,36 @@ module variable_side_slide(
     z_base         = (hole_offset_z / 2) - (post_slide_cutout / 2.1);
     max_u_segments = ceil(tray_u_size) + 1;
 
+    left_side_x  = is_undef(tray_x0) ? (post_width + post_slide_width + tray_post_clearance) : tray_x0;
+    right_side_x = is_undef(tray_w)
+        ? (rack_width - post_width - post_slide_width - tray_post_clearance - tray_side_thickness)
+        : (left_side_x + tray_w - tray_side_thickness);
+    left_slide_x  = left_side_x - post_slide_width;
+    right_slide_x = right_side_x + tray_side_thickness;
+
     if (side == 0) {
-        translate([post_width + post_slide_width + tray_post_clearance, front_panel_thickness, 0]) {
+        translate([left_side_x, front_panel_thickness, 0]) {
             cube([tray_side_thickness, tray_depth, tray_height]);
         }
         for (u_seg = [0 : max_u_segments - 1]) {
             for (slot = [0 : 2]) {
                 z_pos = (u_seg * u_height) + z_base + (slot * hole_spacing);
                 if (z_pos + tab_height <= tray_height + 0.001) {
-                    translate([post_width + tray_post_clearance, front_panel_thickness, z_pos]) {
+                    translate([left_slide_x, front_panel_thickness, z_pos]) {
                         cube([post_slide_width, tray_depth, tab_height]);
                     }
                 }
             }
         }
     } else {
-        translate([rack_width - post_width - post_slide_width - tray_post_clearance - tray_side_thickness, front_panel_thickness, 0]) {
+        translate([right_side_x, front_panel_thickness, 0]) {
             cube([tray_side_thickness, tray_depth, tray_height]);
         }
         for (u_seg = [0 : max_u_segments - 1]) {
             for (slot = [0 : 2]) {
                 z_pos = (u_seg * u_height) + z_base + (slot * hole_spacing);
                 if (z_pos + tab_height <= tray_height + 0.001) {
-                    translate([rack_width - post_width - tray_post_clearance - post_slide_width, front_panel_thickness, z_pos]) {
+                    translate([right_slide_x, front_panel_thickness, z_pos]) {
                         cube([post_slide_width, tray_depth, tab_height]);
                     }
                 }
@@ -394,7 +403,7 @@ module blank_variable_front_panel(
 // e.g. blank_variable_tray(panel_u_size=2, tray_u_size=1.5, tray_depth_scale=1, holes=4, import_file="logo.svg", import_type="svg");
 module blank_variable_tray(
     panel_u_size            = 1, // front panel height in U
-    tray_u_size             = panel_u_size, // side/base height in U (defaults to panel_u_size). if 0.6 is used, you can get 2 slides per side, 0.5 would only make the sides high enough for 1 slide
+    tray_u_size             = undef, // side/base height in U. if undef, defaults to panel_u_size. if 0.6 is used, you can get 2 slides per side, 0.5 would only make the sides high enough for 1 slide
     tray_depth_scale        = 1, // 0 to 1, fraction of rack_width. 1 = full rack_width depth (330mm), 0.5 = rack_width/2 depth (165mm), etc.
     holes                   = 2, // mounting holes PER SIDE (2, 3, 4, or 6). I need to revisit this, as '2' would put 4 holes in each side of a 2U panel, but you might only want 2 each side (top/bottom)
     import_file             = "", //used for importing an SVG or STL/3MF onto the front panel face, see variable_front_panel_face_import() parameters below.
@@ -427,7 +436,8 @@ module blank_variable_tray(
     post_slide_cutout       = 3.2, //*ideally you should create a 1U post for testing the fit of these before printing everything.
     hole_clearance          = 0.3  //*you would be better off adjusting the post dimensions, rather than changing the tray dimensions, and create posts to fit the trays. making the side slides smaller to fit would make them weaker. So make the post cutouts bigger instead.
 ) {
-    tray_height           = max((u_height * tray_u_size) - 1, post_slide_cutout - hole_clearance);
+    tray_u_size_resolved  = is_undef(tray_u_size) ? panel_u_size : tray_u_size;
+    tray_height           = max((u_height * tray_u_size_resolved) - 1, post_slide_cutout - hole_clearance);
     tray_depth            = max(rack_width * tray_depth_scale, 0.01);
     back_panel_depth      = min(back_panel_thickness, tray_depth);
     back_panel_height_mm  = max((u_height * back_panel_height) - 1, post_slide_cutout - hole_clearance);
@@ -461,9 +471,11 @@ module blank_variable_tray(
     }
 
     variable_side_slide(
-        tray_u_size,
+        tray_u_size_resolved,
         side                = 0,
         tray_depth          = tray_depth,
+        tray_x0             = tray_x0,
+        tray_w              = tray_w,
         front_panel_thickness = front_panel_thickness,
         u_height            = u_height,
         post_slide_cutout   = post_slide_cutout,
@@ -477,9 +489,11 @@ module blank_variable_tray(
         rack_width          = rack_width
     );
     variable_side_slide(
-        tray_u_size,
+        tray_u_size_resolved,
         side                = 1,
         tray_depth          = tray_depth,
+        tray_x0             = tray_x0,
+        tray_w              = tray_w,
         front_panel_thickness = front_panel_thickness,
         u_height            = u_height,
         post_slide_cutout   = post_slide_cutout,
@@ -503,7 +517,7 @@ module blank_variable_tray(
     if (side_support == 1) {
         variable_tray_front_gusset(
             panel_u_size,
-            tray_u_size,
+            tray_u_size_resolved,
             side              = 0,
             support_back      = side_support_back,
             support_thickness = side_support_thickness,
@@ -518,7 +532,7 @@ module blank_variable_tray(
         );
         variable_tray_front_gusset(
             panel_u_size,
-            tray_u_size,
+            tray_u_size_resolved,
             side              = 1,
             support_back      = side_support_back,
             support_thickness = side_support_thickness,

@@ -7,8 +7,11 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/15r36";
+version = "v0.1-2026/05/15r47";
 */
+
+
+include <330mm blank variable tray.scad>;
 
 $fn = 32;
 
@@ -71,11 +74,18 @@ module itx_board() {
     }
 }
 
-translate([0, 0, itx_board_clearance]) {
-    itx_board();
+module itx_standoff(incl_board = true) {
+    if (incl_board) {
+        translate([0, 0, itx_board_clearance]) {
+            itx_board();
+        }
+    }
+
+    translate([itx_board_origin_position_x, itx_board_origin_position_y, itx_board_clearance/2]) {
+        itx_holes();
+    }
 }
 
-translate([itx_board_origin_position_x, itx_board_origin_position_y, itx_board_clearance/2]) {
-    itx_holes();
-}
 
+itx_standoff(incl_board = true);
+blank_variable_tray();

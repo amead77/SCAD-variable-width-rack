@@ -1,8 +1,11 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/05r04";
+version = "v0.1-2026/05/15r03";
 */
+
+// Standalone defaults are defined in each module signature.
+// The old rack defines file is no longer required here.
 
 
 // post(slide_side, doublewide)
@@ -827,7 +830,7 @@ module nut_holes(
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/05r04";
+version = "v0.1-2026/05/15r03";
 */
 
 

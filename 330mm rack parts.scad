@@ -1,10 +1,10 @@
 //
 // ***************************************************************************************
 // ***    This is the main file for creating parts, use the customiser in OpenSCAD.    ***
-// *** To create custom trays, look at "330mm rack custom tray 01.scad" for an example ***
+// ***        To create custom trays, look at the other scads for an example           ***
 // ***************************************************************************************
 //
-// 330mm / 13 inch rack parts. This is for larger format printers, such as Creality K2 plus, Prusa XL etc
+// 330mm / 13 inch rack parts (by default) This is for larger format printers, such as Creality K2 plus, Prusa XL etc
 // This is 330mm from the left edge of the left post, to the right edge of the right post, assuming single posts.
 //
 // THERE IS NOT REQUIREMENT FOR IT TO BE 330mm. You can override all of the defaults.
@@ -14,7 +14,7 @@
 // required dismantling the rack to take out a tray with front and rear attachments.
 // Before printing, make some small test pieces to check tolerances etc.
 //
-// (c) 2026 Adam Mead. But go nuts with it. GPLv3
+// (c) 2026 Adam Mead. Licence is in readme.md at the bottom.
 // 
 //
 // The parts...
@@ -35,12 +35,12 @@
 /**
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/05/10r71";
+version = "v0.1-2026/05/15r23";
 **/
 
 include <330mm rack posts.scad>;
 include <330mm rack tray.scad>;
-include <330mm rack defines.scad>; //some of these are overrode below.
+//include <330mm rack defines.scad>; //some of these are overrode below.
 include <330mm rack custom tray 01.scad>;
 include <ugreen um106x.scad>; // switch dimensions
 include <rpi5.scad>;
@@ -71,6 +71,20 @@ footer_include = 1;
 // if you include the header and or footer, this adds a single extra piece to top and bottom of the posts, which is for the joiner to attach to
 header_include = 1; 
 
+// default post and joiner dimensions that used to come transitively from rack defines.
+post_width = 15.875;
+u_height = 44.5;
+hole_offset_z = 12.7;
+hole_spacing = 15.875;
+post_slide_width = 3.0;
+post_slide_cutout = 3.2;
+footer_height = 12.7;
+header_height = 12.7;
+post_cone_base_diameter = 10.0;
+post_cone_top_diameter = 4.0;
+post_cone_height = 2.0;
+post_top_cone_clearance = 0.1;
+
 //mm clearance around the 'oles
 hole_clearance = 0.3; 
 
@@ -85,6 +99,12 @@ nut_thickness = 6.0 + hole_clearance;
 
 // set to 1 to add the side panel, 0 for no side panel. the side panel is designed to work with the double wide posts, but can be used with single wide and longer screws if you want.
 add_side_panel = 1; 
+
+//rack depth
+rack_depth = 330.0;
+
+rack_width = 345;
+
 
 // ** these are the basic setup for the front panel.
 
@@ -106,10 +126,10 @@ front_panel_height = 1.5;
 // ** these are the basic setup for the trays, the trays also use the defines from the front panel.
 
 // how thick the tray base is.
-tray_thickness = 5.0; 
+//tray_thickness = 5.0; 
 
 //clearance between trays and posts. added to BOTH sides.
-tray_post_clearance = 0.5; 
+//tray_post_clearance = 0.5; 
 
 // thickness of the side of the tray, the wall.
 tray_side_thickness = 2.5;
@@ -201,7 +221,7 @@ module assembly() {
         //POST CREATION
         support_count = (base_support_count < 2) ? 2 : base_support_count;
         for (i = [0:support_count-1]) {
-            y_pos = i * (rack_width - post_width) / (support_count - 1);
+            y_pos = i * (rack_depth - post_width) / (support_count - 1);
             is_rear_post = (i == (support_count - 1));
             post_span_x = (post_doublewide == 1) ? (post_width * 2) : post_width;
 
@@ -270,14 +290,14 @@ module assembly() {
         if (base_panel == 1) {
             translate([0, -front_panel_thickness, -hole_offset_z*2]) {
                 color("orange") {
-                    blank_05U_front_panel();
+                    blank_05U_front_panel(rack_width = rack_width);
                 }
             }
             //also put on on the rear, for added support
-             translate([rack_width, rack_width+front_panel_thickness, -hole_offset_z*2]) {
+             translate([rack_width, rack_depth+front_panel_thickness, -hole_offset_z*2]) {
                 rotate([0,0,180]) {
                     color("orange") {
-                        blank_05U_front_panel();
+                        blank_05U_front_panel(rack_width = rack_width);
                     }
                 }
             }
@@ -311,17 +331,17 @@ module assembly() {
         if (top_panel == 1) {
             translate([0, -front_panel_thickness, (u_height*post_u_height)]) {
                 color("orange") {
-                    blank_05U_front_panel();
+                    blank_05U_front_panel(rack_width = rack_width);
                 }
             }
         }
         
         //also put on on the rear, for added support
         
-         translate([rack_width, rack_width+front_panel_thickness, (u_height*post_u_height)]) {
+         translate([rack_width, rack_depth+front_panel_thickness, (u_height*post_u_height)]) {
             rotate([0,0,180]) {
                 color("orange") {
-                    blank_05U_front_panel();
+                    blank_05U_front_panel(rack_width = rack_width);
                 }
             }
         }
@@ -351,7 +371,7 @@ module assembly() {
         //    blank_1U_front_panel(holes = 3);
         //}
             color("cyan") {
-                blank_variable_tray(1, 0.6, 1, back_panel = tray_back_panel);
+                blank_variable_tray(1, 0.6, 1, back_panel = tray_back_panel, rack_width = rack_width);
 
                 //blank_1U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
             }
@@ -360,7 +380,7 @@ module assembly() {
         //    blank_1U_front_panel(holes = 3);
         //}
             //color("red") {
-            rpi5_tray();
+            rpi5_tray(rack_width = rack_width);
             //}
         }
         translate([0, -front_panel_thickness, u_height * 2]) {
@@ -375,14 +395,14 @@ module assembly() {
         //    blank_1U_front_panel(holes = 3);
         //}
             color("orange") {
-                blank_2U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
+                blank_2U_tray(rack_width = rack_width, tray_side_height, front_panel_edge_radius, front_panel_hole_count);
             }
         }
-        translate([0, -front_panel_thickness, u_height * 5]) {
-            color("green") {
-                custom_tray_01();
-            }
-        }
+//        translate([0, -front_panel_thickness, u_height * 5]) {
+//            color("green") {
+//                custom_tray_01();
+//            }
+//        }
     }
 }
 

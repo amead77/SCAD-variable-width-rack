@@ -15,7 +15,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/10r02";
+version = "v0.1-2026/05/15r02";
 */
 
 include <330mm blank variable tray.scad>;
@@ -134,7 +134,8 @@ module tray_assembly() {
         blank_variable_tray(
             panel_u_size = 1,
             tray_u_size = 0.6,
-            tray_depth_scale = 0.33,
+            rack_width = rack_width,
+            tray_depth_scale = 0.5,
             holes = 4,
             back_panel = 1,
             back_panel_height = 0.2, //U height
@@ -150,7 +151,7 @@ module tray_assembly() {
 
 }
 
-module ug_um106x_tray(showmodel = true) {
+module ug_um106x_tray(showmodel = true, rack_width = 330) {
     render() {
         difference() { //1
             union() {

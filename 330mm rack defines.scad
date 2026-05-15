@@ -11,7 +11,8 @@ use for reference. The default values in the functions are now set to these, and
 //in the main assembly/"rack parts" files, some of these get overridden by assignments there. this is deliberate as below is defaults if that other file isn't found.
 
 hole_clearance = 0.3; //mm clearance around the 'oles
-rack_width = 330; //maybe leave this alone
+rack_width = 330;//330; //maybe leave this alone
+
 post_width = 15.875; // standard post width for rack.
 u_height = 44.5; // 1U in mm for post
 v_post_height = 3; //this is in standard 1U units, not mm.
@@ -62,7 +63,7 @@ beam_thickness = 4; //this is used internally, do not adjust.
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/05r01";
+version = "v0.1-2026/05/15r07";
 */
 
 

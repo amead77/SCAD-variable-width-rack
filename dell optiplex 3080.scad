@@ -7,7 +7,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/08r17";
+version = "v0.1-2026/05/15r01";
 */
 
 include <330mm blank variable tray.scad>;
@@ -40,7 +40,7 @@ module dell_optiplex_3080() {
 
 module blank_variable_tray(
     panel_u_size            = 1, // front panel height in U
-    tray_u_size             = panel_u_size, // side/base height in U (defaults to panel_u_size). if 0.6 is used, you can get 2 slides per side, 0.5 would only make the sides high enough for 1 slide
+    tray_u_size             = undef, // side/base height in U. if undef, defaults to panel_u_size. if 0.6 is used, you can get 2 slides per side, 0.5 would only make the sides high enough for 1 slide
     tray_depth_scale        = 1, // 0 to 1, fraction of rack_width. 1 = full rack_width depth (330mm), 0.5 = rack_width/2 depth (165mm), etc.
     holes                   = 2, // mounting holes PER SIDE (2, 3, 4, or 6). I need to revisit this, as '2' would put 4 holes in each side of a 2U panel, but you might only want 2 each side (top/bottom)
     import_file             = "", //used for importing an SVG or STL/3MF onto the front panel face, see variable_front_panel_face_import() parameters below.
