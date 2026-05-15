@@ -35,7 +35,7 @@
 /**
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/05/15r23";
+version = "v0.1-2026/05/15r24";
 **/
 
 include <330mm rack posts.scad>;
@@ -103,7 +103,7 @@ add_side_panel = 1;
 //rack depth
 rack_depth = 330.0;
 
-rack_width = 345;
+rack_width = 350;
 
 
 // ** these are the basic setup for the front panel.
