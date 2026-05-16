@@ -35,19 +35,20 @@
 /**
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/05/15r35";
+version = "v0.1-2026/05/16r06";
 **/
 
 include <rack posts.scad>;
 include <rack tray.scad>;
 //include <rack defines.scad>; //some of these are overrode below.
-include <rack custom tray 01.scad>;
+//include <rack custom tray 01.scad>;
 include <ugreen um106x.scad>; // switch dimensions
 include <rpi5.scad>;
 include <rack side panel.scad>;
+include <dell optiplex 3080.scad>;
 
 // Chose the part to make, or assembly to see all
-part = "assembly"; // [assembly, post, base joiner, top joiner, 1U tray, 2U tray, variable tray, halfUpanel, 1U panel, 2U panel, variable panel, post joins, um106x, rpi5, side panel]
+part = "assembly"; // [assembly, post, base joiner, top joiner, variable tray, halfUpanel, 1U panel, 2U panel, variable panel, dell optiplex 3080, post joins, um106x, rpi5, side panel]
 
 
 // ** these are the basic setup for the posts.
@@ -135,6 +136,7 @@ front_panel_height = 1.5;
 // thickness of the side of the tray, the wall.
 tray_side_thickness = 2.5;
 tray_slide_thickness = post_slide_cutout - hole_clearance;
+tray_side_slides = (slide_side == 1 || slide_side == 3) ? 1 : 0; //this is for whether to add the slide on the left side of the tray, same for right side below.
 
 //this is in hole spacing, 1 = 1 hole up, 2 = 2 holes up etc. 0.25 for a low profile tray. Experiment with the sizes.
 tray_side_height = 1.25; 
@@ -393,12 +395,14 @@ module assembly() {
             ug_um106x_tray(showmodel = true);
         }
         translate([0, -front_panel_thickness, u_height * 3]) {
-        //    blank_1U_front_panel(holes = 3);
-        //}
+/*
             color("orange") {
                 blank_variable_tray(panel_u_size = 2, tray_u_size = 1.5, holes = 4, back_panel = 1, rack_width = rack_width, rack_depth = rack_depth);
                 //blank_2U_tray(rack_width = rack_width, tray_side_height, front_panel_edge_radius, front_panel_hole_count, rack_depth = rack_depth);
             }
+*/
+            dell_tray(show_dell = false);
+
         }
 //        translate([0, -front_panel_thickness, u_height * 5]) {
 //            color("green") {
@@ -488,17 +492,6 @@ if (part == "top joiner") {
     }
 }
 
-if (part == "1U tray") {
-    render() {
-        blank_1U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
-    }
-} 
-
-if (part == "2U tray") {
-    render() {
-        blank_2U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
-    }
-} 
 
 if (part == "variable tray") {
     render() {
@@ -560,5 +553,27 @@ if (part == "side panel") {
     render() {
         side_panel(p_c_pattern_hole_dia = 50, p_c_side_panel_logo = true, p_c_side_panel_logo_import_file = "raspberry-pi.svg", p_c_side_panel_logo_depth = 0.01);
         //side_panel();
+    }
+}
+
+if (part == "dell optiplex 3080") {
+    render() {
+        dell_tray(show_dell = false);
+
+/*
+    rack_width  = 350,
+    rack_depth  = 330,
+    panel_u_size = 3,
+    tray_u_size = 1, 
+    tray_depth_scale = 1.0, 
+    holes = 4, 
+    back_panel = 1, 
+    back_panel_height = 0.3, 
+    back_panel_thickness = 10.0, 
+    side_support = 1, 
+    side_support_back = 150, 
+    tray_thickness = 8
+*/
+
     }
 }

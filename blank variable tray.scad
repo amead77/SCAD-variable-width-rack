@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/15r04";
+version = "v0.1-2026/05/16r34";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -93,11 +93,22 @@ module variable_front_panel_holes(
 // Generates the solid panel body at the given height in mm, with optional edge rounding.
 module variable_front_panel_body(
     panel_height,
-    front_panel_thickness  = 3.0,
-    rack_width             = 330,
-    front_panel_undersizing = 0.1,
-    front_panel_edge_radius = 2.0
+    front_panel_thickness            = 3.0,
+    rack_width                       = 330,
+    post_width                       = 15.875,
+    front_panel_undersizing          = 0.1,
+    front_panel_edge_radius          = 2.0,
+    front_panel_top_reinforce_mm     = 0,
+    front_panel_bottom_reinforce_mm  = 0,
+    tray_post_clearance              = 0.5,
+    reinforce_x_override             = undef,
+    reinforce_w_override             = undef
 ) {
+    reinforce_x_default = post_width + tray_post_clearance;
+    reinforce_w_default = rack_width - (2 * reinforce_x_default);
+    reinforce_x = is_undef(reinforce_x_override) ? reinforce_x_default : reinforce_x_override;
+    reinforce_w = is_undef(reinforce_w_override) ? reinforce_w_default : reinforce_w_override;
+
     if (front_panel_edge_radius > 0) {
         translate([
             front_panel_undersizing + front_panel_edge_radius,
@@ -122,6 +133,20 @@ module variable_front_panel_body(
                 front_panel_thickness,
                 panel_height - (front_panel_undersizing * 2)
             ]);
+        }
+    }
+
+    //top reinforcement lip
+    if ((front_panel_top_reinforce_mm > 0) && (reinforce_w > 0)) {
+        translate([reinforce_x, front_panel_thickness, panel_height - front_panel_top_reinforce_mm]) {
+            cube([reinforce_w, front_panel_top_reinforce_mm, front_panel_top_reinforce_mm]);
+        }
+    }
+
+    //bottom reinforcement lip
+    if ((front_panel_bottom_reinforce_mm > 0) && (reinforce_w > 0)) {
+        translate([reinforce_x, front_panel_thickness, 0]) {
+            cube([reinforce_w, front_panel_bottom_reinforce_mm, front_panel_bottom_reinforce_mm]);
         }
     }
 }
@@ -199,6 +224,7 @@ module variable_front_panel_face_import(
 module variable_side_slide(
     tray_u_size           = 1,
     side                  = 0,
+    add_slides            = 1,
     tray_depth            = 330,
     tray_x0               = undef,
     tray_w                = undef,
@@ -230,12 +256,14 @@ module variable_side_slide(
         translate([left_side_x, front_panel_thickness, 0]) {
             cube([tray_side_thickness, tray_depth, tray_height]);
         }
-        for (u_seg = [0 : max_u_segments - 1]) {
-            for (slot = [0 : 2]) {
-                z_pos = (u_seg * u_height) + z_base + (slot * hole_spacing);
-                if (z_pos + tab_height <= tray_height + 0.001) {
-                    translate([left_slide_x, front_panel_thickness, z_pos]) {
-                        cube([post_slide_width, tray_depth, tab_height]);
+        if (add_slides == 1) {
+            for (u_seg = [0 : max_u_segments - 1]) {
+                for (slot = [0 : 2]) {
+                    z_pos = (u_seg * u_height) + z_base + (slot * hole_spacing);
+                    if (z_pos + tab_height <= tray_height + 0.001) {
+                        translate([left_slide_x, front_panel_thickness, z_pos]) {
+                            cube([post_slide_width, tray_depth, tab_height]);
+                        }
                     }
                 }
             }
@@ -244,12 +272,14 @@ module variable_side_slide(
         translate([right_side_x, front_panel_thickness, 0]) {
             cube([tray_side_thickness, tray_depth, tray_height]);
         }
-        for (u_seg = [0 : max_u_segments - 1]) {
-            for (slot = [0 : 2]) {
-                z_pos = (u_seg * u_height) + z_base + (slot * hole_spacing);
-                if (z_pos + tab_height <= tray_height + 0.001) {
-                    translate([right_slide_x, front_panel_thickness, z_pos]) {
-                        cube([post_slide_width, tray_depth, tab_height]);
+        if (add_slides == 1) {
+            for (u_seg = [0 : max_u_segments - 1]) {
+                for (slot = [0 : 2]) {
+                    z_pos = (u_seg * u_height) + z_base + (slot * hole_spacing);
+                    if (z_pos + tab_height <= tray_height + 0.001) {
+                        translate([right_slide_x, front_panel_thickness, z_pos]) {
+                            cube([post_slide_width, tray_depth, tab_height]);
+                        }
                     }
                 }
             }
@@ -266,6 +296,8 @@ module variable_tray_front_gusset(
     panel_u_size          = 1,
     tray_u_size           = 1,
     side                  = 0,
+    tray_x0               = undef,
+    tray_w                = undef,
     support_back          = 20,
     support_thickness     = 2.0,
     front_panel_thickness = 3.0,
@@ -279,9 +311,13 @@ module variable_tray_front_gusset(
 ) {
     panel_top = (u_height * panel_u_size) - 1;
     tray_top  = max((u_height * tray_u_size) - 1, post_slide_cutout - hole_clearance);
-    x0 = (side == 0)
+    left_x = is_undef(tray_x0)
         ? (post_width + post_slide_width + tray_post_clearance)
-        : (rack_width - post_width - post_slide_width - tray_post_clearance - support_thickness);
+        : tray_x0;
+    right_x = is_undef(tray_w)
+        ? (rack_width - post_width - post_slide_width - tray_post_clearance - support_thickness)
+        : (left_x + tray_w - support_thickness);
+    x0 = (side == 0) ? left_x : right_x;
     x1  = x0 + support_thickness;
     y0  = front_panel_thickness;
     y1  = front_panel_thickness + support_back;
@@ -311,6 +347,8 @@ module variable_tray_front_gusset(
 // e.g. blank_variable_front_panel(u_size=2, holes=4, import_file="logo.svg", import_type="svg", import_mode="emboss");
 module blank_variable_front_panel(
     u_size                  = 1,
+    front_panel_top_reinforce_mm     = 1,
+    front_panel_bottom_reinforce_mm  = 1,
     holes                   = 2,
     import_file             = "",
     import_type             = "none",
@@ -328,18 +366,27 @@ module blank_variable_front_panel(
     hole_offset_z           = 12.7,
     hole_spacing            = 15.875,
     front_panel_undersizing = 0.1,
-    front_panel_edge_radius = 2.0
+    front_panel_edge_radius = 2.0,
+    tray_post_clearance     = 0.5,
+    reinforce_x_override    = undef,
+    reinforce_w_override    = undef
 ) {
     panel_height = u_height * u_size;
 
     difference() {
         union() {
             variable_front_panel_body(
-                panel_height,
-                front_panel_thickness,
-                rack_width,
-                front_panel_undersizing,
-                front_panel_edge_radius
+                panel_height                 = panel_height,
+                front_panel_thickness        = front_panel_thickness,
+                rack_width                   = rack_width,
+                post_width                   = post_width,
+                front_panel_undersizing      = front_panel_undersizing,
+                front_panel_edge_radius      = front_panel_edge_radius,
+                front_panel_top_reinforce_mm = front_panel_top_reinforce_mm,
+                front_panel_bottom_reinforce_mm = front_panel_bottom_reinforce_mm,
+                tray_post_clearance          = tray_post_clearance,
+                reinforce_x_override         = reinforce_x_override,
+                reinforce_w_override         = reinforce_w_override
             );
             if (import_mode != "engrave") {
                 variable_front_panel_face_import(
@@ -402,7 +449,10 @@ module blank_variable_front_panel(
 // e.g. blank_variable_tray(panel_u_size=1, tray_u_size=0.5, tray_depth_scale=0.5, holes=4, tray_thickness=4.0, front_panel_thickness=20.0);
 // e.g. blank_variable_tray(panel_u_size=2, tray_u_size=1.5, tray_depth_scale=1, holes=4, import_file="logo.svg", import_type="svg");
 module blank_variable_tray(
+    mode                    = "tray", //"tray" or "panel"
     panel_u_size            = 1, // front panel height in U
+    front_panel_top_reinforce_mm     = 0, //a reinforcing lip at the top of the panel
+    front_panel_bottom_reinforce_mm  = 0, //same but bottom. these are on the back of the panel
     tray_u_size             = undef, // side/base height in U. if undef, defaults to panel_u_size. if 0.6 is used, you can get 2 slides per side, 0.5 would only make the sides high enough for 1 slide
     tray_depth_scale        = 1, // 0 to 1, fraction of rack_width. 1 = full rack_width depth (330mm), 0.5 = rack_width/2 depth (165mm), etc.
     holes                   = 2, // mounting holes PER SIDE (2, 3, 4, or 6). I need to revisit this, as '2' would put 4 holes in each side of a 2U panel, but you might only want 2 each side (top/bottom)
@@ -422,6 +472,8 @@ module blank_variable_tray(
     back_panel              = 0, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
     back_panel_thickness    = 2.0, //the rear wall thickness, if you have back_panel=1.
     back_panel_height       = 1.0, //in U units, converted to mm internally
+    back_panel_chamfer      = 0.0, //mm front edge chamfer on the rear wall. primary purpose is for printing overhang angle reduction.
+    back_panel_chamfer_ang  = 45.0, //degrees for the rear wall chamfer angle. 45 degrees is a good starting point, but you can adjust as needed. this is only used if back_panel_chamfer > 0.
     tray_thickness          = 5.0, //thickness of the tray base in mm.
     rack_width              = 330, //this is the external width of the rack, if single-width, using this and post_width is what determines the panel and tray widths and depths.
     rack_depth              = 330, //this can be different than the width
@@ -433,20 +485,32 @@ module blank_variable_tray(
     front_panel_undersizing = 0.1, //mm the front panel is undersized by on each edge to ensure it doesn't interfere with other panels
     front_panel_edge_radius = 2.0, //mm radius for front panel edges. set to 0 for sharp edges.
     tray_post_clearance     = 0.5, //0.5mm clearance, this makes 1mm total tray clearance. adjust as needed. modifying this might require tweaking the post_slide_cutout and hole_clearance to ensure the holes still clear properly.
-    post_slide_width        = 3.0, //*these next 3 are for the slides that go into the posts on the rack.
+    tray_side_slides        = 1,   //0 or 1 to add side slides that go into the posts. these are designed to fit into the post 
+                                    //cutouts defined by post_slide_cutout/width, so adjust those dimensions if you change the slide design.
+
+    post_slide_width        = 3.0, //*these next 2 are for the slides that go into the posts on the rack.
     post_slide_cutout       = 3.2, //*ideally you should create a 1U post for testing the fit of these before printing everything.
-    hole_clearance          = 0.3  //*you would be better off adjusting the post dimensions, rather than changing the tray dimensions, and create posts to fit the trays. making the side slides smaller to fit would make them weaker. So make the post cutouts bigger instead.
+                                   //*you would be better off adjusting the post dimensions, rather than changing the tray dimensions, 
+                                   //and create posts to fit the trays. making the side slides smaller to fit would make them weaker. 
+                                   //So make the post cutouts bigger instead.
+    hole_clearance          = 0.3 //clearance around the panel holes, for screwing into the posts.
 ) {
+    mode_resolved = (mode == "panel") ? "panel" : "tray";
+    slides_enabled = (tray_side_slides == 1) ? 1 : 0;
+    slide_allowance = slides_enabled ? post_slide_width : 0;
+
     tray_u_size_resolved  = is_undef(tray_u_size) ? panel_u_size : tray_u_size;
     tray_height           = max((u_height * tray_u_size_resolved) - 1, post_slide_cutout - hole_clearance);
     tray_depth            = max(rack_depth * tray_depth_scale, 0.01);
     back_panel_depth      = min(back_panel_thickness, tray_depth);
     back_panel_height_mm  = max((u_height * back_panel_height) - 1, post_slide_cutout - hole_clearance);
-    tray_x0          = post_width + tray_post_clearance + post_slide_width;
-    tray_w           = (rack_width - (post_width * 2)) - (tray_post_clearance * 2) - (post_slide_width * 2);
+    tray_x0          = post_width + tray_post_clearance + slide_allowance;
+    tray_w           = rack_width - (2 * tray_x0);
 
     blank_variable_front_panel(
         panel_u_size,
+        front_panel_top_reinforce_mm,
+        front_panel_bottom_reinforce_mm,
         holes,
         import_file,
         import_type,
@@ -464,87 +528,122 @@ module blank_variable_tray(
         hole_offset_z,
         hole_spacing,
         front_panel_undersizing,
-        front_panel_edge_radius
+        front_panel_edge_radius,
+        tray_post_clearance,
+        reinforce_x_override = tray_x0,
+        reinforce_w_override = tray_w
     );
 
-    translate([tray_x0, 0, front_panel_undersizing]) {
-        cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
-    }
-
-    variable_side_slide(
-        tray_u_size_resolved,
-        side                = 0,
-        tray_depth          = tray_depth,
-        tray_x0             = tray_x0,
-        tray_w              = tray_w,
-        front_panel_thickness = front_panel_thickness,
-        u_height            = u_height,
-        post_slide_cutout   = post_slide_cutout,
-        hole_clearance      = hole_clearance,
-        hole_offset_z       = hole_offset_z,
-        tray_side_thickness = tray_side_thickness,
-        post_slide_width    = post_slide_width,
-        post_width          = post_width,
-        tray_post_clearance = tray_post_clearance,
-        hole_spacing        = hole_spacing,
-        rack_width          = rack_width
-    );
-    variable_side_slide(
-        tray_u_size_resolved,
-        side                = 1,
-        tray_depth          = tray_depth,
-        tray_x0             = tray_x0,
-        tray_w              = tray_w,
-        front_panel_thickness = front_panel_thickness,
-        u_height            = u_height,
-        post_slide_cutout   = post_slide_cutout,
-        hole_clearance      = hole_clearance,
-        hole_offset_z       = hole_offset_z,
-        tray_side_thickness = tray_side_thickness,
-        post_slide_width    = post_slide_width,
-        post_width          = post_width,
-        tray_post_clearance = tray_post_clearance,
-        hole_spacing        = hole_spacing,
-        rack_width          = rack_width
-    );
-
-    if (back_panel == 1) {
-        // Rear wall to connect side panels; height controlled by back_panel_height (in U).
-        translate([tray_x0, front_panel_thickness + tray_depth - back_panel_depth, 0]) {
-            cube([tray_w, back_panel_depth, back_panel_height_mm]);
+    if (mode_resolved == "tray") {
+        translate([tray_x0, 0, front_panel_undersizing]) {
+            cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
         }
-    }
 
-    if (side_support == 1) {
-        variable_tray_front_gusset(
-            panel_u_size,
+        variable_side_slide(
             tray_u_size_resolved,
             side              = 0,
-            support_back      = side_support_back,
-            support_thickness = side_support_thickness,
+            add_slides        = slides_enabled,
+            tray_depth        = tray_depth,
+            tray_x0           = tray_x0,
+            tray_w            = tray_w,
             front_panel_thickness = front_panel_thickness,
             u_height          = u_height,
             post_slide_cutout = post_slide_cutout,
             hole_clearance    = hole_clearance,
+            hole_offset_z     = hole_offset_z,
+            tray_side_thickness = tray_side_thickness,
             post_width        = post_width,
             post_slide_width  = post_slide_width,
             tray_post_clearance = tray_post_clearance,
+            hole_spacing      = hole_spacing,
             rack_width        = rack_width
         );
-        variable_tray_front_gusset(
-            panel_u_size,
+        variable_side_slide(
             tray_u_size_resolved,
             side              = 1,
-            support_back      = side_support_back,
-            support_thickness = side_support_thickness,
+            add_slides        = slides_enabled,
+            tray_depth        = tray_depth,
+            tray_x0           = tray_x0,
+            tray_w            = tray_w,
             front_panel_thickness = front_panel_thickness,
             u_height          = u_height,
             post_slide_cutout = post_slide_cutout,
             hole_clearance    = hole_clearance,
+            hole_offset_z     = hole_offset_z,
+            tray_side_thickness = tray_side_thickness,
             post_width        = post_width,
             post_slide_width  = post_slide_width,
             tray_post_clearance = tray_post_clearance,
+            hole_spacing      = hole_spacing,
             rack_width        = rack_width
         );
+
+        if (back_panel == 1) {
+            // Rear wall to connect side panels; height controlled by back_panel_height (in U).
+            translate([tray_x0, front_panel_thickness + tray_depth - back_panel_depth, 0]) {
+                chamfer_ang = min(max(back_panel_chamfer_ang, 1), 89);
+                back_panel_chamfer_h = min(max(back_panel_chamfer, 0), min(back_panel_height_mm, back_panel_depth * tan(chamfer_ang)));
+                back_panel_chamfer_d = back_panel_chamfer_h / tan(chamfer_ang);
+
+                if (back_panel_chamfer_h > 0.001) {
+                    difference() {
+                        cube([tray_w, back_panel_depth, back_panel_height_mm]);
+
+                        // Remove a triangular prism to chamfer the front-top edge of the rear wall.
+                        eps = 0.01;
+                        translate([tray_w + eps, 0, 0]) {
+                            rotate([0, -90, 0]) {
+                                linear_extrude(height = tray_w + (eps * 2)) {
+                                    polygon(points = [
+                                        [back_panel_height_mm - back_panel_chamfer_h, -eps],
+                                        [back_panel_height_mm + eps, back_panel_chamfer_d + eps],
+                                        [back_panel_height_mm + eps, -eps]
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    cube([tray_w, back_panel_depth, back_panel_height_mm]);
+                }
+            }
+        }
+
+        if (side_support == 1) {
+            variable_tray_front_gusset(
+                panel_u_size,
+                tray_u_size_resolved,
+                side              = 0,
+                tray_x0           = tray_x0,
+                tray_w            = tray_w,
+                support_back      = side_support_back,
+                support_thickness = side_support_thickness,
+                front_panel_thickness = front_panel_thickness,
+                u_height          = u_height,
+                post_slide_cutout = post_slide_cutout,
+                hole_clearance    = hole_clearance,
+                post_width        = post_width,
+                post_slide_width  = post_slide_width,
+                tray_post_clearance = tray_post_clearance,
+                rack_width        = rack_width
+            );
+            variable_tray_front_gusset(
+                panel_u_size,
+                tray_u_size_resolved,
+                side              = 1,
+                tray_x0           = tray_x0,
+                tray_w            = tray_w,
+                support_back      = side_support_back,
+                support_thickness = side_support_thickness,
+                front_panel_thickness = front_panel_thickness,
+                u_height          = u_height,
+                post_slide_cutout = post_slide_cutout,
+                hole_clearance    = hole_clearance,
+                post_width        = post_width,
+                post_slide_width  = post_slide_width,
+                tray_post_clearance = tray_post_clearance,
+                rack_width        = rack_width
+            );
+        }
     }
 }

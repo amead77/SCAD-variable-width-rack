@@ -7,7 +7,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/15r38";
+version = "v0.1-2026/05/16r65";
 */
 
 include <blank variable tray.scad>;
@@ -82,17 +82,84 @@ module blank_variable_tray(
     post_slide_width        = 3.0, //*these next 3 are for the slides that go into the posts on the rack.
     post_slide_cutout       = 3.2, //*ideally you should create a 1U post for testing the fit of these before printing everything.
     hole_clearance          = 0.3  //*you would be better off adjusting the post dimensions, rather than changing the tray dimensions, and create posts to fit the trays. making the side slides smaller to fit would make them weaker. So make the post cutouts bigger instead.
+    back_panel_chamfer      = 0.0, //mm front edge chamfer on the rear wall. primary purpose is for printing overhang angle reduction.
 ) {
 
 **/
 
 
-module dell_tray() {
-    blank_variable_tray(rack_width = 350, rack_depth = 330, panel_u_size = 3, tray_u_size = 1, tray_depth_scale = 1.0, holes = 4, back_panel = 1, back_panel_height = 0.3, back_panel_thickness = 10.0, side_support = 1, side_support_back = 150, tray_thickness = 8);
+module dell_tray(
+    show_dell = false,
+    tray_side_slides = 0,
+    rack_width  = 350,
+    rack_depth  = 330,
+    panel_u_size = 3,
+    front_panel_top_reinforce_mm     = 5,
+    front_panel_bottom_reinforce_mm  = 0,
+    tray_u_size = 1, 
+    tray_depth_scale = 1.0,
+    tray_side_thickness = 5,
+    holes = 4, 
+    back_panel = 1, 
+    back_panel_height = 0.35, 
+    back_panel_thickness = 14.0, 
+    side_support = 1, 
+    side_support_back = 150,
+    side_support_thickness = 5,
+    tray_thickness = 8,
+    back_panel_chamfer = 8.0,
+    back_panel_chamfer_ang = 30.0,
+    import_file             = "Dell_Logo.svg", //used for importing an SVG or STL/3MF onto the front panel face, see variable_front_panel_face_import() parameters below.
+    import_type             = "svg", //"svg", "stl", or "none"
+    import_width            = 20, //if 0, defaults to 50% of the front panel inner width. used for imported SVGs and STLs/3MFs.
+    import_height           = 20, //if 0, defaults to 50% of the front panel inner height. used for imported SVGs and STLs/3MFs.
+    import_depth            = 0.01, //how far the imported design is embossed (positive) or engraved (negative). if 0, defaults to 0.8mm for SVGs, and 50% of the target width for STLs/3MFs.
+    import_offset_x         = 140, //X offset for imported design from exact center of front panel. positive values move right, negative values move left.
+    import_offset_z         = 50, //Z offset for imported design from exact center of front panel. positive values move up, negative values move down.
+    import_mode             = "engrave", // "emboss" (raised from front face) or "engrave" (cut into front face)
+
+    ) {
+    difference() {
+        blank_variable_tray(
+            tray_side_slides = tray_side_slides,
+            front_panel_top_reinforce_mm = front_panel_top_reinforce_mm,
+            front_panel_bottom_reinforce_mm = front_panel_bottom_reinforce_mm, 
+            import_file = import_file, 
+            import_type = import_type, 
+            import_width = import_width, 
+            import_height = import_height, 
+            import_depth = import_depth, 
+            import_offset_x = import_offset_x, 
+            import_offset_z = import_offset_z, 
+            import_mode = import_mode, 
+            back_panel_chamfer_ang = back_panel_chamfer_ang, 
+            back_panel_chamfer = back_panel_chamfer, 
+            rack_width = rack_width, 
+            rack_depth = rack_depth, 
+            panel_u_size = panel_u_size, 
+            tray_u_size = tray_u_size, 
+            tray_depth_scale = tray_depth_scale, 
+            holes = holes, 
+            back_panel = back_panel, 
+            back_panel_height = back_panel_height, 
+            back_panel_thickness = back_panel_thickness, 
+            side_support = side_support, 
+            side_support_back = side_support_back, 
+            tray_thickness = tray_thickness, 
+            tray_side_thickness= tray_side_thickness, 
+            side_support_thickness = side_support_thickness,
+        );
+    }
+    if (show_dell) {
+        //offset slightly to the right due to side feet on the case
+        dell_optiplex_3080(posx = 34, posy = 6, posz = 8);
+    }
 }
 
+/*
 difference() {
     dell_tray();
     //offset slightly to the right due to side feet on the case
     dell_optiplex_3080(posx = 34, posy = 6, posz = 8);
 }
+*/
