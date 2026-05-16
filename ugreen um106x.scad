@@ -15,7 +15,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/15r02";
+version = "v0.1-2026/05/16r05";
 */
 
 include <blank variable tray.scad>;
@@ -132,6 +132,7 @@ module ug_um106x_tray_internal_support() {
 module tray_assembly() {
     union() {
         blank_variable_tray(
+            front_panel_top_reinforce_mm = front_panel_top_reinforce_mm,
             panel_u_size = 1,
             tray_u_size = 0.6,
             rack_width = rack_width,
@@ -139,6 +140,10 @@ module tray_assembly() {
             holes = 4,
             back_panel = 1,
             back_panel_height = 0.2, //U height
+            back_panel_thickness    = 5.0, //the rear wall thickness, if you have back_panel=1.
+            back_panel_chamfer      = 4.5, //mm front edge chamfer on the rear wall. primary purpose is for printing overhang angle reduction.
+            back_panel_chamfer_ang  = 45.0, //degrees for the rear wall chamfer angle. 45 degrees is a good starting point, but you can adjust as needed. this is only used if back_panel_chamfer > 0.
+
             //side_support_back = 100,
             tray_thickness = ug_tray_thickness,
             front_panel_thickness = ug_tray_front_panel_thickness,
@@ -151,7 +156,7 @@ module tray_assembly() {
 
 }
 
-module ug_um106x_tray(showmodel = true, rack_width = 330) {
+module ug_um106x_tray(showmodel = true, rack_width = 330, front_panel_top_reinforce_mm = 5) {
     render() {
         difference() { //1
             union() {

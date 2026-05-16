@@ -7,7 +7,7 @@
 // 330mm / 13 inch rack parts (by default) This is for larger format printers, such as Creality K2 plus, Prusa XL etc
 // This is 330mm from the left edge of the left post, to the right edge of the right post, assuming single posts.
 //
-// THERE IS NOT REQUIREMENT FOR IT TO BE 330mm. You can override all of the defaults.
+// THERE IS NO REQUIREMENT FOR IT TO BE 330mm. You can override all of the defaults.
 //
 // I designed this specifically to allow the rear of the tray to slide into the post.
 // This is for added support on the rear, and because other designs with front and rear attachment
@@ -20,13 +20,13 @@
 // The parts...
 // Posts. These are in 1U segments. They can be single or double wide. They can also have a slide on one or both sides, for guiding and supporting trays.
 // Trays. These are available in 1U, 2U and a variable size. The 1U and 2U ones I created initially to test, the variable one can also have a rear back panel, making it a drawer.
-// Panels. These are blanking panels, but the design is also used by the trays.
+// Panels. These are blanking panels, but the design is also used by the trays. The 0.5U panel isn't actually 0.5U, it is designed to join the top of the posts to the headers/footers.
 // Footer/Header. These are added to the post to allow joining the front/rear posts together using the joiner. (optional)
 // Joiners. The attach to the footer/header and span the gap between front and rear posts. (optional)
 //
 // The front panels/trays can have a logo embossed/etched. This is built into the function. See the custom tray for example. "rack custom tray 01.scad".
 //
-// AI use notes: The variable size tray/panel is AI created. The rest was 99% me, with some help from AI when getting stuck. I should probably go through and comment my code better :S
+// AI use notes: The variable size tray/panel is part AI created. The rest was 99% me, with some help from AI when getting stuck. I should probably go through and comment my code better :S
 // AI is not good at 3d design (yet), so if you want to create custom parts using AI, at least get the basic design done by hand, then get AI to assist with bits you're stuck on.
 // I was going to up to github, then realised I had only commented a small part, so AI did ~70% of the comments.
 
@@ -35,7 +35,7 @@
 /**
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/05/16r06";
+version = "v0.1-2026/05/16r17";
 **/
 
 include <rack posts.scad>;
@@ -125,6 +125,8 @@ front_panel_hole_count = 2;
 // this is how many U high the front panel is. 1 = 1U high, 2 = 2U high etc.
 front_panel_height = 1.5;
 
+front_panel_top_reinforce_mm = 5; //adds a reinforcing lip to the top of the front panel, which is where the most stress is when pulling on the tray. this is in mm, and adds to the height of the front panel, so a 1U panel with a 10mm reinforce will be 1U + 10mm high. adjust as needed, but I found that for a 1U panel, 10mm was good for my prints and materials.
+
 // ** these are the basic setup for the trays, the trays also use the defines from the front panel.
 
 // how thick the tray base is.
@@ -165,60 +167,20 @@ top_join = 1;
 base_panel = 1; //a blanking panel and reinforcement. 0.5U high
 top_panel = 1; //a blanking panel and reinforcement. 0.5U high
 
-
 module side_panel_ass() {
-/**
-module side_panel(
-    p_cv_panel_u_height = 6,
-    p_c_u_height = 44.5,
-    p_c_foot_add = 0,
-    p_c_head_add = 0,
-    p_c_panel_oversizing = 0.2,
-    p_cv_panel_depth = 330,
-    p_c_panel_thickness = 3,
-    p_c_lip_thickness = 3,
-    p_c_hole_clearance = 0.2,
-    p_cv_post_width = 15.875,
-    p_c_hole_offset_z = 12.7,
-    p_c_hole_spacing = 15.875,
-    p_c_front_panel_edge_radius = 2.0,
-
-    p_c_pattern = "honeycomb",
-    p_c_pattern_margin = 20,
-    p_c_pattern_hole_dia = 20,
-    p_c_pattern_offset_y = 4,
-    p_c_pattern_offset_z = 0.5,
-    p_c_pattern_edge_offset_left = 1.3,
-    p_c_pattern_edge_offset_bottom = 1,
-    p_c_pattern_grid_layout = "offset",
-    p_c_pattern_slot_length = 50,
-    p_c_pattern_slot_width = 15,
-    p_c_pattern_slot_wall = 2,
-    p_c_pattern_slot_rounded = true,
-    p_c_pattern_slot_rotation = 45,
-
-    p_c_side_panel_logo = false,
-    p_c_side_panel_logo_shape = "hexagon",
-    p_c_side_panel_logo_rotation = 60,
-    p_c_side_panel_logo_size = 100,
-    p_c_side_panel_logo_import_file = "",
-    p_c_side_panel_logo_import_width = 40,
-    p_c_side_panel_logo_import_height = 50,
-    p_c_side_panel_logo_import_rotation = [0, 0, 90],
-    p_c_side_panel_logo_import_ypos = 160,
-    p_c_side_panel_logo_import_zpos = 135,
-    p_c_side_panel_logo_ypos = -1,
-    p_c_side_panel_logo_zpos = -1,
-    p_c_side_panel_import_mode = "recessed",
-    p_c_side_panel_logo_depth = 1.0
-) {
-**/
-
+/* 
+the side panel, with rpi logo. I set the depth of the logo to 0.01mm so it is basically flat, but enables me to see it
+in my slicer software. Because I can see it, I can paint it. Because it is flat, it doesn't require support or complicate printing.
+*/
     side_panel(p_c_pattern_hole_dia = 50, p_c_side_panel_logo = true, p_c_side_panel_logo_import_file = "raspberry-pi.svg", p_c_side_panel_logo_depth = 0.01);
 }
 
+
 module assembly() {
-// this is used to render/see all the bits together, as an example.
+/*
+this is used to render/see all the bits together, as an example build.
+As you scroll down you'll see all the parts being created and positioned.
+*/
     render() {
 
         //POST CREATION
@@ -290,6 +252,8 @@ module assembly() {
                 }
             }
         }
+
+        //add 0.5U blanking panels to join the lower parts together (not actually 0.5U)
         if (base_panel == 1) {
             translate([0, -front_panel_thickness, -hole_offset_z*2]) {
                 color("orange") {
@@ -329,8 +293,7 @@ module assembly() {
             }
         }
 
-        // the top panel, to join the top of post to bracket
-
+        //add 0.5U blanking panels to join the upper parts together (not actually 0.5U)
         if (top_panel == 1) {
             translate([0, -front_panel_thickness, (u_height*post_u_height)]) {
                 color("orange") {
@@ -392,7 +355,7 @@ module assembly() {
             //color("cyan") {
             //    blank_1U_tray(tray_side_height, front_panel_edge_radius, front_panel_hole_count);
             //}
-            ug_um106x_tray(showmodel = true);
+            ug_um106x_tray(showmodel = true, rack_width = rack_width, front_panel_top_reinforce_mm = front_panel_top_reinforce_mm);
         }
         translate([0, -front_panel_thickness, u_height * 3]) {
 /*
@@ -413,14 +376,15 @@ module assembly() {
 }
 
 module assembly_info_panel() {
+/*
+Just notes about the assembly, shows when you look at the assembly view.
+*/
     panel_w = 420;
     panel_h = 40;
     panel_t = 2;
     text_t = 1;
     text_size = 5.5;
     text_line = 9;
-
-
 
     color("black") {
         translate([0, 0, 0]) {
@@ -449,7 +413,7 @@ module assembly_info_panel() {
     }
 }
 
-// [assembly, post, base joiner, top joiner, 1U tray, 2U tray, variable tray, halfUpanel, 1U panel, 2U panel, variable panel]
+// This is the overview assembly, showing a selection of parts together.
 if (part == "assembly") {
     assembly();
     translate([-300, -150, 0]) {
@@ -462,12 +426,14 @@ if (part == "assembly") {
 
 }
 
+// the post, with holes and slides if selected.
 if (part == "post") {
     render() {
         rail_1u_holes(slide_side = slide_side, doublewide = post_doublewide, post_u_height, cones);
     }
 }
 
+// the base joiner for the front/rear posts. by default 2 post supports, but can set supports= to add more (i have 3)
 if (part == "base joiner") {
     render() {
         if (post_doublewide == 0) {
@@ -480,6 +446,7 @@ if (part == "base joiner") {
     }
 }
 
+// same as base joiner, but goes on top. I use a thicker beam for the top, because i might lift the rack by the top.
 if (part == "top joiner") {
     render() {
         if (post_doublewide == 0) {
@@ -492,7 +459,7 @@ if (part == "top joiner") {
     }
 }
 
-
+// create a basic tray, takes the dimensions from the customiser.
 if (part == "variable tray") {
     render() {
         blank_variable_tray(panel_u_size = front_panel_height, tray_u_size = tray_side_height, holes = front_panel_hole_count, back_panel = tray_back_panel, tray_depth_scale = tray_y);
@@ -500,32 +467,37 @@ if (part == "variable tray") {
 }
 
 
-    
+// create the 0.5U front panel, which is actually not 0.5U, but is designed to join the top of the posts to the headers/footers.
 if (part == "halfUpanel") {
     color("orange") {
         blank_05U_front_panel(rack_width = rack_width);
     }
 }
 
+// create the 1U front panel, with holes based on the customiser.
 if (part == "1U panel") {
     color("orange") {
         blank_1U_front_panel(holes = front_panel_hole_count, rack_width = rack_width);
     }
 }
 
+// create the 2U front panel, with holes based on the customiser.
 if (part == "2U panel") {
     color("orange") {
         blank_2U_front_panel(holes = front_panel_hole_count, rack_width = rack_width);
     }
 }
 
+// a blank front panel, with height and holes based on the customiser. Note that this is calling the tray function, but in panel mode.
 if (part == "variable panel") {
     color("orange") {
-        blank_variable_front_panel(u_size = front_panel_height, holes = front_panel_hole_count, rack_width = rack_width);
+        blank_variable_tray(mode = "panel", panel_u_size = front_panel_height, holes = front_panel_hole_count, rack_width = rack_width);
     }
 }
 
 /*
+the post joins are actually important if you use more than 4 posts. These are screwed to the header/footer pieces on the posts and
+screwed to the base/top joiners. Without these, the inner posts have no solid attachment.
 // post_base_join_panel(doublewide, thickness)
 // Public — compact panel to join one post footprint (or two for doublewide) to a base joiner using 2 holes per post.
 // doublewide: 0=single post width, 1=double post width. thickness: panel thickness in mm.
@@ -537,18 +509,21 @@ if (part == "post joins") {
     post_base_join_panel(doublewide = post_doublewide, thickness = front_panel_thickness);
 }
 
+// my 2.5gbe switch tray and keystones
 if (part == "um106x") {
     render() {
-        ug_um106x_tray(showmodel = false, rack_width = rack_width);
+        ug_um106x_tray(showmodel = false, rack_width = rack_width, front_panel_top_reinforce_mm = front_panel_top_reinforce_mm);
     }
 }
 
+//my raspberry pi tray, wip
 if (part == "rpi5") {
     render() {
         rpi5_tray();
     }
 }
 
+// the side panel with rpi logo
 if (part == "side panel") {
     render() {
         side_panel(p_c_pattern_hole_dia = 50, p_c_side_panel_logo = true, p_c_side_panel_logo_import_file = "raspberry-pi.svg", p_c_side_panel_logo_depth = 0.01);
@@ -556,24 +531,12 @@ if (part == "side panel") {
     }
 }
 
+//my dell optiplex 3080 tray. it is just a tray with cutout for the front of the pc. thicker base and reinforcing beams.
 if (part == "dell optiplex 3080") {
     render() {
-        dell_tray(show_dell = false);
-
-/*
-    rack_width  = 350,
-    rack_depth  = 330,
-    panel_u_size = 3,
-    tray_u_size = 1, 
-    tray_depth_scale = 1.0, 
-    holes = 4, 
-    back_panel = 1, 
-    back_panel_height = 0.3, 
-    back_panel_thickness = 10.0, 
-    side_support = 1, 
-    side_support_back = 150, 
-    tray_thickness = 8
-*/
-
+        dell_tray(show_dell = false, 
+            rack_width = rack_width, 
+            rack_depth = rack_depth
+        );
     }
 }

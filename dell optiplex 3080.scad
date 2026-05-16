@@ -7,7 +7,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/16r65";
+version = "v0.1-2026/05/16r69";
 */
 
 include <blank variable tray.scad>;
@@ -90,11 +90,11 @@ module blank_variable_tray(
 
 module dell_tray(
     show_dell = false,
-    tray_side_slides = 0,
+    tray_side_slides = 1,
     rack_width  = 350,
     rack_depth  = 330,
     panel_u_size = 3,
-    front_panel_top_reinforce_mm     = 5,
+    front_panel_top_reinforce_mm     = 10,
     front_panel_bottom_reinforce_mm  = 0,
     tray_u_size = 1, 
     tray_depth_scale = 1.0,
@@ -149,6 +149,7 @@ module dell_tray(
             tray_side_thickness= tray_side_thickness, 
             side_support_thickness = side_support_thickness,
         );
+        dell_optiplex_3080(posx = 34, posy = 6, posz = 8);
     }
     if (show_dell) {
         //offset slightly to the right due to side feet on the case
