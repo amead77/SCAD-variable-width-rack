@@ -11,7 +11,7 @@ One of the biggest reasons for creating it was also anger. I printed the parts f
 
 THIS PIC IS NOT MY DESIGN, but I did print it, then got angry about it:
 
-![angry rack]("angry rack.png")
+![angry rack](angry-rack.png)
 
 
 Anyway, if you like the design, you're welcome to buy me a coffee:
