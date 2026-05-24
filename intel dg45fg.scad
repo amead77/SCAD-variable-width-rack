@@ -7,13 +7,16 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/23r49";
+version = "v0.1-2026/05/24r85";
 */
 
 
 include <blank variable tray.scad>;
+include <flex_psu.scad>;
+include <odd_parts.scad>;
 
-$fn = 32;
+
+$fn = 64;
 
 //spec out the holes for mini-itx board
 
@@ -42,13 +45,21 @@ itx_board_clearance = 6.5;
 itx_board_thickness = 1.6;
 
 actual_board_position_x = 40;
-actual_board_position_y = 10;
+actual_board_position_y = 158;
 
+//front panel cutout for the board, i commented out the line that creates this, as i decided to
+//put the board in the other way around, so the back panel i/o is in the back.
 board_front_panel_cutout_offset_x = actual_board_position_x + 25;
 board_front_panel_cutout_offset_z = 12;
 board_front_panel_cutout_x = 133;
 board_front_panel_cutout_z = 35;
 board_front_panel_cutout_y = front_panel_thickness + 0.2;
+
+flex_itx_psu = true; //[true, false] set to true to use the flex psu design. Just creates a screw mount on the rear
+flex_itx_position_x = 270;
+flex_itx_position_y = 333;
+flex_itx_position_z = tray_thickness+0.1; //add a tiny bit because i have no idea why the model sits that much higher
+flex_itx_psu_rotated = true; //[true, false] set to true to rotate the flex psu 180 deg to have the power in the rear
 
 module board_front_panel_cutout() {
     translate([board_front_panel_cutout_offset_x, -0.1, board_front_panel_cutout_offset_z]) {
@@ -92,6 +103,10 @@ module itx_board() {
             itx_screws();
         }
     }
+    //add a small block onto the board to show where the back panel cutout is.
+    translate([itx_board_dimensions[0] - 150, itx_board_dimensions[1]-10, itx_board_thickness]) {
+        cube([130, 10, 25], center = false);
+    }
 }
 
 module itx_standoff(incl_board = true) {
@@ -106,11 +121,28 @@ module itx_standoff(incl_board = true) {
     }
 }
 
+
+
 render() {
     union() {
+        if (flex_itx_psu) {
+            color("green") {
+
+                translate([flex_itx_position_x, flex_itx_position_y, flex_itx_position_z]) {
+                    if (flex_itx_psu_rotated) {
+                        rotate([0, 0, 180]) {
+                            flex_itx_mount();
+                        }
+                    } else {
+                        flex_itx_mount();
+                    }
+                }
+            }
+        }
+
         color("lightgray") {
             translate([actual_board_position_x, actual_board_position_y, 0]) {
-                itx_standoff(incl_board = true);
+                itx_standoff(incl_board = false);
             }
         }
 
@@ -118,7 +150,7 @@ render() {
             blank_variable_tray(
                 mode                    = "tray", //"tray" or "panel"
                 panel_u_size            = 2, // front panel height in U
-                front_panel_top_reinforce_mm     = 5, //a reinforcing lip at the top of the panel
+                front_panel_top_reinforce_mm     = 8, //a reinforcing lip at the top of the panel
                 front_panel_bottom_reinforce_mm  = 0, //same but bottom. these are on the back of the panel
                 tray_u_size             = 1, // side/base height in U. if undef, defaults to panel_u_size. if 0.6 is used, you can get 2 slides per side, 0.5 would only make the sides high enough for 1 slide
                 tray_depth_scale        = 1, // 0 to 1, fraction of rack_width. 1 = full rack_width depth (330mm), 0.5 = rack_width/2 depth (165mm), etc.
@@ -136,9 +168,9 @@ render() {
                 side_support_thickness  = 2.0, //normally the same as tray_side_thickness, but can be different if you want thinner gussets
                 tray_side_thickness     = 2.0, //thickness of the tray side walls in mm.
                 front_panel_thickness   = front_panel_thickness, //consider your screw lengths. 3mm is usually fine for m6x16 screws.
-                back_panel              = 0, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
-                back_panel_thickness    = 2.0, //the rear wall thickness, if you have back_panel=1.
-                back_panel_height       = 1.0, //in U units, converted to mm internally
+                back_panel              = 1, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
+                back_panel_thickness    = 3.0, //the rear wall thickness, if you have back_panel=1.
+                back_panel_height       = 0.3, //in U units, converted to mm internally
                 back_panel_chamfer      = 0.0, //mm front edge chamfer on the rear wall. primary purpose is for printing overhang angle reduction.
                 back_panel_chamfer_ang  = 45.0, //degrees for the rear wall chamfer angle. 45 degrees is a good starting point, but you can adjust as needed. this is only used if back_panel_chamfer > 0.
                 tray_thickness          = tray_thickness, //thickness of the tray base in mm.
@@ -162,9 +194,38 @@ render() {
                                             //So make the post cutouts bigger instead.
                 hole_clearance          = 0.3 //clearance around the panel holes, for screwing into the posts.
             );
+            //color("green") {
+            //    board_front_panel_cutout();
+            //}
+            
+            //difference out the screw holes, as the back panel overruns them
             color("green") {
-                board_front_panel_cutout();
+                if (flex_itx_psu) {
+                    translate([flex_itx_position_x, flex_itx_position_y, flex_itx_position_z]) {
+                        if (flex_itx_psu_rotated) {
+                            rotate([0, 0, 180]) {
+                                flex_back_panel_screws();
+                            }
+                        }
+                        
+                    }
+                }
             }
-        }
+            //power switch, 16mm dia, 16mm long
+            translate([50, 0, 60]) {
+                rotate([90, 0, 0]) {
+                    panel_mount_power_switch_round();
+                }
+            }
+            //hdd activity led, 5mm dia, 8mm long
+            translate([50, 0, 30]) {
+                rotate([90, 0, 0]) {
+                    panel_mount_led_round();
+                }
+            }
+
+
+        } //difference
+
     }
 }

@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/23r00";
+version = "v0.1-2026/05/24r00";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -464,6 +464,13 @@ module blank_variable_tray(
     import_offset_x         = 0, //X offset for imported design from exact center of front panel. positive values move right, negative values move left.
     import_offset_z         = 0, //Z offset for imported design from exact center of front panel. positive values move up, negative values move down.
     import_mode             = "emboss", // "emboss" (raised from front face) or "engrave" (cut into front face)
+    panel_text              = "", //optional text to add to the front panel
+    panel_text_font         = "Liberation Mono:style=Bold", //font for the panel text, using the format "FontName:style=Style". you can use any font installed on your system, and specify the style if needed. check the OpenSCAD documentation for details on font naming and styles.
+    panel_text_size         = 10, //font size for the panel text
+    panel_text_depth        = 0.8, //depth for engraving the panel text. ignored if panel_text is empty.
+    panel_text_offset_x     = 0, //X offset for panel text from exact center. positive values move right, negative values move left.
+    panel_text_offset_z     = 0, //Z offset for panel text from exact center. positive values move up, negative values move down.
+    panel_text_mode         = "engrave", // "emboss" or "engrave" for the panel text
     side_support            = 1, //0 or 1 to add gussets between front panel and sides when panel is taller than sides
     side_support_back       = 40, //how far back the gussets extend (mm)
     side_support_thickness  = 2.0, //normally the same as tray_side_thickness, but can be different if you want thinner gussets
