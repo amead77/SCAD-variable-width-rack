@@ -25,6 +25,8 @@ I've numbered some arrows so you can see:
 5. Here is where you put post joins. These are a little square section that joins the inner posts to the top/bottom joins. Otherwise they'd be floating.
 6. A side panel. In my case I made a honeycome panel and added a raspberry pi logo.
 
+Note: For mine I used 6 posts (great for half depth trays), 4 face forward, rear 2 face backwards. Consider this when creating posts for which side you want the side-slides on.
+
 ![Assembly overview](overview.png)
 
 
@@ -38,11 +40,11 @@ Rear view
 
 How about a part complete rack, as in.. mine. I do have a tray for the Dell, but haven't printed it yet, so the Dell is just thrown in there. It is not a good computer, it is old but it was free.
 
-![dell](20260524_191549.jpg)
+![dell](20260524_191538.jpg)
 
 Now the side panel. You don't have to have honeycomb, you can have a few different designs, plus size of shapes, image/logo is also optional. I have a RPi logo because I have a bunch of them. They'll end up in the rack in due course.
 
-![side panel](20260524_191538.jpg)
+![side panel](20260524_191549.jpg)
 
 
 
@@ -61,6 +63,7 @@ Now the side panel. You don't have to have honeycomb, you can have a few differe
 ### Posts
 
 Posts are the vertical rails of the rack. They are generated in configurable U heights and can be single or double wide. A slide channel can be added to the left side, right side, both sides, or neither. 
+I highly recommend creating with top/bottom headers, double-wide, cones and side slides. 
 
 ![Post](post.png)
 
