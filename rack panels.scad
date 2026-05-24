@@ -1,7 +1,23 @@
 /*
+
+
+
+this scad only produces 3 types of panel.
+
+
+2U front panel: blank_2U_front_panel()
+1U front panel: blank_1U_front_panel()
+0.5U front panel: blank_05U_front_panel() (this is for joining the base and headers)
+
+for any other size, use blank_variable_tray(mode="panel") from blank variable tray.scad, which includes a 
+front panel and can be used with or without the tray body. It is far more customisable.
+
+
+*/
+/*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/15r00";
+version = "v0.1-2026/05/24r02";
 */
 
 

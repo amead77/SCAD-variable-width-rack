@@ -7,7 +7,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/24r85";
+version = "v0.1-2026/05/24r111";
 */
 
 
@@ -163,16 +163,24 @@ render() {
                 import_offset_x         = 0, //X offset for imported design from exact center of front panel. positive values move right, negative values move left.
                 import_offset_z         = 0, //Z offset for imported design from exact center of front panel. positive values move up, negative values move down.
                 import_mode             = "emboss", // "emboss" (raised from front face) or "engrave" (cut into front face)
+                panel_text              = "Intel DG45FG - Core2duo E7400", //optional text to add to the front panel
+                panel_text_font         = "Liberation Mono:style=Bold", //font for the panel text, using the format "FontName:style=Style". you can use any font installed on your system, and specify the style if needed. check the OpenSCAD documentation for details on font naming and styles.
+                panel_text_size         = 8, //font size for the panel text
+                panel_text_depth        = 0.01, //depth for engraving the panel text. ignored if panel_text is empty.
+                panel_text_offset_x     = 0, //X offset for panel text from exact center. positive values move right, negative values move left.
+                panel_text_offset_z     = 0, //Z offset for panel text from exact center. positive values move up, negative values move down.
+                panel_text_mode         = "engrave", // "emboss" or "engrave" for the panel text
+
                 side_support            = 1, //0 or 1 to add gussets between front panel and sides when panel is taller than sides
                 side_support_back       = 140, //how far back the gussets extend (mm)
                 side_support_thickness  = 2.0, //normally the same as tray_side_thickness, but can be different if you want thinner gussets
                 tray_side_thickness     = 2.0, //thickness of the tray side walls in mm.
                 front_panel_thickness   = front_panel_thickness, //consider your screw lengths. 3mm is usually fine for m6x16 screws.
                 back_panel              = 1, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
-                back_panel_thickness    = 3.0, //the rear wall thickness, if you have back_panel=1.
-                back_panel_height       = 0.3, //in U units, converted to mm internally
-                back_panel_chamfer      = 0.0, //mm front edge chamfer on the rear wall. primary purpose is for printing overhang angle reduction.
-                back_panel_chamfer_ang  = 45.0, //degrees for the rear wall chamfer angle. 45 degrees is a good starting point, but you can adjust as needed. this is only used if back_panel_chamfer > 0.
+                back_panel_thickness    = 6.0, //the rear wall thickness, if you have back_panel=1.
+                back_panel_height       = 0.19, //in U units, converted to mm internally
+                back_panel_chamfer      = 10.0, //mm front edge chamfer on the rear wall. primary purpose is for printing overhang angle reduction.
+                back_panel_chamfer_ang  = 30.0, //degrees for the rear wall chamfer angle. 45 degrees is a good starting point, but you can adjust as needed. this is only used if back_panel_chamfer > 0.
                 tray_thickness          = tray_thickness, //thickness of the tray base in mm.
                 rack_width              = 350, //this is the external width of the rack, if single-width, using this and post_width is what determines the panel and tray widths and depths.
                 rack_depth              = 330, //this can be different than the width
@@ -211,12 +219,18 @@ render() {
                     }
                 }
             }
+
+            //
+            //front panel cutouts
+            //
+
             //power switch, 16mm dia, 16mm long
             translate([50, 0, 60]) {
                 rotate([90, 0, 0]) {
                     panel_mount_power_switch_round();
                 }
             }
+
             //hdd activity led, 5mm dia, 8mm long
             translate([50, 0, 30]) {
                 rotate([90, 0, 0]) {

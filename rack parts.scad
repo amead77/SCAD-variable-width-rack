@@ -35,11 +35,11 @@
 /**
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/05/16r17";
+version = "v0.1-2026/05/24r01";
 **/
 
 include <rack posts.scad>;
-include <rack tray.scad>;
+include <rack panels.scad>;
 //include <rack defines.scad>; //some of these are overrode below.
 //include <rack custom tray 01.scad>;
 include <ugreen um106x.scad>; // switch dimensions

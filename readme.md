@@ -1,18 +1,50 @@
-Most of this readme was wrote by copilot, because I am a forklift operator, not a novelist. But I did write most of the code (except variable tray, which copilot fixed for me then refactored) and the spec.
+# Variable width Rack design.
 
-If you like the design, you're welcome to buy me a coffee:
+No longer are you stuck with 10" rack or a 19" rack you can't print parts for! What's more, you can actually have supported trays :)
+
+
+So, what is this actually?
+Simply put, I wanted a bigger rack that I could print on my Creality K2plus (350x350x350 build volume) and I wanted it to be 100% in OpenSCAD. Because that's the only software I can use. Fusion 360 is good, but eats cpu, doesn't work on Linux, and worst of all, they changed the licence and features available for hobbyists.
+What about FreeCAD? Yeah, FreeCAD is getting good now, but I just didn't want to learn it, because that would require starting out with the spec nailed down before even creating a design. It wasn't.
+
+Anyway, if you like the design, you're welcome to buy me a coffee:
 
 <a href="https://buymeacoffee.com/amead77"><img src="bmc-button.png" alt="Buy Me a Coffee" width="50%" /></a>
 
-# 330mm / 13-Inch Rack System (OpenSCAD)
 
-A parametric, 3D-printable rack system designed for larger-format printers such as the Creality K2 Plus, Prusa XL, etc. The rack is 330mm wide — measured from the left edge of the left post to the right edge of the right post (single-post configuration).
+A quick overview
+
+Below is a screenshot of OpenSCAD with a assembly view. This is just to show an example of some of what is possible. Everything is customisable.
+
+I've numbered some arrows so you can see:
+
+1. is showing top header, this is an extra hole added to the post for joining to 2. These  are not required if you don't want stability.
+2. is the top join, this joins the posts together at the top. Note: you can have 4 OR MORE posts. I have 6 in this example and how I use it. They can optionally (recommended) have the support cones. This is so the posts can lock in place if they also have cones.
+3. A half U panel. Technically not half-U, but that's what I called it. This is used to span across the posts and secure the top and bottom joins.
+4. The bottom join. Just like the top.
+5. Here is where you put post joins. These are a little square section that joins the inner posts to the top/bottom joins. Otherwise they'd be floating.
+6. A side panel. In my case I made a honeycome panel and added a raspberry pi logo.
 
 ![Assembly overview](overview.png)
 
+
+Rear view
+
 ![Rear view of assembly](overview-rearish.png)
 
+8 legged freak
+
 ![Assembly with 8 legs](overview-8_legs.png)
+
+How about a part complete rack, as in.. mine. I do have a tray for the Dell, but haven't printed it yet, so the Dell is just thrown in there. It is not a good computer, it is old but it was free.
+
+![dell](20260524_191549.jpg)
+
+Now the side panel. You don't have to have honeycomb, you can have a few different designs, plus size of shapes, image/logo is also optional. I have a RPi logo because I have a bunch of them. They'll end up in the rack in due course.
+
+![side panel](20260524_191538.jpg)
+
+
 
 ---
 
@@ -32,28 +64,35 @@ Posts are the vertical rails of the rack. They are generated in configurable U h
 
 ![Post](post.png)
 
+
 ### Trays
 
 Trays are available in fixed sizes (1U, 2U) or a fully variable size. The variable tray accepts a `tray_back_panel` flag to add a rear panel, turning it into a drawer. Trays slide into the post's rear slot for easy removal. Trays also don't need to be full length, defining 0.25 will make a quarter depth tray (y axis)
 
-![Variable tray](vari-tray.png)
+Look at "blank variable tray.scad" to find the tray code, but "intel dg45fg.scad" shows it being used.
+More info on how to use later.
 
-
-
-![Part Tray](tray-part_depth_y.png)
+![Variable tray](blank-tray.png)
 
 
 ### Panels (Blanking Panels)
 
-Flat front panels for blanking unused rack slots. Available in ½U, 1U, 2U, and variable sizes.
+"rack panels.scad"
 
-![Half-U panel](halfpanel.png)
+Flat front panels for blanking unused rack slots. Available in ½U, 1U, 2U.
+Note that "blank variable tray" can now do all of this apart from the half-U. It is also the recommended method as you can customise it, reinforce, etc.
+
+The half-U for joining posts together when using headers.
+
+![Half-U panel](half-u-panel.png)
+
 
 ![2U panel](2u-panel.png)
 
 ### Footer / Header
 
-Optional pieces added to the top and bottom of posts. They provide an attachment point for the joiners.
+Optional pieces added to the top and bottom of POSTS. They provide an attachment point for the joiners.
+If you want the front to rear support braces, I recommend adding these on.
 
 ### Joiners (Base / Top)
 
@@ -62,22 +101,50 @@ You can have more than just 4 posts. The joiners can have 2+ supports, by increa
 
 ![Top joiner](top-joiner.png)
 
+![Base joiner](base-joiner.png)
+
 ---
 
 ## Custom Trays
 
-The file `rack custom tray 01.scad` provides an example of a custom tray — including IO cutouts (e.g. Raspberry Pi 5 USB/Ethernet ports), standoffs with heat-set inserts, and embossed logos. Use this as a starting point for your own designs.
+The file "intel dg45fg.scad" has a tray I've made for my mini-itx board. Yes it's an older board, this is because I want it for WinXP.
+Anyway, it has:
+- mount for a FlexATX PSU
+- screw holes for mini-itx, for the back panel to be on the rear. (screw holes are sized for my heat-inserts)
+- a LED hole in the front for hdd activity
+- a Power button (large round) cutout
+- Name of board/cpu inside on the front of the panel. (I use a engrave of 0.01mm, this makes it easy to 'paint' in my slicer, while still being level with the panel)
+- reinforced front panel at the top
+- reinforced rear, by creating a back panel, then chamfering it at 30deg. this is because I print panel face down and it means far less supports
+- If my printer wasn't being a D. I'd have it printed by now. 
+
+![mini-itx](mini-itx-tray.png)
+
+This picture is the mini-itx tray, but I chopped it to a tiny piece in the slicer, I highly recommend making test pieces before commiting to 12hour+ prints.
+
+![test print](20250524_191530.jpg)
+
+
+
+The file "ugreen um106x.scad" is another one I use, and have a photo of in use.
+This was created to:
+- have my 5 port switch
+- 4x keystones
+
+![ugreen](um106x.png)
+
+
 
 ---
 
 ## Usage
 
-1. Open `rack parts.scad` in OpenSCAD (use the nightlys, the offical releases are mega old).
+1. Open `rack parts.scad` in OpenSCAD. This is not perfect. This will create the basic parts, but not highly customised trays.
 2. Open the **Customizer** panel (Window → Customizer).
 3. Select the part you want from the `part` dropdown:
    - `assembly` — preview all parts together
-   - `post` — a single post
-   - `base joiner` / `top joiner` — horizontal joiners
+   - `post` — a single post, I recommend double-wide for future side panels etc, and slide_sides, if you want the trays to be supported.
+   - `base joiner` / `top joiner` — horizontal joiners, also recommended. Make sure your posts have headers/footers and cones.
    - `1U tray` / `2U tray` / `variable tray` — trays
    - `halfUpanel` / `1U panel` / `2U panel` / `variable panel` — blanking panels
 4. Adjust the parameters to suit your needs.
@@ -96,9 +163,10 @@ The file `rack custom tray 01.scad` provides an example of a custom tray — inc
 | `tray_back_panel` | `0` = open tray, `1` = drawer with rear panel |
 | `footer_include` / `header_include` | Include footer/header attachment pieces |
 
+
 ### Hardware
 
-The design is based on **M6 screws** with **M6 hex nuts** (10mm across-flats, 5mm thick). Adjust `hole_clearance`, `hole_d`, `nut_diameter`, and `nut_thickness` in `rack defines.scad` if you want to use different fasteners.
+The design is based on **M6 screws** with **M6 hex nuts** (10mm across-flats, 5mm thick). Adjust `hole_clearance`, `hole_d`, `nut_diameter`, and `nut_thickness` if you want to use different fasteners.
 
 ---
 
@@ -107,18 +175,21 @@ The design is based on **M6 screws** with **M6 hex nuts** (10mm across-flats, 5m
 | File | Purpose |
 |---|---|
 | `rack parts.scad` | Main entry point — select and configure parts here |
-| `rack defines.scad` | All default dimensions and constants |
+| `rack defines.scad` | All default dimensions and constants - DEPRECIATED, kept for reference|
 | `rack posts.scad` | Post geometry |
-| `rack tray.scad` | Tray and panel geometry |
-| `rack custom tray 01.scad` | Example custom tray (Raspberry Pi 5) |
-| `rack *.3mf` | Pre-sliced print files for reference |
-
+| `rack panels.scad` | Panel geometry, for 0.5U, 1U and 2U |
+| `intel dg45fg.scad` | My mini itx tray, useful for reference
+| `blank variable tray.scad` | The main tray and panel making scad. Call blank_variable_tray() for everything, then customise.
 ---
+
+The reason rack defines.scad is depreciated is because everything got refactored so that the default values of calling the functions are what was in the defines. Everything can be overriden in the function calls.
+I really recommend having a look at the parts and how they are called, then look at the function/module they call, because I have commented all the options.
+
 
 ## Requirements
 
-- [OpenSCAD](https://openscad.org/) the releases are ancient, use the nightlies instead.
-- A printer with at least 330mm on one axis (e.g. Creality K2 Plus, Prusa XL)
+- [OpenSCAD](https://openscad.org/) the releases are ancient, use the nightlies instead. On raspberry pi you have to compile from source.
+- A printer that can handle the size you want (e.g. Creality K2 Plus can do 350mm, Prusa XL can do 340mm)
 
 ---
 
@@ -126,7 +197,7 @@ The design is based on **M6 screws** with **M6 hex nuts** (10mm across-flats, 5m
 
 This project is licensed under the **Creative Commons - Attribution (CC BY)** for all the parts and **Creative Commons - Attribution - Non-Commercial (CC BY-NC)** for the specifications.
 
-In simpler terms, you can remix and do whatever you want with making parts or modifying the parts, including selling. But the design spec, that is 330mm dimension and guide slots, is the same terms but non-commercial use. This is specifically aimed at companies making 13"/330mm racks using my design, not someone who makes some mods or addons and sells them.
+In simpler terms, you can remix and do whatever you want with making parts or modifying the parts, including selling. But the design spec, that is dimensions, guide slots on the posts, overall look, is the same terms but non-commercial use. This is specifically aimed at companies making racks using my design, not someone who makes some mods or addons and sells them. Even creating the whole thing as a print and selling is fine. Just not for manufacturers.
 
 
 &copy; 2026 Adam Mead

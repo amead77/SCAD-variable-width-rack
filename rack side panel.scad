@@ -9,11 +9,11 @@ this is why double wide posts are useful, as the normal panels use the inner hol
 /*
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/05/10r173";
+version = "v0.1-2026/05/24r00";
 */
 
 
-include <honeycomb.scad>;
+include <honeycomb.scad>; //* Copyright: Gael Lafond 2017
 //include <rack posts.scad>;
 
 $fn = 32;

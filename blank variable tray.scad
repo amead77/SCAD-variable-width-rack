@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/24r00";
+version = "v0.1-2026/05/24r05";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -217,6 +217,64 @@ module variable_front_panel_face_import(
 }
 
 
+// variable_front_panel_face_text(panel_height, panel_text, panel_text_font, panel_text_size, panel_text_depth, panel_text_offset_x, panel_text_offset_z, panel_text_mode, rack_width, front_panel_undersizing)
+// Embosses or engraves centered text onto the front panel face.
+// panel_text_mode: "emboss" (raised) or "engrave" (cut in).
+// Called by blank_variable_front_panel(); not normally used directly.
+module variable_front_panel_face_text(
+    panel_height,
+    panel_text              = "",
+    panel_text_font         = "Liberation Mono:style=Bold",
+    panel_text_size         = 10,
+    panel_text_depth        = 0.8,
+    panel_text_offset_x     = 0,
+    panel_text_offset_z     = 0,
+    panel_text_mode         = "engrave",
+    rack_width              = 330,
+    front_panel_undersizing = 0.1
+) {
+    if ((panel_text != "") && (panel_text_size > 0) && (panel_text_depth > 0)) {
+        panel_inner_width  = rack_width   - (front_panel_undersizing * 2);
+        panel_inner_height = panel_height - (front_panel_undersizing * 2);
+
+        x_pos = front_panel_undersizing + (panel_inner_width  / 2) + panel_text_offset_x;
+        z_pos = front_panel_undersizing + (panel_inner_height / 2) + panel_text_offset_z;
+
+        if (panel_text_mode == "engrave") {
+            // Use a tiny overlap so CSG subtraction reliably intersects the panel volume.
+            translate([x_pos, panel_text_depth + 0.01, z_pos]) {
+                rotate([90, 0, 0]) {
+                    linear_extrude(height = panel_text_depth + 0.02) {
+                        text(
+                            panel_text,
+                            size = panel_text_size,
+                            font = panel_text_font,
+                            halign = "center",
+                            valign = "center"
+                        );
+                    }
+                }
+            }
+        } else {
+            // Emboss out from the front face (y = -depth to 0).
+            translate([x_pos, 0, z_pos]) {
+                rotate([90, 0, 0]) {
+                    linear_extrude(height = panel_text_depth) {
+                        text(
+                            panel_text,
+                            size = panel_text_size,
+                            font = panel_text_font,
+                            halign = "center",
+                            valign = "center"
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 // variable_side_slide(tray_u_size, side, tray_depth, front_panel_thickness, u_height, post_slide_cutout, hole_clearance, hole_offset_z, tray_side_thickness, post_slide_width, post_width, tray_post_clearance, hole_spacing, rack_width)
 // Builds the side wall and slide tabs for a variable-height tray.
 // tray_u_size: side wall height in U units (can be fractional). side: 0=left, 1=right.
@@ -333,12 +391,10 @@ module variable_tray_front_gusset(
 }
 
 
-// =============================================================================
-// Public modules
-// =============================================================================
 
+//Use blank_variable_tray() instead of calling this directly. See options in the tray.
 // blank_variable_front_panel(u_size, holes, import_file, import_type, import_width, import_height, import_depth, import_offset_x, import_offset_z, import_mode, front_panel_thickness, rack_width, post_width, hole_d, u_height, hole_offset_z, hole_spacing, front_panel_undersizing, front_panel_edge_radius)
-// Public — generates a variable-height blanking front panel, optionally with an embossed or engraved logo/image.
+// generates a variable-height blanking front panel, optionally with an embossed or engraved logo/image.
 // u_size: panel height in U units (can be fractional, e.g. 1.5). holes: mounting holes per side (2, 3, 4, or 6).
 // import_file: path to SVG or STL file. import_type: "svg", "stl", or "none". import_mode: "emboss" or "engrave".
 // All rack dimension parameters have defaults matching the 330mm rack standard.
@@ -358,6 +414,13 @@ module blank_variable_front_panel(
     import_offset_x         = 0,
     import_offset_z         = 0,
     import_mode             = "emboss",
+    panel_text              = "",
+    panel_text_font         = "Liberation Mono:style=Bold",
+    panel_text_size         = 10,
+    panel_text_depth        = 0.8,
+    panel_text_offset_x     = 0,
+    panel_text_offset_z     = 0,
+    panel_text_mode         = "engrave",
     front_panel_thickness   = 3.0,
     rack_width              = 330,
     post_width              = 15.875,
@@ -403,6 +466,20 @@ module blank_variable_front_panel(
                     front_panel_undersizing
                 );
             }
+            if (panel_text_mode != "engrave") {
+                variable_front_panel_face_text(
+                    panel_height,
+                    panel_text,
+                    panel_text_font,
+                    panel_text_size,
+                    panel_text_depth,
+                    panel_text_offset_x,
+                    panel_text_offset_z,
+                    panel_text_mode,
+                    rack_width,
+                    front_panel_undersizing
+                );
+            }
         }
 
         translate([0, -1, 0]) {
@@ -429,6 +506,21 @@ module blank_variable_front_panel(
                 import_offset_x,
                 import_offset_z,
                 import_mode,
+                rack_width,
+                front_panel_undersizing
+            );
+        }
+
+        if (panel_text_mode == "engrave") {
+            variable_front_panel_face_text(
+                panel_height,
+                panel_text,
+                panel_text_font,
+                panel_text_size,
+                panel_text_depth,
+                panel_text_offset_x,
+                panel_text_offset_z,
+                panel_text_mode,
                 rack_width,
                 front_panel_undersizing
             );
@@ -527,6 +619,13 @@ module blank_variable_tray(
         import_offset_x,
         import_offset_z,
         import_mode,
+        panel_text,
+        panel_text_font,
+        panel_text_size,
+        panel_text_depth,
+        panel_text_offset_x,
+        panel_text_offset_z,
+        panel_text_mode,
         front_panel_thickness,
         rack_width,
         post_width,
