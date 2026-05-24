@@ -7,6 +7,13 @@ So, what is this actually?
 Simply put, I wanted a bigger rack that I could print on my Creality K2plus (350x350x350 build volume) and I wanted it to be 100% in OpenSCAD. Because that's the only software I can use. Fusion 360 is good, but eats cpu, doesn't work on Linux, and worst of all, they changed the licence and features available for hobbyists.
 What about FreeCAD? Yeah, FreeCAD is getting good now, but I just didn't want to learn it, because that would require starting out with the spec nailed down before even creating a design. It wasn't.
 
+One of the biggest reasons for creating it was also anger. I printed the parts for a 10" mini rack because I was prepared to make do. But the design was such that to remove a tray, you need to dismantle the whole thing, because of the way the trays are secured at the rear.
+
+THIS PIC IS NOT MY DESIGN, but I did print it, then got angry about it:
+
+![angry rack]("angry rack.png")
+
+
 Anyway, if you like the design, you're welcome to buy me a coffee:
 
 <a href="https://buymeacoffee.com/amead77"><img src="bmc-button.png" alt="Buy Me a Coffee" width="50%" /></a>
