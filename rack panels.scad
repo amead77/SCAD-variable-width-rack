@@ -17,7 +17,7 @@ front panel and can be used with or without the tray body. It is far more custom
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/24r02";
+version = "v0.1-2026/05/25r00";
 */
 
 
@@ -42,7 +42,7 @@ module front_panel_hole_at(
 module front_panel_2U_holes(
     holes = 4,
     post_width = 15.875,
-    rack_width = 330,
+    rack_width = 350,
     u_height = 44.5,
     hole_offset_z = 12.7,
     hole_spacing = 15.875,
@@ -91,7 +91,7 @@ module front_panel_2U_holes(
 // hole_d, hole_offset_z, hole_spacing: hole geometry.
 module blank_1U_front_panel(
     holes = 2,
-    rack_width = 330,
+    rack_width = 350,
     post_width = 15.875,
     u_height = 44.5,
     front_panel_thickness = 3.0,
@@ -150,7 +150,7 @@ module blank_1U_front_panel(
 // Params are the same as blank_1U_front_panel, with holes expected as 2/4/6 per side.
 module blank_2U_front_panel(
     holes = 4,
-    rack_width = 330,
+    rack_width = 350,
     post_width = 15.875,
     u_height = 44.5,
     front_panel_thickness = 3.0,
@@ -200,7 +200,7 @@ module blank_2U_front_panel(
 // front_panel_undersizing, front_panel_edge_radius: fit and edge shaping.
 // hole_d, hole_offset_z: hole geometry; this module uses a fixed 2-hole-per-side 0.5U pattern.
 module blank_05U_front_panel(
-    rack_width = 330,
+    rack_width = 350,
     post_width = 15.875,
     front_panel_thickness = 3.0,
     front_panel_undersizing = 0.1,

@@ -2,6 +2,7 @@
 
 No longer are you stuck with 10" rack or a 19" rack you can't print parts for! What's more, you can actually have supported trays :)
 
+Normal defaults are 350mm wide panel, 330mm deep tray. (this can be changed)
 
 So, what is this actually?
 Simply put, I wanted a bigger rack that I could print on my Creality K2plus (350x350x350 build volume) and I wanted it to be 100% in OpenSCAD. Because that's the only software I can use. Fusion 360 is good, but eats cpu, doesn't work on Linux, and worst of all, they changed the licence and features available for hobbyists.
