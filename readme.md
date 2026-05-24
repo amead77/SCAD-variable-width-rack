@@ -123,9 +123,19 @@ Anyway, it has:
 
 ![mini-itx](mini-itx-tray.png)
 
-This picture is the mini-itx tray, but I chopped it to a tiny piece in the slicer, I highly recommend making test pieces before commiting to 12hour+ prints.
 
-![test print](20250524_191530.jpg)
+This picture is the mini-itx tray, but I chopped it to a tiny piece in the slicer, I highly recommend making test pieces before commiting to 12hour+ prints. Even create 1U post with sliders and a part tray to check clearances. Everyone's printer is different.
+
+![test print](20260524_191530.jpg)
+
+When I fix my printer I will print the mini-itx tray like the following picture, note that:
+- I chop out parts to reduce filament usage.
+- angle the cutouts so they don't require supports.
+- print face down so the support rails don't require supports.
+- print face down so my text on the front panel gets printed in one hit on a single layer, rather than changing filament many many times.
+- created a back panel, but only small and use a chamfer. This is to create a reinforcement that doesn't require supports to print
+
+![slicer](slicer.png)
 
 
 
