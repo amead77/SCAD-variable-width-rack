@@ -75,7 +75,7 @@ I highly recommend creating with top/bottom headers, double-wide, cones and side
 
 ### Trays
 
-Trays are available in fixed sizes (1U, 2U) or a fully variable size. The variable tray accepts a `tray_back_panel` flag to add a rear panel, turning it into a drawer. Trays slide into the post's rear slot for easy removal. Trays also don't need to be full length, defining 0.25 will make a quarter depth tray (y axis)
+Trays are available in fully variable size. The variable tray accepts a `tray_back_panel` flag to add a rear panel, turning it into a drawer. Trays slide into the post's rear slot for easy removal. Trays also don't need to be full length, defining 0.25 will make a quarter depth tray (y axis)
 
 Look at "blank variable tray.scad" to find the tray code, but "intel dg45fg.scad" shows it being used.
 More info on how to use later.
@@ -134,17 +134,18 @@ This picture is the mini-itx tray, but I chopped it to a tiny piece in the slice
 ![test print](20260524_191530.jpg)
 
 When I fix my printer I will print the mini-itx tray like the following picture, note that:
-- I chop out parts to reduce filament usage.
+- I chop out parts to reduce filament usage. I do the chopping in the slicer by adding negative volumes.
 - angle the cutouts so they don't require supports.
 - print face down so the support rails don't require supports.
 - print face down so my text on the front panel gets printed in one hit on a single layer, rather than changing filament many many times.
-- created a back panel, but only small and use a chamfer. This is to create a reinforcement that doesn't require supports to print
+- created a back panel, but only small and use a 30 degree chamfer. This is to create a reinforcement that doesn't require supports to print
+- Doing it this way means only the PSU mount and mini-itx screw holes need supports.
 
 ![slicer](slicer.png)
 
 
 
-The file "ugreen um106x.scad" is another one I use, and have a photo of in use.
+The file "ugreen um106x.scad" is another one I use (x2), and have a photo of in use.
 This was created to:
 - have my 5 port switch
 - 4x keystones
@@ -184,7 +185,7 @@ This was created to:
 
 ### Hardware
 
-The design is based on **M6 screws** with **M6 hex nuts** (10mm across-flats, 5mm thick). Adjust `hole_clearance`, `hole_d`, `nut_diameter`, and `nut_thickness` if you want to use different fasteners.
+The design is based on **M6 screws** with **M6 hex nuts** (10mm across-flats, 5mm thick). Adjust `hole_clearance`, `hole_d`, `nut_diameter`, and `nut_thickness` if you want to use different fasteners. See the comments in the posts and trays functions.
 
 ---
 
