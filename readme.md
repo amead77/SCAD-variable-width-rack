@@ -9,9 +9,7 @@ What about FreeCAD? Yeah, FreeCAD is getting good now, but I just didn't want to
 
 One of the biggest reasons for creating it was also anger. I printed the parts for a 10" mini rack because I was prepared to make do. But the design was such that to remove a tray, you need to dismantle the whole thing, because of the way the trays are secured at the rear.
 
-THIS PIC IS NOT MY DESIGN, but I did print it, then got angry about it:
-
-![angry rack](angry-rack.png)
+There is a picture of the mini-rack that made me angry at the bottom of this readme.
 
 
 Anyway, if you like the design, you're welcome to buy me a coffee:
@@ -221,3 +219,10 @@ In simpler terms, you can remix and do whatever you want with making parts or mo
 
 
 &copy; 2026 Adam Mead
+
+
+
+## THIS PIC IS NOT MY DESIGN, but I did print it and this is what it produced. It is the reason I made my design:
+
+![angry rack](angry-rack.png)
+
