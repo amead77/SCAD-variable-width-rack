@@ -1,7 +1,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/01r03";
+version = "v0.1-2026/06/01r04";
 */
 
 
