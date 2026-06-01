@@ -2,7 +2,7 @@
 
 ---
 
-## Definitions (`rack defines.scad`)
+## Definitions (`parts/rack defines.scad`)
 
 These are the global defaults. Many can be overridden in `rack parts.scad` or passed directly as function parameters.
 
@@ -198,7 +198,7 @@ blank_variable_front_panel(
 Examples:
 ```scad
 blank_variable_front_panel(u_size=1.5, holes=2);
-blank_variable_front_panel(u_size=2, holes=4, import_file="logo.svg", import_type="svg", import_mode="engrave");
+blank_variable_front_panel(u_size=2, holes=4, import_file="images-logo/raspberry-pi.svg", import_type="svg", import_mode="engrave");
 ```
 
 ---
@@ -261,7 +261,7 @@ Examples:
 ```scad
 blank_variable_tray(panel_u_size=1, tray_u_size=0.75, holes=2);
 blank_variable_tray(panel_u_size=1, tray_u_size=0.75, tray_depth_scale=0.5, back_panel=1);
-blank_variable_tray(panel_u_size=2, tray_u_size=1.5, holes=4, import_file="logo.svg", import_type="svg", import_mode="emboss");
+blank_variable_tray(panel_u_size=2, tray_u_size=1.5, holes=4, import_file="images-logo/raspberry-pi.svg", import_type="svg", import_mode="emboss");
 ```
 
 ---

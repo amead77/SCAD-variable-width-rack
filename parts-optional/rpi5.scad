@@ -4,14 +4,14 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/15r04";
+version = "v0.1-2026/06/01r00";
 */
 
 
 rpi5_screw_hole_diameter = 2.7;
 
 
-include <blank variable tray.scad>;
+include <../parts/blank variable tray.scad>;
 include <keystone panel.scad>;
 
 

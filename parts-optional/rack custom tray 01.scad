@@ -1,9 +1,9 @@
-include <blank variable tray.scad>;
+include <../parts/blank variable tray.scad>;
 
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/15r00";
+version = "v0.1-2026/06/01r00";
 */
 
 
@@ -88,7 +88,7 @@ module custom_tray_01(
     front_panel_thickness = 3.0,
     front_panel_undersizing = 0.1,
     tray_thickness = 5.0,
-    import_file = "raspberry-pi.svg",
+    import_file = "../images-logo/raspberry-pi.svg",
     import_type = "svg",
     import_width = 16,
     import_height = 20,

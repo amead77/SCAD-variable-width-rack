@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/24r05";
+version = "v0.1-2026/06/01r00";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -400,7 +400,7 @@ module variable_tray_front_gusset(
 // All rack dimension parameters have defaults matching the 330mm rack standard.
 // e.g. blank_variable_front_panel(u_size=1.5, holes=2);
 // e.g. blank_variable_front_panel(u_size=1, front_panel_thickness=20, rack_width=330, u_height=44.5);
-// e.g. blank_variable_front_panel(u_size=2, holes=4, import_file="logo.svg", import_type="svg", import_mode="emboss");
+// e.g. blank_variable_front_panel(u_size=2, holes=4, import_file="../images-logo/raspberry-pi.svg", import_type="svg", import_mode="emboss");
 module blank_variable_front_panel(
     u_size                  = 1,
     front_panel_top_reinforce_mm     = 1,
@@ -539,7 +539,7 @@ module blank_variable_front_panel(
 // Accepts the same import_* parameters as blank_variable_front_panel() for emboss/engrave graphics.
 // e.g. blank_variable_tray(panel_u_size=1, tray_u_size=0.75, tray_depth_scale=0.5, holes=2, back_panel=1);
 // e.g. blank_variable_tray(panel_u_size=1, tray_u_size=0.5, tray_depth_scale=0.5, holes=4, tray_thickness=4.0, front_panel_thickness=20.0);
-// e.g. blank_variable_tray(panel_u_size=2, tray_u_size=1.5, tray_depth_scale=1, holes=4, import_file="logo.svg", import_type="svg");
+// e.g. blank_variable_tray(panel_u_size=2, tray_u_size=1.5, tray_depth_scale=1, holes=4, import_file="../images-logo/raspberry-pi.svg", import_type="svg");
 module blank_variable_tray(
     mode                    = "tray", //"tray" or "panel"
     panel_u_size            = 1, // front panel height in U
