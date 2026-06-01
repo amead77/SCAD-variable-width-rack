@@ -1,7 +1,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/01r04";
+version = "v0.1-2026/06/01r15";
 */
 
 
@@ -186,7 +186,7 @@ module rail_1u_holes_segment(
     hole_spacing = 15.875,
     hole_d = 6.3,
     nut_thickness = 6.3,
-    nut_diameter_point = 10.3 / cos(30)
+    nut_diameter_across_flats = 10.3
 ) {
     difference() {
         post(
@@ -200,11 +200,11 @@ module rail_1u_holes_segment(
             hole_spacing = hole_spacing
         );
         holes(holes = 3, post_width = post_width, hole_offset_z = hole_offset_z, hole_spacing = hole_spacing, hole_d = hole_d);
-        nut_holes(holes = 3, post_width = post_width, nut_thickness = nut_thickness, nut_diameter_point = nut_diameter_point, hole_offset_z = hole_offset_z, hole_spacing = hole_spacing);
+        nut_holes(holes = 3, post_width = post_width, nut_thickness = nut_thickness, nut_diameter_across_flats = nut_diameter_across_flats, hole_offset_z = hole_offset_z, hole_spacing = hole_spacing);
         if (doublewide == 1) {
             translate([post_width, 0, 0]) {
                 holes(holes = 3, post_width = post_width, hole_offset_z = hole_offset_z, hole_spacing = hole_spacing, hole_d = hole_d);
-                nut_holes(holes = 3, post_width = post_width, nut_thickness = nut_thickness, nut_diameter_point = nut_diameter_point, hole_offset_z = hole_offset_z, hole_spacing = hole_spacing);
+                nut_holes(holes = 3, post_width = post_width, nut_thickness = nut_thickness, nut_diameter_across_flats = nut_diameter_across_flats, hole_offset_z = hole_offset_z, hole_spacing = hole_spacing);
             }
         }
     }
@@ -237,8 +237,10 @@ module footer_hole_and_nut(
     hole_offset_z = 12.7,
     hole_d = 6.3,
     nut_thickness = 6.3,
-    nut_diameter_point = 10.3 / cos(30)
+    nut_diameter_across_flats = 10.3
 ) {
+    nut_diameter_point = nut_diameter_across_flats / cos(30);
+
     translate([post_width / 2, post_width / 2, -(hole_offset_z / 2)]) {
         rotate([90, 0, 0]) {
             cylinder(d = hole_d, h = post_width, center = true, $fn = 32);
@@ -283,8 +285,10 @@ module header_hole_and_nut(
     hole_offset_z = 12.7,
     hole_d = 6.3,
     nut_thickness = 6.3,
-    nut_diameter_point = 10.3 / cos(30)
+    nut_diameter_across_flats = 10.3
 ) {
+    nut_diameter_point = nut_diameter_across_flats / cos(30);
+
     translate([post_width / 2, post_width / 2, u_height * post_height + (hole_offset_z / 2)]) {
         rotate([90, 0, 0]) {
             cylinder(d = hole_d, h = post_width, center = true, $fn = 32);
@@ -305,8 +309,10 @@ module base_joiner_hole_and_nut(
     hole_offset_z = 12.7,
     hole_d = 6.3,
     nut_thickness = 6.3,
-    nut_diameter_point = 10.3 / cos(30)
+    nut_diameter_across_flats = 10.3
 ) {
+    nut_diameter_point = nut_diameter_across_flats / cos(30);
+
     translate([post_width / 2, post_width / 2, hole_offset_z / 2]) {
         rotate([90, 0, 0]) {
             cylinder(d = hole_d, h = post_width, center = true, $fn = 32);
@@ -330,7 +336,7 @@ module base_joiner_block(
     hole_offset_z = 12.7,
     hole_d = 6.3,
     nut_thickness = 6.3,
-    nut_diameter_point = 10.3 / cos(30)
+    nut_diameter_across_flats = 10.3
 ) {
     translate([0, 0, -(footer_height * 2)]) {
         difference() {
@@ -340,7 +346,7 @@ module base_joiner_block(
                 hole_offset_z = hole_offset_z,
                 hole_d = hole_d,
                 nut_thickness = nut_thickness,
-                nut_diameter_point = nut_diameter_point
+                nut_diameter_across_flats = nut_diameter_across_flats
             );
         }
     }
@@ -353,7 +359,7 @@ module base_joiner_block(
                     hole_offset_z = hole_offset_z,
                     hole_d = hole_d,
                     nut_thickness = nut_thickness,
-                    nut_diameter_point = nut_diameter_point
+                    nut_diameter_across_flats = nut_diameter_across_flats
                 );
             }
         }
@@ -376,7 +382,7 @@ module base_joiner_core(
     hole_offset_z = 12.7,
     hole_d = 6.3,
     nut_thickness = 6.3,
-    nut_diameter_point = 10.3 / cos(30),
+    nut_diameter_across_flats = 10.3,
     post_cone_base_diameter = 10.0,
     post_cone_top_diameter = 4.0,
     post_cone_height = 2.0,
@@ -391,7 +397,7 @@ module base_joiner_core(
             hole_offset_z = hole_offset_z,
             hole_d = hole_d,
             nut_thickness = nut_thickness,
-            nut_diameter_point = nut_diameter_point
+            nut_diameter_across_flats = nut_diameter_across_flats
         );
         translate([0, rack_width - post_width, 0]) {
             if (doublewide == 1) {
@@ -404,7 +410,7 @@ module base_joiner_core(
                             hole_offset_z = hole_offset_z,
                             hole_d = hole_d,
                             nut_thickness = nut_thickness,
-                            nut_diameter_point = nut_diameter_point
+                            nut_diameter_across_flats = nut_diameter_across_flats
                         );
                     }
                 }
@@ -418,7 +424,7 @@ module base_joiner_core(
                             hole_offset_z = hole_offset_z,
                             hole_d = hole_d,
                             nut_thickness = nut_thickness,
-                            nut_diameter_point = nut_diameter_point
+                            nut_diameter_across_flats = nut_diameter_across_flats
                         );
                     }
                 }
@@ -433,7 +439,7 @@ module base_joiner_core(
                     hole_offset_z = hole_offset_z,
                     hole_d = hole_d,
                     nut_thickness = nut_thickness,
-                    nut_diameter_point = nut_diameter_point
+                    nut_diameter_across_flats = nut_diameter_across_flats
                 );
             }
         } else {
@@ -444,7 +450,7 @@ module base_joiner_core(
                 hole_offset_z = hole_offset_z,
                 hole_d = hole_d,
                 nut_thickness = nut_thickness,
-                nut_diameter_point = nut_diameter_point
+                nut_diameter_across_flats = nut_diameter_across_flats
             );
         }
 
@@ -458,7 +464,7 @@ module base_joiner_core(
                         hole_offset_z = hole_offset_z,
                         hole_d = hole_d,
                         nut_thickness = nut_thickness,
-                        nut_diameter_point = nut_diameter_point
+                        nut_diameter_across_flats = nut_diameter_across_flats
                     );
                 }
             }
@@ -530,7 +536,7 @@ module base_joiner(
     hole_offset_z = 12.7,                   // Vertical position of the joiner mounting hole centre.
     hole_d = 6.3,                           // Diameter of the joiner mounting screw holes.
     nut_thickness = 6.3,                    // Depth of the nut traps for the mounting fasteners.
-    nut_diameter_point = 10.3 / cos(30),    // Point-to-point diameter of the hex nut trap.
+    nut_diameter_across_flats = 10.3,       // Across-flats size of the hex nut trap.
     post_cone_base_diameter = 10.0,         // Diameter at the base of the alignment cone/socket.
     post_cone_top_diameter = 4.0,           // Diameter at the tip of the alignment cone/socket.
     post_cone_height = 2.0,                 // Height/depth of the alignment cone/socket.
@@ -551,7 +557,7 @@ module base_joiner(
     hole_offset_z = 12.7,                   // Vertical position of the joiner mounting hole centre.
     hole_d = 6.3,                           // Diameter of the joiner mounting screw holes.
     nut_thickness = 6.3,                    // Depth of the nut traps for the mounting fasteners.
-    nut_diameter_point = 10.3 / cos(30),    // Point-to-point diameter of the hex nut trap.
+    nut_diameter_across_flats = 10.3,       // Across-flats size of the hex nut trap.
     post_cone_base_diameter = 10.0,         // Diameter at the base of the alignment cone/socket.
     post_cone_top_diameter = 4.0,           // Diameter at the tip of the alignment cone/socket.
     post_cone_height = 2.0,                 // Height/depth of the alignment cone/socket.
@@ -570,7 +576,7 @@ module base_joiner(
             hole_offset_z = hole_offset_z,
             hole_d = hole_d,
             nut_thickness = nut_thickness,
-            nut_diameter_point = nut_diameter_point,
+            nut_diameter_across_flats = nut_diameter_across_flats,
             post_cone_base_diameter = post_cone_base_diameter,
             post_cone_top_diameter = post_cone_top_diameter,
             post_cone_height = post_cone_height,
@@ -591,7 +597,7 @@ module base_joiner(
                     hole_offset_z = hole_offset_z,
                     hole_d = hole_d,
                     nut_thickness = nut_thickness,
-                    nut_diameter_point = nut_diameter_point,
+                    nut_diameter_across_flats = nut_diameter_across_flats,
                     post_cone_base_diameter = post_cone_base_diameter,
                     post_cone_top_diameter = post_cone_top_diameter,
                     post_cone_height = post_cone_height,
@@ -654,7 +660,7 @@ module rail_1u_holes(
     hole_offset_z = 12.7,                   // Height from the bottom of a 1U segment to the first hole centre.
     hole_spacing = 15.875,                  // Vertical spacing between hole centres within a 1U segment.
     nut_thickness = 6.3,                    // Depth of the rear nut traps.
-    nut_diameter_point = 10.3 / cos(30),    // Point-to-point diameter of the hex nut trap.
+    nut_diameter_across_flats = 10.3,       // Across-flats size of the hex nut trap.
     post_slide_width = 3.0,                 // Width of the side slide rail.
     post_slide_cutout = 3.2,                // Size of the slide cutouts in each 1U section.
     footer_height = 12.7,                   // Height of the optional footer block.
@@ -679,7 +685,7 @@ module rail_1u_holes(
     hole_offset_z = 12.7,                   // Height from the bottom of a 1U segment to the first hole centre.
     hole_spacing = 15.875,                  // Vertical spacing between hole centres within a 1U segment.
     nut_thickness = 6.3,                    // Depth of the rear nut traps.
-    nut_diameter_point = 10.3 / cos(30),    // Point-to-point diameter of the hex nut trap.
+    nut_diameter_across_flats = 10.3,       // Across-flats size of the hex nut trap.
     post_slide_width = 3.0,                 // Width of the side slide rail.
     post_slide_cutout = 3.2,                // Size of the slide cutouts in each 1U section.
     footer_height = 12.7,                   // Height of the optional footer block.
@@ -704,7 +710,7 @@ module rail_1u_holes(
                         hole_spacing = hole_spacing,
                         hole_d = hole_d,
                         nut_thickness = nut_thickness,
-                        nut_diameter_point = nut_diameter_point
+                        nut_diameter_across_flats = nut_diameter_across_flats
                     );
                 }
             }
@@ -745,7 +751,7 @@ module rail_1u_holes(
                 hole_offset_z = hole_offset_z,
                 hole_d = hole_d,
                 nut_thickness = nut_thickness,
-                nut_diameter_point = nut_diameter_point
+                nut_diameter_across_flats = nut_diameter_across_flats
             );
             if (doublewide == 1) {
                 translate([post_width, 0, 0]) {
@@ -756,7 +762,7 @@ module rail_1u_holes(
                         hole_offset_z = hole_offset_z,
                         hole_d = hole_d,
                         nut_thickness = nut_thickness,
-                        nut_diameter_point = nut_diameter_point
+                        nut_diameter_across_flats = nut_diameter_across_flats
                     );
                 }
             }
@@ -768,7 +774,7 @@ module rail_1u_holes(
                 hole_offset_z = hole_offset_z,
                 hole_d = hole_d,
                 nut_thickness = nut_thickness,
-                nut_diameter_point = nut_diameter_point
+                nut_diameter_across_flats = nut_diameter_across_flats
             );
             if (doublewide == 1) {
                 translate([post_width, 0, 0]) {
@@ -777,7 +783,7 @@ module rail_1u_holes(
                         hole_offset_z = hole_offset_z,
                         hole_d = hole_d,
                         nut_thickness = nut_thickness,
-                        nut_diameter_point = nut_diameter_point
+                        nut_diameter_across_flats = nut_diameter_across_flats
                     );
                 }
             }
@@ -845,10 +851,13 @@ module nut_holes(
     holes = 2,
     post_width = 15.875,
     nut_thickness = 6.3,
-    nut_diameter_point = 10.3 / cos(30),
+    nut_diameter_across_flats = 10.3,
     hole_offset_z = 12.7,
     hole_spacing = 15.875
 ) {
+    
+    nut_diameter_point = nut_diameter_across_flats / cos(30);
+    
     translate([post_width / 2, post_width - (nut_thickness / 2), hole_offset_z / 2]) {
         rotate([90, 0, 0]) {
             cylinder(d = nut_diameter_point, h = nut_thickness, center = true, $fn = 6);
