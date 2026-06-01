@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/01r01";
+version = "v0.1-2026/06/01r05";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -529,17 +529,66 @@ module blank_variable_front_panel(
 }
 
 
-// blank_variable_tray(panel_u_size, tray_u_size, tray_depth_scale, holes, import_file, import_type, import_width, import_height, import_depth, import_offset_x, import_offset_z, import_mode, side_support, side_support_back, tray_side_thickness, front_panel_thickness, side_support_thickness, back_panel, back_panel_thickness, tray_thickness, rack_width, post_width, hole_d, u_height, hole_offset_z, hole_spacing, front_panel_undersizing, front_panel_edge_radius, tray_post_clearance, post_slide_width, post_slide_cutout, hole_clearance)
-// Public — the main variable-size tray module.
-// panel_u_size: front panel height in U (can be fractional). tray_u_size: side/base height in U (defaults to panel_u_size).
-// tray_depth_scale: tray projection depth as a fraction of rack_width (1 = full depth, 0.25 = quarter depth).
-// holes: mounting holes per side (2, 3, 4, or 6). back_panel: 0=open tray, 1=add rear wall (makes a drawer). back_panel_height: rear wall height in U (defaults to tray_u_size).
-// side_support: 1=add front gussets when panel is taller than side wall.
-// All rack dimension parameters have defaults matching the 330mm rack standard.
-// Accepts the same import_* parameters as blank_variable_front_panel() for emboss/engrave graphics.
-// e.g. blank_variable_tray(panel_u_size=1, tray_u_size=0.75, tray_depth_scale=0.5, holes=2, back_panel=1);
-// e.g. blank_variable_tray(panel_u_size=1, tray_u_size=0.5, tray_depth_scale=0.5, holes=4, tray_thickness=4.0, front_panel_thickness=20.0);
-// e.g. blank_variable_tray(panel_u_size=2, tray_u_size=1.5, tray_depth_scale=1, holes=4, import_file="../images-logo/raspberry-pi.svg", import_type="svg");
+/*
+Create a configurable tray or blanking panel using the same variable front-panel
+geometry. This can build a plain panel, an open tray, or a tray with rear wall,
+side slides, text, imported artwork, front reinforcement lips, and front gussets
+depending on the options enabled.
+Calling with just blank_variable_tray(); will produce a default 1U tray for the
+standard rack dimensions. (default = 350mm wide, 330mm deep, 44.5mm U height, 
+15.875mm posts, etc.)
+-----
+module blank_variable_tray(
+    mode = "tray",                          // "tray" builds a tray, "panel" builds only the front panel.
+    panel_u_size = 1,                        // Front panel height in U, can be fractional.
+    front_panel_top_reinforce_mm = 0,        // Height of the top reinforcement lip behind the panel.
+    front_panel_bottom_reinforce_mm = 0,     // Height of the bottom reinforcement lip behind the panel.
+    tray_u_size = undef,                     // Tray side height in U; undef makes it match panel_u_size.
+    tray_depth_scale = 1,                    // Tray depth as a fraction of rack_depth.
+    holes = 2,                               // Mounting holes per side: typically 2, 3, 4, or 6.
+    import_file = "",                       // Optional SVG/STL/3MF artwork file for the front panel.
+    import_type = "none",                   // Artwork type: "svg", "stl", or "none".
+    import_width = 0,                        // Target width for imported artwork; 0 uses auto sizing.
+    import_height = 0,                       // Target height for imported artwork; 0 uses auto sizing.
+    import_depth = 0.8,                      // Emboss or engrave depth for imported artwork.
+    import_offset_x = 0,                     // X offset for imported artwork from panel centre.
+    import_offset_z = 0,                     // Z offset for imported artwork from panel centre.
+    import_mode = "emboss",                 // "emboss" raises the artwork, "engrave" cuts it in.
+    panel_text = "",                        // Optional text placed on the front panel.
+    panel_text_font = "Liberation Mono:style=Bold", // Font used for the front-panel text.
+    panel_text_size = 10,                    // Font size for the front-panel text.
+    panel_text_depth = 0.8,                  // Emboss or engrave depth for the front-panel text.
+    panel_text_offset_x = 0,                 // X offset for the text from panel centre.
+    panel_text_offset_z = 0,                 // Z offset for the text from panel centre.
+    panel_text_mode = "engrave",            // "emboss" or "engrave" for the panel text.
+    side_support = 1,                        // 1 adds front gussets when the panel is taller than the tray sides.
+    side_support_back = 40,                  // How far back the front gussets extend.
+    side_support_thickness = 2.0,            // Thickness of the front gussets.
+    tray_side_thickness = 2.0,               // Thickness of the tray side walls.
+    front_panel_thickness = 3.0,             // Thickness of the front panel face.
+    back_panel = 0,                          // 1 adds a rear wall, turning the tray into more of a drawer.
+    back_panel_thickness = 2.0,              // Thickness of the rear wall.
+    back_panel_height = 1.0,                 // Rear wall height in U.
+    back_panel_chamfer = 0.0,                // Chamfer amount on the front-top edge of the rear wall.
+    back_panel_chamfer_ang = 45.0,           // Chamfer angle for the rear wall.
+    tray_thickness = 5.0,                    // Thickness of the tray base.
+    rack_width = 350,                        // External rack width used to derive tray and panel width.
+    rack_depth = 330,                        // External rack depth used to derive tray depth.
+    post_width = 15.875,                     // Width of one rack post.
+    hole_d = 6.4,                            // Diameter of the panel mounting holes.
+    u_height = 44.5,                         // Height of one rack unit in mm.
+    hole_offset_z = 12.7,                    // Height from the bottom to the first hole centre.
+    hole_spacing = 15.875,                   // Vertical spacing between hole centres.
+    front_panel_undersizing = 0.1,           // Amount trimmed from panel edges for fit clearance.
+    front_panel_edge_radius = 2.0,           // Corner radius on the front panel.
+    tray_post_clearance = 0.5,               // Clearance gap between tray sides and posts.
+    tray_side_slides = 1,                    // 1 adds tray side slides that engage the rack posts.
+    post_slide_width = 3.0,                  // Width of the tray side slide tabs.
+    post_slide_cutout = 3.2,                 // Height of the matching slide cutout profile.
+    hole_clearance = 0.3                     // Clearance value used in slide and hole fit calculations.
+) {
+
+*/
 module blank_variable_tray(
     mode                    = "tray", //"tray" or "panel"
     panel_u_size            = 1, // front panel height in U

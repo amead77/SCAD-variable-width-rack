@@ -6,7 +6,7 @@ Normal defaults are 350mm wide panel, 330mm deep tray. (this can be changed)
 
 So, what is this actually?
 Simply put, I wanted a bigger rack that I could print on my Creality K2plus (350x350x350 build volume) and I wanted it to be 100% in OpenSCAD. Because that's the only software I can use. Fusion 360 is good, but eats cpu, doesn't work on Linux, and worst of all, they changed the licence and features available for hobbyists.
-What about FreeCAD? Yeah, FreeCAD is getting good now, but I just didn't want to learn it, because that would require starting out with the spec nailed down before even creating a design. It wasn't.
+What about FreeCAD? Yeah, FreeCAD is getting good now, but I just didn't want to learn it, because that would require starting out with the spec nailed down before even creating a design. It wasn't at the start.
 
 One of the biggest reasons for creating it was also anger. I printed the parts for a 10" mini rack because I was prepared to make do. But the design was such that to remove a tray, you need to dismantle the whole thing, because of the way the trays are secured at the rear.
 
@@ -21,6 +21,8 @@ Anyway, if you like the design, you're welcome to buy me a coffee:
 A quick overview
 
 Below is a screenshot of OpenSCAD with a assembly view. This is just to show an example of some of what is possible. Everything is customisable.
+
+For API reference see [functions.md](functions.md)
 
 I've numbered some arrows so you can see:
 
@@ -215,12 +217,11 @@ I really recommend having a look at the parts and how they are called, then look
 
 ## License
 
-This project is licensed under the **Creative Commons - Attribution (CC BY)** for all the parts and **Creative Commons - Attribution - Non-Commercial (CC BY-NC)** for the specifications.
-
-In simpler terms, you can remix and do whatever you want with making parts or modifying the parts, including selling. But the design spec, that is dimensions, guide slots on the posts, overall look, is the same terms but non-commercial use. This is specifically aimed at companies making racks using my design, not someone who makes some mods or addons and sells them. Even creating the whole thing as a print and selling is fine. Just not for manufacturers.
+This project is licensed under **Creative Commons - Attribution - Non-Commercial (CC BY-NC)**
 
 
 &copy; 2026 Adam Mead
+
 
 
 

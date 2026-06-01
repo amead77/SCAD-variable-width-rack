@@ -1,13 +1,11 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/15r06";
+version = "v0.1-2026/06/01r02";
 */
 
-// Standalone defaults are defined in each module signature.
-// The old rack defines file is no longer required here.
 
-
+/*
 // post(slide_side, doublewide)
 // Builds a single 1U post body with optional slide channel(s).
 // slide_side: 0=none, 1=left, 2=right, 3=both. doublewide: 0=single, 1=double.
@@ -15,6 +13,7 @@ version = "v0.1-2026/05/15r06";
 // post_slide_width/post_slide_cutout: side-slide rail width and slot cutout size.
 // hole_offset_z/hole_spacing: vertical hole/slot placement inside each U section.
 // e.g. post(slide_side=1, doublewide=0);
+*/
 module post(
     slide_side = 0,
     doublewide = 0,
@@ -508,33 +507,53 @@ module base_joiner_core(
 }
 
 
-// base_joiner(doublewide, bottom, supports, beam_thickness)
-// Horizontal joiner that connects a front and rear post pair via the footer/header.
-// doublewide: 0=single, 1=double post footprint.
-// bottom: 1=base/footer joiner, 0=top/header joiner.
-// supports: minimum 2 (front+rear); >2 adds equally-spaced intermediate support blocks.
-// beam_thickness: beam thickness in mm.
-// post_width/rack_width/footer_height/header_height: joiner body dimensions.
-// hole_offset_z/hole_d/nut_thickness/nut_diameter_point: mounting and nut trap geometry.
-// post_cone_base_diameter/post_cone_top_diameter/post_cone_height/post_top_cone_clearance: alignment cone geometry.
+/*
+Create a horizontal joiner that links front and rear posts together using the
+footer/header attachment blocks. This can generate either the lower/base joiner
+or the upper/top joiner, and can optionally add extra support positions for
+intermediate posts in wider multi-post builds.
+Calling with just base_joiner(); will produce a default single-width bottom
+joiner sized for a standard rack.
+-----
 module base_joiner(
-    doublewide = 0,
-    bottom = 1,
-    supports = 2,
-    beam_thickness = 5.0,
-    post_width = 15.875,
-    rack_width = 330,
-    rack_depth = 330,
-    footer_height = 12.7,
-    header_height = 12.7,
-    hole_offset_z = 12.7,
-    hole_d = 6.3,
-    nut_thickness = 6.3,
-    nut_diameter_point = 10.3 / cos(30),
-    post_cone_base_diameter = 10.0,
-    post_cone_top_diameter = 4.0,
-    post_cone_height = 2.0,
-    post_top_cone_clearance = 0.1
+    doublewide = 0,                         // 0 = single-width post mount, 1 = double-width post mount.
+    bottom = 1,                             // 1 = bottom/base joiner, 0 = top/header joiner.
+    supports = 2,                           // Number of support positions along the joiner, minimum 2.
+    beam_thickness = 5.0,                   // Thickness of the long beam that ties the support blocks together.
+    post_width = 15.875,                    // Width of one post footprint.
+    rack_width = 330,                       // Front-to-rear span used for the main joiner body layout.
+    rack_depth = 330,                       // Front-to-rear span used by the mirrored top joiner cone cut positions.
+    footer_height = 12.7,                   // Height of the footer-side mounting blocks.
+    header_height = 12.7,                   // Height of the header-side mounting blocks or cone sockets.
+    hole_offset_z = 12.7,                   // Vertical position of the joiner mounting hole centre.
+    hole_d = 6.3,                           // Diameter of the joiner mounting screw holes.
+    nut_thickness = 6.3,                    // Depth of the nut traps for the mounting fasteners.
+    nut_diameter_point = 10.3 / cos(30),    // Point-to-point diameter of the hex nut trap.
+    post_cone_base_diameter = 10.0,         // Diameter at the base of the alignment cone/socket.
+    post_cone_top_diameter = 4.0,           // Diameter at the tip of the alignment cone/socket.
+    post_cone_height = 2.0,                 // Height/depth of the alignment cone/socket.
+    post_top_cone_clearance = 0.1           // Clearance applied so cones fit into sockets.
+) {
+
+*/
+module base_joiner(
+    doublewide = 0,                         // 0 = single-width post mount, 1 = double-width post mount.
+    bottom = 1,                             // 1 = bottom/base joiner, 0 = top/header joiner.
+    supports = 2,                           // Number of support positions along the joiner, minimum 2.
+    beam_thickness = 5.0,                   // Thickness of the long beam that ties the support blocks together.
+    post_width = 15.875,                    // Width of one post footprint.
+    rack_width = 330,                       // Front-to-rear span used for the main joiner body layout.
+    rack_depth = 330,                       // Front-to-rear span used by the mirrored top joiner cone cut positions.
+    footer_height = 12.7,                   // Height of the footer-side mounting blocks.
+    header_height = 12.7,                   // Height of the header-side mounting blocks or cone sockets.
+    hole_offset_z = 12.7,                   // Vertical position of the joiner mounting hole centre.
+    hole_d = 6.3,                           // Diameter of the joiner mounting screw holes.
+    nut_thickness = 6.3,                    // Depth of the nut traps for the mounting fasteners.
+    nut_diameter_point = 10.3 / cos(30),    // Point-to-point diameter of the hex nut trap.
+    post_cone_base_diameter = 10.0,         // Diameter at the base of the alignment cone/socket.
+    post_cone_top_diameter = 4.0,           // Diameter at the tip of the alignment cone/socket.
+    post_cone_height = 2.0,                 // Height/depth of the alignment cone/socket.
+    post_top_cone_clearance = 0.1           // Clearance applied so cones fit into sockets.
 ) {
     if (bottom == 1) {
         base_joiner_core(
@@ -613,42 +632,60 @@ module base_joiner(
 }
 
 
-// rail_1u_holes(slide_side, doublewide, post_height, v_post_cones, include_footer, include_header)
-// Main public module — generates a complete post of post_height U units with holes, nut traps,
-// optional slide rails, optional footer/header blocks, and optional alignment cones.
-// slide_side: 0=none, 1=left, 2=right, 3=both.
-// doublewide: 0=single, 1=double post footprint.
-// post_height: post height in U units.
-// v_post_cones: 1 adds top cones and bottom sockets for stacking.
-// include_footer/include_header: 1 includes corresponding attachment blocks.
-// post_width/u_height: post envelope dimensions.
-// hole_d/hole_offset_z/hole_spacing: screw-hole geometry and vertical pattern.
-// nut_thickness/nut_diameter_point: nut trap dimensions.
-// post_slide_width/post_slide_cutout: slide rail dimensions.
-// footer_height/header_height: footer/header block heights.
-// post_cone_*: alignment cone and clearance dimensions.
+/*
+Create a complete rack post made from stacked 1U sections, with screw holes,
+rear nut traps, optional side slide rails, optional footer/header attachment
+blocks, and optional alignment cones for stacking or joiner location.
+Calling with just rail_1u_holes(slide_side = 0); will produce a default 3U
+single-width post with footer, header, and alignment cones enabled.
+-----
 module rail_1u_holes(
-    slide_side,
-    doublewide = 0,
-    post_height = 3,
-    v_post_cones = 1,
-    include_footer = 1,
-    include_header = 1,
-    post_width = 15.875,
-    u_height = 44.5,
-    hole_d = 6.3,
-    hole_offset_z = 12.7,
-    hole_spacing = 15.875,
-    nut_thickness = 6.3,
-    nut_diameter_point = 10.3 / cos(30),
-    post_slide_width = 3.0,
-    post_slide_cutout = 3.2,
-    footer_height = 12.7,
-    header_height = 12.7,
-    post_cone_base_diameter = 10.0,
-    post_cone_top_diameter = 4.0,
-    post_cone_height = 2.0,
-    post_top_cone_clearance = 0.1
+    slide_side,                             // 0 = none, 1 = left, 2 = right, 3 = both side rails.
+    doublewide = 0,                         // 0 = single-width post, 1 = double-width post.
+    post_height = 3,                        // Post height in U units.
+    v_post_cones = 1,                       // 1 = add top cones and bottom sockets, 0 = no cones.
+    include_footer = 1,                     // 1 = include the lower footer block.
+    include_header = 1,                     // 1 = include the upper header block.
+    post_width = 15.875,                    // Width/depth of one post section.
+    u_height = 44.5,                        // Height of one U section in mm.
+    hole_d = 6.3,                           // Diameter of the post mounting holes.
+    hole_offset_z = 12.7,                   // Height from the bottom of a 1U segment to the first hole centre.
+    hole_spacing = 15.875,                  // Vertical spacing between hole centres within a 1U segment.
+    nut_thickness = 6.3,                    // Depth of the rear nut traps.
+    nut_diameter_point = 10.3 / cos(30),    // Point-to-point diameter of the hex nut trap.
+    post_slide_width = 3.0,                 // Width of the side slide rail.
+    post_slide_cutout = 3.2,                // Size of the slide cutouts in each 1U section.
+    footer_height = 12.7,                   // Height of the optional footer block.
+    header_height = 12.7,                   // Height of the optional header block.
+    post_cone_base_diameter = 10.0,         // Diameter at the base of the alignment cone/socket.
+    post_cone_top_diameter = 4.0,           // Diameter at the tip of the alignment cone/socket.
+    post_cone_height = 2.0,                 // Height/depth of the alignment cone/socket.
+    post_top_cone_clearance = 0.1           // Clearance applied so cones fit into sockets.
+) {
+
+*/
+module rail_1u_holes(
+    slide_side,                             // 0 = none, 1 = left, 2 = right, 3 = both side rails.
+    doublewide = 0,                         // 0 = single-width post, 1 = double-width post.
+    post_height = 3,                        // Post height in U units.
+    v_post_cones = 1,                       // 1 = add top cones and bottom sockets, 0 = no cones.
+    include_footer = 1,                     // 1 = include the lower footer block.
+    include_header = 1,                     // 1 = include the upper header block.
+    post_width = 15.875,                    // Width/depth of one post section.
+    u_height = 44.5,                        // Height of one U section in mm.
+    hole_d = 6.3,                           // Diameter of the post mounting holes.
+    hole_offset_z = 12.7,                   // Height from the bottom of a 1U segment to the first hole centre.
+    hole_spacing = 15.875,                  // Vertical spacing between hole centres within a 1U segment.
+    nut_thickness = 6.3,                    // Depth of the rear nut traps.
+    nut_diameter_point = 10.3 / cos(30),    // Point-to-point diameter of the hex nut trap.
+    post_slide_width = 3.0,                 // Width of the side slide rail.
+    post_slide_cutout = 3.2,                // Size of the slide cutouts in each 1U section.
+    footer_height = 12.7,                   // Height of the optional footer block.
+    header_height = 12.7,                   // Height of the optional header block.
+    post_cone_base_diameter = 10.0,         // Diameter at the base of the alignment cone/socket.
+    post_cone_top_diameter = 4.0,           // Diameter at the tip of the alignment cone/socket.
+    post_cone_height = 2.0,                 // Height/depth of the alignment cone/socket.
+    post_top_cone_clearance = 0.1           // Clearance applied so cones fit into sockets.
 ) {
     difference() {
         union() {
@@ -833,7 +870,7 @@ module nut_holes(
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/15r06";
+version = "v0.1-2026/06/01r02";
 */
 
 

@@ -9,7 +9,7 @@ this is why double wide posts are useful, as the normal panels use the inner hol
 /*
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/06/01r01";
+version = "v0.1-2026/06/01r09";
 */
 
 
@@ -624,51 +624,103 @@ module side_panel_logo_mask(
         }
     }
 }
-
-
+/*
+Create a side panel with mounting lips and holes for a default=330mm 
+deep rack, with optional cutout patterns and a logo insert area. The 
+panel height is determined by the number of U units specified, and 
+the pattern and logo features can be customized or disabled as needed.
+Calling with just side_panel(); will produce a basic blank panel with 
+lips and holes sized for a 6U rack.
+-----
 module side_panel(
-    p_cv_panel_u_height = 6,
-    p_c_u_height = 44.5,
-    p_c_foot_add = 0,
-    p_c_head_add = 0,
-    p_c_panel_oversizing = 0.2,
-    p_cv_panel_depth = 330,
-    p_c_panel_thickness = 3,
-    p_c_lip_thickness = 3,
-    p_c_hole_clearance = 0.2,
-    p_cv_post_width = 15.875,
-    p_c_hole_offset_z = 12.7,
-    p_c_hole_spacing = 15.875,
-    p_c_front_panel_edge_radius = 2.0,
+    p_cv_panel_u_height = 6,                 // Panel height in U units.
+    p_c_u_height = 44.5,                     // Height of 1U in mm.
+    p_c_foot_add = 0,                        // Extra height added at the bottom.
+    p_c_head_add = 0,                        // Extra height added at the top.
+    p_c_panel_oversizing = 0.2,              // Extra depth added to improve fit tolerance.
+    p_cv_panel_depth = 330,                  // Main panel depth in mm.
+    p_c_panel_thickness = 3,                 // Thickness of the side panel body.
+    p_c_lip_thickness = 3,                   // Thickness for the front/rear mounting lips.
+    p_c_hole_clearance = 0.2,                // Extra clearance added to screw hole diameter.
+    p_cv_post_width = 15.875,                // Rack post width used to size lips and hole positions.
+    p_c_hole_offset_z = 12.7,                // Height from the bottom to the first hole centre.
+    p_c_hole_spacing = 15.875,               // Vertical spacing between mounting holes.
+    p_c_front_panel_edge_radius = 2.0,       // Radius on the lip edge corners.
 
-    p_c_pattern = "honeycomb",
-    p_c_pattern_margin = 20,
-    p_c_pattern_hole_dia = 20,
-    p_c_pattern_offset_y = 0,
-    p_c_pattern_offset_z = 0,
-    p_c_pattern_edge_offset_left = 1.3,
-    p_c_pattern_edge_offset_bottom = 1,
-    p_c_pattern_grid_layout = "offset",
-    p_c_pattern_slot_length = 50,
-    p_c_pattern_slot_width = 15,
-    p_c_pattern_slot_wall = 2,
-    p_c_pattern_slot_rounded = true,
-    p_c_pattern_slot_rotation = 45,
+    p_c_pattern = "honeycomb",              // Pattern type: [none, honeycomb, circles, squares, slots].
+    p_c_pattern_margin = 20,                 // Margin from panel edges before the cutout pattern starts.
+    p_c_pattern_hole_dia = 20,               // Size of the honeycomb/circle/square openings.
+    p_c_pattern_offset_y = 0,                // Pattern offset along the panel depth to fine-tune edge cropping.
+    p_c_pattern_offset_z = 0,                // Pattern offset along the panel height to fine-tune edge cropping.
+    p_c_pattern_edge_offset_left = 1.3,      // Controls whether depth-side cropping is biased toward the start edge.
+    p_c_pattern_edge_offset_bottom = 1,      // Controls whether height-side cropping is biased toward the bottom edge.
+    p_c_pattern_grid_layout = "offset",     // [inline, offset] Grid layout for circle/square/slot patterns.
+    p_c_pattern_slot_length = 50,            // Slot length when using the slot pattern.
+    p_c_pattern_slot_width = 15,             // Slot width when using the slot pattern.
+    p_c_pattern_slot_wall = 2,               // Material left between slot openings.
+    p_c_pattern_slot_rounded = true,         // Whether slot ends are rounded.
+    p_c_pattern_slot_rotation = 45,          // Rotation angle for slots in degrees.
 
-    p_c_side_panel_logo = false,
-    p_c_side_panel_logo_shape = "hexagon",
-    p_c_side_panel_logo_rotation = 60,
-    p_c_side_panel_logo_size = 100,
-    p_c_side_panel_logo_import_file = "",
-    p_c_side_panel_logo_import_width = 40,
-    p_c_side_panel_logo_import_height = 50,
-    p_c_side_panel_logo_import_rotation = [0, 0, 90],
-    p_c_side_panel_logo_import_ypos = 160,
-    p_c_side_panel_logo_import_zpos = 135,
-    p_c_side_panel_logo_ypos = -1,
-    p_c_side_panel_logo_zpos = -1,
-    p_c_side_panel_import_mode = "recessed",
-    p_c_side_panel_logo_depth = 1.0
+    p_c_side_panel_logo = false,             // Enable the logo insert/pocket feature.
+    p_c_side_panel_logo_shape = "hexagon",  // [square, circle, hexagon] Base shape behind the logo.
+    p_c_side_panel_logo_rotation = 60,       // Rotation applied to the base logo shape.
+    p_c_side_panel_logo_size = 100,          // Overall size of the logo base shape.
+    p_c_side_panel_logo_import_file = "",   // Optional imported SVG/PNG/STL/3MF for the logo artwork.
+    p_c_side_panel_logo_import_width = 40,   // Target width for the imported logo artwork.
+    p_c_side_panel_logo_import_height = 50,  // Target height for the imported logo artwork.
+    p_c_side_panel_logo_import_rotation = [0, 0, 90], // Rotation applied to the imported artwork.
+    p_c_side_panel_logo_import_ypos = 160,   // Depth position of the imported artwork within the logo shape.
+    p_c_side_panel_logo_import_zpos = 135,   // Height position of the imported artwork within the logo shape.
+    p_c_side_panel_logo_ypos = -1,           // Logo shape depth position; -1 centers it automatically.
+    p_c_side_panel_logo_zpos = -1,           // Logo shape height position; -1 centers it automatically.
+    p_c_side_panel_import_mode = "recessed", // [recessed, raised] Whether the imported logo is recessed or raised.
+    p_c_side_panel_logo_depth = 1.0          // Depth of the recess or height of the raised logo.
+) {
+
+*/
+module side_panel(
+    p_cv_panel_u_height = 6,                 // Panel height in U units.
+    p_c_u_height = 44.5,                     // Height of 1U in mm.
+    p_c_foot_add = 0,                        // Extra height added at the bottom.
+    p_c_head_add = 0,                        // Extra height added at the top.
+    p_c_panel_oversizing = 0.2,              // Extra depth added to improve fit tolerance.
+    p_cv_panel_depth = 330,                  // Main panel depth in mm.
+    p_c_panel_thickness = 3,                 // Thickness of the side panel body.
+    p_c_lip_thickness = 3,                   // Thickness for the front/rear mounting lips.
+    p_c_hole_clearance = 0.2,                // Extra clearance added to screw hole diameter.
+    p_cv_post_width = 15.875,                // Rack post width used to size lips and hole positions.
+    p_c_hole_offset_z = 12.7,                // Height from the bottom to the first hole centre.
+    p_c_hole_spacing = 15.875,               // Vertical spacing between mounting holes.
+    p_c_front_panel_edge_radius = 2.0,       // Radius on the lip edge corners.
+
+    p_c_pattern = "honeycomb",              // Pattern type: [none, honeycomb, circles, squares, slots].
+    p_c_pattern_margin = 20,                 // Margin from panel edges before the cutout pattern starts.
+    p_c_pattern_hole_dia = 20,               // Size of the honeycomb/circle/square openings.
+    p_c_pattern_offset_y = 0,                // Pattern offset along the panel depth to fine-tune edge cropping.
+    p_c_pattern_offset_z = 0,                // Pattern offset along the panel height to fine-tune edge cropping.
+    p_c_pattern_edge_offset_left = 1.3,      // Controls whether depth-side cropping is biased toward the start edge.
+    p_c_pattern_edge_offset_bottom = 1,      // Controls whether height-side cropping is biased toward the bottom edge.
+    p_c_pattern_grid_layout = "offset",     // [inline, offset] Grid layout for circle/square/slot patterns.
+    p_c_pattern_slot_length = 50,            // Slot length when using the slot pattern.
+    p_c_pattern_slot_width = 15,             // Slot width when using the slot pattern.
+    p_c_pattern_slot_wall = 2,               // Material left between slot openings.
+    p_c_pattern_slot_rounded = true,         // Whether slot ends are rounded.
+    p_c_pattern_slot_rotation = 45,          // Rotation angle for slots in degrees.
+
+    p_c_side_panel_logo = false,             // Enable the logo insert/pocket feature.
+    p_c_side_panel_logo_shape = "hexagon",  // [square, circle, hexagon] Base shape behind the logo.
+    p_c_side_panel_logo_rotation = 60,       // Rotation applied to the base logo shape.
+    p_c_side_panel_logo_size = 100,          // Overall size of the logo base shape.
+    p_c_side_panel_logo_import_file = "",   // Optional imported SVG/PNG/STL/3MF for the logo artwork.
+    p_c_side_panel_logo_import_width = 40,   // Target width for the imported logo artwork.
+    p_c_side_panel_logo_import_height = 50,  // Target height for the imported logo artwork.
+    p_c_side_panel_logo_import_rotation = [0, 0, 90], // Rotation applied to the imported artwork.
+    p_c_side_panel_logo_import_ypos = 160,   // Depth position of the imported artwork within the logo shape.
+    p_c_side_panel_logo_import_zpos = 135,   // Height position of the imported artwork within the logo shape.
+    p_c_side_panel_logo_ypos = -1,           // Logo shape depth position; -1 centers it automatically.
+    p_c_side_panel_logo_zpos = -1,           // Logo shape height position; -1 centers it automatically.
+    p_c_side_panel_import_mode = "recessed", // [recessed, raised] Whether the imported logo is recessed or raised.
+    p_c_side_panel_logo_depth = 1.0          // Depth of the recess or height of the raised logo.
 ) {
     // Derived values computed directly from parameters.
     c_panel_height = (p_cv_panel_u_height * p_c_u_height) + p_c_foot_add + p_c_head_add;

@@ -17,7 +17,7 @@ front panel and can be used with or without the tray body. It is far more custom
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/25r00";
+version = "v0.1-2026/06/01r02";
 */
 
 
@@ -38,7 +38,7 @@ module front_panel_hole_at(
 
 
 // front_panel_2U_holes(holes, post_width, rack_width, u_height, hole_offset_z, hole_spacing, hole_d)
-// Internal helper — subtracts the correct pattern of screw holes for a 2U front panel.
+// Internal helper — subtracts the hole layout for a 2U panel based on 2, 4, or 6 holes per side.
 module front_panel_2U_holes(
     holes = 4,
     post_width = 15.875,
@@ -80,26 +80,37 @@ module front_panel_2U_holes(
     }
 }
 
-
-// blank_1U_front_panel(...)
-// Public — generates a 1U blanking front panel.
-// Params:
-// holes: holes per side (2/3/4/6). rack_width: total panel width. post_width: rail post width.
-// u_height: 1U height. front_panel_thickness: panel depth (Y).
-// front_panel_undersizing: fit undersize amount applied on X and Z edges.
-// front_panel_edge_radius: corner radius; 0 for square edges.
-// hole_d, hole_offset_z, hole_spacing: hole geometry.
+/*
+Create a fixed-size 1U blanking panel with the standard rack hole pattern.
+This is the simple panel generator for a single rack unit when you do not need
+the extra flexibility of the variable front-panel module.
+Calling with just blank_1U_front_panel(); will produce a default 1U blank panel.
+-----
 module blank_1U_front_panel(
-    holes = 2,
-    rack_width = 350,
-    post_width = 15.875,
-    u_height = 44.5,
-    front_panel_thickness = 3.0,
-    front_panel_undersizing = 0.1,
-    front_panel_edge_radius = 2.0,
-    hole_d = 6.3,
-    hole_offset_z = 12.7,
-    hole_spacing = 15.875
+    holes = 2,                              // Number of mounting holes per side: typically 2, 3, 4, or 6.
+    rack_width = 350,                       // Overall panel width across the rack.
+    post_width = 15.875,                    // Width of one rack post used to place mounting holes.
+    u_height = 44.5,                        // Height of one rack unit in mm.
+    front_panel_thickness = 3.0,            // Thickness of the panel face.
+    front_panel_undersizing = 0.1,          // Clearance trimmed from panel edges for fit.
+    front_panel_edge_radius = 2.0,          // Corner radius for the panel; 0 gives square corners.
+    hole_d = 6.3,                           // Diameter of the mounting holes.
+    hole_offset_z = 12.7,                   // Height from the bottom to the first hole centre.
+    hole_spacing = 15.875                   // Vertical spacing between hole centres.
+) {
+
+*/
+module blank_1U_front_panel(
+    holes = 2,                              // Number of mounting holes per side: typically 2, 3, 4, or 6.
+    rack_width = 350,                       // Overall panel width across the rack.
+    post_width = 15.875,                    // Width of one rack post used to place mounting holes.
+    u_height = 44.5,                        // Height of one rack unit in mm.
+    front_panel_thickness = 3.0,            // Thickness of the panel face.
+    front_panel_undersizing = 0.1,          // Clearance trimmed from panel edges for fit.
+    front_panel_edge_radius = 2.0,          // Corner radius for the panel; 0 gives square corners.
+    hole_d = 6.3,                           // Diameter of the mounting holes.
+    hole_offset_z = 12.7,                   // Height from the bottom to the first hole centre.
+    hole_spacing = 15.875                   // Vertical spacing between hole centres.
 ) {
     difference() {
         union() {
@@ -144,21 +155,37 @@ module blank_1U_front_panel(
     }
 }
 
-
-// blank_2U_front_panel(...)
-// Public — generates a 2U blanking front panel.
-// Params are the same as blank_1U_front_panel, with holes expected as 2/4/6 per side.
+/*
+Create a fixed-size 2U blanking panel with the standard rack hole pattern.
+This is the simple panel generator for 2U panels when you want a fixed-size
+blank without using the more configurable variable panel module.
+Calling with just blank_2U_front_panel(); will produce a default 2U blank panel.
+-----
 module blank_2U_front_panel(
-    holes = 4,
-    rack_width = 350,
-    post_width = 15.875,
-    u_height = 44.5,
-    front_panel_thickness = 3.0,
-    front_panel_undersizing = 0.1,
-    front_panel_edge_radius = 2.0,
-    hole_d = 6.3,
-    hole_offset_z = 12.7,
-    hole_spacing = 15.875
+    holes = 4,                              // Number of mounting holes per side: typically 2, 4, or 6 for 2U.
+    rack_width = 350,                       // Overall panel width across the rack.
+    post_width = 15.875,                    // Width of one rack post used to place mounting holes.
+    u_height = 44.5,                        // Height of one rack unit in mm.
+    front_panel_thickness = 3.0,            // Thickness of the panel face.
+    front_panel_undersizing = 0.1,          // Clearance trimmed from panel edges for fit.
+    front_panel_edge_radius = 2.0,          // Corner radius for the panel; 0 gives square corners.
+    hole_d = 6.3,                           // Diameter of the mounting holes.
+    hole_offset_z = 12.7,                   // Height from the bottom to the first hole centre.
+    hole_spacing = 15.875                   // Vertical spacing between hole centres.
+) {
+
+*/
+module blank_2U_front_panel(
+    holes = 4,                              // Number of mounting holes per side: typically 2, 4, or 6 for 2U.
+    rack_width = 350,                       // Overall panel width across the rack.
+    post_width = 15.875,                    // Width of one rack post used to place mounting holes.
+    u_height = 44.5,                        // Height of one rack unit in mm.
+    front_panel_thickness = 3.0,            // Thickness of the panel face.
+    front_panel_undersizing = 0.1,          // Clearance trimmed from panel edges for fit.
+    front_panel_edge_radius = 2.0,          // Corner radius for the panel; 0 gives square corners.
+    hole_d = 6.3,                           // Diameter of the mounting holes.
+    hole_offset_z = 12.7,                   // Height from the bottom to the first hole centre.
+    hole_spacing = 15.875                   // Vertical spacing between hole centres.
 ) {
     difference() {
         union() {
@@ -192,21 +219,31 @@ module blank_2U_front_panel(
     }
 }
 
-
-// blank_05U_front_panel(...)
-// Public — generates a 0.5U blanking front panel.
-// Params:
-// rack_width, post_width: rail geometry. front_panel_thickness: panel depth.
-// front_panel_undersizing, front_panel_edge_radius: fit and edge shaping.
-// hole_d, hole_offset_z: hole geometry; this module uses a fixed 2-hole-per-side 0.5U pattern.
+/*
+Create the short joining panel used between posts and the base/header parts.
+Although referred to as a 0.5U panel, this is really a special bridging panel
+sized from the rack hole spacing rather than a standard rack-unit height.
+Calling with just blank_05U_front_panel(); will produce the default joining panel.
+-----
 module blank_05U_front_panel(
-    rack_width = 350,
-    post_width = 15.875,
-    front_panel_thickness = 3.0,
-    front_panel_undersizing = 0.1,
-    front_panel_edge_radius = 2.0,
-    hole_d = 6.3,
-    hole_offset_z = 12.7
+    rack_width = 350,                       // Overall panel width across the rack.
+    post_width = 15.875,                    // Width of one rack post used to place mounting holes.
+    front_panel_thickness = 3.0,            // Thickness of the panel face.
+    front_panel_undersizing = 0.1,          // Clearance trimmed from panel edges for fit.
+    front_panel_edge_radius = 2.0,          // Corner radius for the panel; 0 gives square corners.
+    hole_d = 6.3,                           // Diameter of the mounting holes.
+    hole_offset_z = 12.7                    // Half-U hole offset used to derive the fixed panel height and hole positions.
+) {
+
+*/
+module blank_05U_front_panel(
+    rack_width = 350,                       // Overall panel width across the rack.
+    post_width = 15.875,                    // Width of one rack post used to place mounting holes.
+    front_panel_thickness = 3.0,            // Thickness of the panel face.
+    front_panel_undersizing = 0.1,          // Clearance trimmed from panel edges for fit.
+    front_panel_edge_radius = 2.0,          // Corner radius for the panel; 0 gives square corners.
+    hole_d = 6.3,                           // Diameter of the mounting holes.
+    hole_offset_z = 12.7                    // Half-U hole offset used to derive the fixed panel height and hole positions.
 ) {
     half_u = hole_offset_z * 2;
     difference() {
@@ -244,18 +281,28 @@ module blank_05U_front_panel(
     }
 }
 
-
-// post_base_join_panel(...)
-// Public — compact panel to join one post footprint (or two for doublewide) to a base joiner.
-// Params:
-// doublewide: 0 single post footprint, 1 double. thickness: panel thickness.
-// post_width: rail post width. hole_offset_z and hole_d: hole geometry.
+/*
+Create a compact rectangular join panel used to fasten a post footprint to a
+base or top joiner support position. It can be generated for either a single-
+width or double-width post footprint.
+Calling with just post_base_join_panel(); will produce the default single-width
+join panel.
+-----
 module post_base_join_panel(
-    doublewide = 0,
-    thickness = 3.0,
-    post_width = 15.875,
-    hole_offset_z = 12.7,
-    hole_d = 6.3
+    doublewide = 0,                         // 0 = single-width post footprint, 1 = double-width post footprint.
+    thickness = 3.0,                        // Thickness of the join panel.
+    post_width = 15.875,                    // Width of one rack post footprint.
+    hole_offset_z = 12.7,                   // Height from the bottom to the first hole centre.
+    hole_d = 6.3                            // Diameter of the panel mounting holes.
+) {
+
+*/
+module post_base_join_panel(
+    doublewide = 0,                         // 0 = single-width post footprint, 1 = double-width post footprint.
+    thickness = 3.0,                        // Thickness of the join panel.
+    post_width = 15.875,                    // Width of one rack post footprint.
+    hole_offset_z = 12.7,                   // Height from the bottom to the first hole centre.
+    hole_d = 6.3                            // Diameter of the panel mounting holes.
 ) {
     panel_width = (doublewide == 1) ? (post_width * 2) : post_width;
     panel_height = hole_offset_z * 2;
