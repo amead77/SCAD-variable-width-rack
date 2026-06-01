@@ -35,7 +35,7 @@
 /**
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/06/01r01";
+version = "v0.1-2026/06/01r13";
 **/
 
 include <parts/rack posts.scad>;
@@ -45,13 +45,14 @@ include <parts/rack panels.scad>;
 include <parts-optional/ugreen um106x.scad>; // switch dimensions
 include <parts-optional/rpi5.scad>;
 include <parts/rack side panel.scad>;
+//use <parts/rack side panel.scad>;
 include <parts-optional/dell optiplex 3080.scad>;
 
 // Chose the part to make, or assembly to see all
 part = "assembly"; // [assembly, post, base joiner, top joiner, variable tray, halfUpanel, 1U panel, 2U panel, variable panel, dell optiplex 3080, post joins, um106x, rpi5, side panel]
 
 
-// ** these are the basic setup for the posts.
+/* [Posts and common spacing] */
 
 //how many U high
 post_u_height = 6; 
@@ -64,30 +65,30 @@ slide_side = 0;
 
 
 //this is for joining rails or header/footer joins. creates a cone on the top of the post, and a matching cone on the bottom of the joiner, to allow them to slot together for easier assembly
-cones = 1; 
+cones = 1; // [0, 1]
 
 // set to 0 to not include the footer, 1 to include it. The footer is a small piece at the bottom of the rack
-footer_include = 1; 
+footer_include = 1; // [0, 1]
 
 // if you include the header and or footer, this adds a single extra piece to top and bottom of the posts, which is for the joiner to attach to
-header_include = 1; 
+header_include = 1; // [0, 1]
 
 // default post and joiner dimensions that used to come transitively from rack defines.
-post_width = 15.875;
-u_height = 44.5;
-hole_offset_z = 12.7;
-hole_spacing = 15.875;
-post_slide_width = 3.0;
-post_slide_cutout = 3.2;
-footer_height = 12.7;
-header_height = 12.7;
-post_cone_base_diameter = 10.0;
-post_cone_top_diameter = 4.0;
-post_cone_height = 2.0;
-post_top_cone_clearance = 0.1;
+post_width = 15.875; //0.001
+u_height = 44.5; //0.1
+hole_offset_z = 12.7; //0.1
+hole_spacing = 15.875; //0.001
+post_slide_width = 3.0; //0.1
+post_slide_cutout = 3.2; //0.1
+footer_height = 12.7; //0.1
+header_height = 12.7; //0.1
+post_cone_base_diameter = 10.0; //0.1
+post_cone_top_diameter = 4.0; //0.1
+post_cone_height = 2.0; //0.1
+post_top_cone_clearance = 0.1; //0.1
 
 //mm clearance around the 'oles
-hole_clearance = 0.3; 
+hole_clearance = 0.3; //0.01
 
 //screw holes dia
 hole_d = 6.0 + hole_clearance; 
@@ -98,36 +99,58 @@ nut_diameter = 10.0 + hole_clearance;
 //5mm for m6 ** I increased this from 5 to 6 because my screws are a bit stumpy. extra 1mm embeds it deeper. (that's what she said)
 nut_thickness = 6.0 + hole_clearance; 
 
-// set to 1 to add the side panel, 0 for no side panel. the side panel is designed to work with the double wide posts, but can be used with single wide and longer screws if you want.
-add_side_panel = 1; 
 
 //rack depth
-rack_depth = 330.0;
+rack_depth = 330.0; //0.1
 
 //rack width, bear in mind this is outer edge of left post to outer edge of right post, so if you are using double wide posts, or your posts are wider than 15.875mm, you will need to increase this to ensure the trays fit properly. also, if you are using a lot of clearance in the trays, you might need to increase this to ensure the trays fit properly.
-rack_width = 350;
+rack_width = 350; //0.1
+
+/* [bases, tops, headers, footers.] */
+
+//this is how many supports the base and top joins have. you can have more than just the 4 corners.
+base_support_count = 3;
+
+// the top beam for connecting 2 posts/rails together, front to rear.
+header_top_beam_thickness = 10.0; // 0.1
+// the base beam for connecting 2 posts/rails together, front to rear.
+footer_base_beam_thickness = 5.0; // 0.1
 
 
+//a joining piece for front and rear posts/rails. Recommended you use cones on the posts and these.
+base_join = 1; // [0, 1]
+top_join = 1; // [0, 1]
+
+
+/* [Front panel.] */
 // ** these are the basic setup for the front panel.
 
 // [[the 2.01 and 2.99 values are because of OpenSCAD customiser, if i put 2.0, it will not allow you to use decimal values, so 2, 3, 4
 // is accepted, but 2.5 will not be enterable]
 
 // rounding of the front panel edges. set to 0 for square edges.
-front_panel_edge_radius = 2.01; //should be 2.0, but customiser...
+front_panel_edge_radius = 2.0; // 0.01
 
 // how thick the front panel is, go too thick and your screws might not reach.
-front_panel_thickness = 2.99; //should be 3.0
+front_panel_thickness = 3.0; // 0.01
 
 //this is per side. 2 or 3 or 4 or 6. for certain panels and hole spacing just play with this.
 front_panel_hole_count = 2; 
 
 // this is how many U high the front panel is. 1 = 1U high, 2 = 2U high etc.
-front_panel_height = 1.5;
+front_panel_height = 1.5; //0.1
 
-front_panel_top_reinforce_mm = 5; //adds a reinforcing lip to the top of the front panel, which is where the most stress is when pulling on the tray. this is in mm, and adds to the height of the front panel, so a 1U panel with a 10mm reinforce will be 1U + 10mm high. adjust as needed, but I found that for a 1U panel, 10mm was good for my prints and materials.
+//adds a reinforcing lip to the top of the front panel, which is where the most stress is when pulling on the tray. this is in mm, and adds to the height of the front panel, so a 1U panel with a 10mm reinforce will be 1U + 10mm high. adjust as needed, but I found that for a 1U panel, 10mm was good for my prints and materials.
+front_panel_top_reinforce_mm = 5; // 0.1
+
+//a blanking panel and reinforcement. 0.5U high
+base_panel = 1; // [0, 1] 
+//a blanking panel and reinforcement. 0.5U high
+top_panel = 1; // [0, 1] 
+
 
 // ** these are the basic setup for the trays, the trays also use the defines from the front panel.
+/* [Trays.] */
 
 // how thick the tray base is.
 //tray_thickness = 5.0; 
@@ -136,43 +159,33 @@ front_panel_top_reinforce_mm = 5; //adds a reinforcing lip to the top of the fro
 //tray_post_clearance = 0.5; 
 
 // thickness of the side of the tray, the wall.
-tray_side_thickness = 2.5;
+tray_side_thickness = 2.5; //0.1
 tray_slide_thickness = post_slide_cutout - hole_clearance;
 tray_side_slides = (slide_side == 1 || slide_side == 3) ? 1 : 0; //this is for whether to add the slide on the left side of the tray, same for right side below.
 
 //this is in hole spacing, 1 = 1 hole up, 2 = 2 holes up etc. 0.25 for a low profile tray. Experiment with the sizes.
-tray_side_height = 1.25; 
+tray_side_height = 1.25; //0.01
 
 // set to 0 for no rear panel, 1 for a rear panel. this creates a drawer
-tray_back_panel = 0;
+tray_back_panel = 0; // [0, 1]
 
 // how far back the tray projects
-tray_y = 0.99;
+tray_y = 0.99; //0.01
 
 //this is just for the assembly demo. has no other function other than to show a tray partially slid out.
 tray_slide_out = 150; 
 
-//this is how many supports the base and top joins have. you can have more than just the 4 corners.
-base_support_count = 3;
+/* [Side Panel] */
+// set to 1 to add the side panel, 0 for no side panel. the side panel is designed to work with the double wide posts, but can be used with single wide and longer screws if you want.
+add_side_panel = 1; // [0, 1]
 
-// the top beam for connecting 2 posts/rails together, front to rear.
-header_top_beam_thickness = 10.0;
-// the base beam for connecting 2 posts/rails together, front to rear.
-footer_base_beam_thickness = 5.0; 
-
-
-
-base_join = 1;
-top_join = 1;
-base_panel = 1; //a blanking panel and reinforcement. 0.5U high
-top_panel = 1; //a blanking panel and reinforcement. 0.5U high
 
 module side_panel_ass() {
 /* 
 the side panel, with rpi logo. I set the depth of the logo to 0.01mm so it is basically flat, but enables me to see it
 in my slicer software. Because I can see it, I can paint it. Because it is flat, it doesn't require support or complicate printing.
 */
-    side_panel(p_c_pattern_hole_dia = 50, p_c_side_panel_logo = true, p_c_side_panel_logo_import_file = "images-logo/raspberry-pi.svg", p_c_side_panel_logo_depth = 0.01);
+    side_panel(p_c_pattern_hole_dia = 50, p_c_side_panel_logo = true, p_c_side_panel_logo_import_file = "../images-logo/raspberry-pi.svg", p_c_side_panel_logo_depth = 0.01);
 }
 
 
@@ -526,7 +539,7 @@ if (part == "rpi5") {
 // the side panel with rpi logo
 if (part == "side panel") {
     render() {
-        side_panel(p_c_pattern_hole_dia = 50, p_c_side_panel_logo = true, p_c_side_panel_logo_import_file = "images-logo/raspberry-pi.svg", p_c_side_panel_logo_depth = 0.01);
+        side_panel(p_c_pattern_hole_dia = 50, p_c_side_panel_logo = true, p_c_side_panel_logo_import_file = "../images-logo/raspberry-pi.svg", p_c_side_panel_logo_depth = 0.01);
         //side_panel();
     }
 }
