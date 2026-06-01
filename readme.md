@@ -6,7 +6,7 @@ Normal defaults are 350mm wide panel, 330mm deep tray. (this can be changed)
 
 So, what is this actually?
 Simply put, I wanted a bigger rack that I could print on my Creality K2plus (350x350x350 build volume) and I wanted it to be 100% in OpenSCAD. Because that's the only software I can use. Fusion 360 is good, but eats cpu, doesn't work on Linux, and worst of all, they changed the licence and features available for hobbyists.
-What about FreeCAD? Yeah, FreeCAD is getting good now, but I just didn't want to learn it, because that would require starting out with the spec nailed down before even creating a design. It wasn't.
+What about FreeCAD? Yeah, FreeCAD is getting good now, but I just didn't want to learn it, because that would require starting out with the spec nailed down before even creating a design. It wasn't at the start.
 
 One of the biggest reasons for creating it was also anger. I printed the parts for a 10" mini rack because I was prepared to make do. But the design was such that to remove a tray, you need to dismantle the whole thing, because of the way the trays are secured at the rear.
 
@@ -15,12 +15,14 @@ There is a picture of the mini-rack that made me angry at the bottom of this rea
 
 Anyway, if you like the design, you're welcome to buy me a coffee:
 
-<a href="https://buymeacoffee.com/amead77"><img src="bmc-button.png" alt="Buy Me a Coffee" width="50%" /></a>
+<a href="https://buymeacoffee.com/amead77"><img src="images-info/bmc-button.png" alt="Buy Me a Coffee" width="50%" /></a>
 
 
 A quick overview
 
 Below is a screenshot of OpenSCAD with a assembly view. This is just to show an example of some of what is possible. Everything is customisable.
+
+For API reference see [functions.md](functions.md)
 
 I've numbered some arrows so you can see:
 
@@ -33,24 +35,24 @@ I've numbered some arrows so you can see:
 
 Note: For mine I used 6 posts (great for half depth trays), 4 face forward, rear 2 face backwards. Consider this when creating posts for which side you want the side-slides on.
 
-![Assembly overview](overview.png)
+![Assembly overview](images-info/overview.png)
 
 
 Rear view
 
-![Rear view of assembly](overview-rearish.png)
+![Rear view of assembly](images-info/overview-rearish.png)
 
 8 legged freak
 
-![Assembly with 8 legs](overview-8_legs.png)
+![Assembly with 8 legs](images-info/overview-8_legs.png)
 
 How about a part complete rack, as in.. mine. I do have a tray for the Dell, but haven't printed it yet, so the Dell is just thrown in there. It is not a good computer, it is old but it was free.
 
-![dell](20260524_191538.jpg)
+![dell](images-info/20260524_191538.jpg)
 
 Now the side panel. You don't have to have honeycomb, you can have a few different designs, plus size of shapes, image/logo is also optional. I have a RPi logo because I have a bunch of them. They'll end up in the rack in due course.
 
-![side panel](20260524_191549.jpg)
+![side panel](images-info/20260524_191549.jpg)
 
 
 
@@ -71,32 +73,32 @@ Now the side panel. You don't have to have honeycomb, you can have a few differe
 Posts are the vertical rails of the rack. They are generated in configurable U heights and can be single or double wide. A slide channel can be added to the left side, right side, both sides, or neither. 
 I highly recommend creating with top/bottom headers, double-wide, cones and side slides. 
 
-![Post](post.png)
+![Post](images-info/post.png)
 
 
 ### Trays
 
 Trays are available in fully variable size. The variable tray accepts a `tray_back_panel` flag to add a rear panel, turning it into a drawer. Trays slide into the post's rear slot for easy removal. Trays also don't need to be full length, defining 0.25 will make a quarter depth tray (y axis)
 
-Look at "blank variable tray.scad" to find the tray code, but "intel dg45fg.scad" shows it being used.
+Look at "parts/blank variable tray.scad" to find the tray code, but "parts-optional/intel dg45fg.scad" shows it being used.
 More info on how to use later.
 
-![Variable tray](blank-tray.png)
+![Variable tray](images-info/blank-tray.png)
 
 
 ### Panels (Blanking Panels)
 
-"rack panels.scad"
+"parts/rack panels.scad"
 
 Flat front panels for blanking unused rack slots. Available in ½U, 1U, 2U.
 Note that "blank variable tray" can now do all of this apart from the half-U. It is also the recommended method as you can customise it, reinforce, etc.
 
 The half-U for joining posts together when using headers.
 
-![Half-U panel](half-u-panel.png)
+![Half-U panel](images-info/half-u-panel.png)
 
 
-![2U panel](2u-panel.png)
+![2U panel](images-info/2u-panel.png)
 
 ### Footer / Header
 
@@ -108,15 +110,15 @@ If you want the front to rear support braces, I recommend adding these on.
 Optional horizontal joiners that connect the front posts to the rear posts via the footer/header. 
 You can have more than just 4 posts. The joiners can have 2+ supports, by increasing the number and printing more posts, you can have greater supports
 
-![Top joiner](top-joiner.png)
+![Top joiner](images-info/top-joiner.png)
 
-![Base joiner](base-joiner.png)
+![Base joiner](images-info/base-joiner.png)
 
 ---
 
 ## Custom Trays
 
-The file "intel dg45fg.scad" has a tray I've made for my mini-itx board. Yes it's an older board, this is because I want it for WinXP.
+The file "parts-optional/intel dg45fg.scad" has a tray I've made for my mini-itx board. Yes it's an older board, this is because I want it for WinXP.
 Anyway, it has:
 - mount for a FlexATX PSU
 - screw holes for mini-itx, for the back panel to be on the rear. (screw holes are sized for my heat-inserts)
@@ -127,12 +129,12 @@ Anyway, it has:
 - reinforced rear, by creating a back panel, then chamfering it at 30deg. this is because I print panel face down and it means far less supports
 - If my printer wasn't being a D. I'd have it printed by now. 
 
-![mini-itx](mini-itx-tray.png)
+![mini-itx](images-info/mini-itx-tray.png)
 
 
 This picture is the mini-itx tray, but I chopped it to a tiny piece in the slicer, I highly recommend making test pieces before commiting to 12hour+ prints. Even create 1U post with sliders and a part tray to check clearances. Everyone's printer is different.
 
-![test print](20260524_191530.jpg)
+![test print](images-info/20260524_191530.jpg)
 
 When I fix my printer I will print the mini-itx tray like the following picture, note that:
 - I chop out parts to reduce filament usage. I do the chopping in the slicer by adding negative volumes.
@@ -142,16 +144,16 @@ When I fix my printer I will print the mini-itx tray like the following picture,
 - created a back panel, but only small and use a 30 degree chamfer. This is to create a reinforcement that doesn't require supports to print
 - Doing it this way means only the PSU mount and mini-itx screw holes need supports.
 
-![slicer](slicer.png)
+![slicer](images-info/slicer.png)
 
 
 
-The file "ugreen um106x.scad" is another one I use (x2), and have a photo of in use.
+The file "parts-optional/ugreen um106x.scad" is another one I use (x2), and have a photo of in use.
 This was created to:
 - have my 5 port switch
 - 4x keystones
 
-![ugreen](um106x.png)
+![ugreen](images-info/um106x.png)
 
 
 
@@ -195,14 +197,14 @@ The design is based on **M6 screws** with **M6 hex nuts** (10mm across-flats, 5m
 | File | Purpose |
 |---|---|
 | `rack parts.scad` | Main entry point — select and configure parts here |
-| `rack defines.scad` | All default dimensions and constants - DEPRECIATED, kept for reference|
-| `rack posts.scad` | Post geometry |
-| `rack panels.scad` | Panel geometry, for 0.5U, 1U and 2U |
-| `intel dg45fg.scad` | My mini itx tray, useful for reference
-| `blank variable tray.scad` | The main tray and panel making scad. Call blank_variable_tray() for everything, then customise.
+| `parts/rack defines.scad` | All default dimensions and constants - DEPRECIATED, kept for reference|
+| `parts/rack posts.scad` | Post geometry |
+| `parts/rack panels.scad` | Panel geometry, for 0.5U, 1U and 2U |
+| `parts-optional/intel dg45fg.scad` | My mini itx tray, useful for reference
+| `parts/blank variable tray.scad` | The main tray and panel making scad. Call blank_variable_tray() for everything, then customise.
 ---
 
-The reason rack defines.scad is depreciated is because everything got refactored so that the default values of calling the functions are what was in the defines. Everything can be overriden in the function calls.
+The reason parts/rack defines.scad is depreciated is because everything got refactored so that the default values of calling the functions are what was in the defines. Everything can be overriden in the function calls.
 I really recommend having a look at the parts and how they are called, then look at the function/module they call, because I have commented all the options.
 
 
@@ -215,16 +217,15 @@ I really recommend having a look at the parts and how they are called, then look
 
 ## License
 
-This project is licensed under the **Creative Commons - Attribution (CC BY)** for all the parts and **Creative Commons - Attribution - Non-Commercial (CC BY-NC)** for the specifications.
-
-In simpler terms, you can remix and do whatever you want with making parts or modifying the parts, including selling. But the design spec, that is dimensions, guide slots on the posts, overall look, is the same terms but non-commercial use. This is specifically aimed at companies making racks using my design, not someone who makes some mods or addons and sells them. Even creating the whole thing as a print and selling is fine. Just not for manufacturers.
+This project is licensed under **Creative Commons - Attribution - Non-Commercial (CC BY-NC)**
 
 
 &copy; 2026 Adam Mead
 
 
 
+
 ## THIS PIC IS NOT MY DESIGN, but I did print it and this is what it produced. It is the reason I made my design:
 
-![angry rack](angry-rack.png)
+![angry rack](images-info/angry-rack.png)
 

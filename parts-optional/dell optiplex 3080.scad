@@ -7,10 +7,10 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/16r69";
+version = "v0.1-2026/06/01r01";
 */
 
-include <blank variable tray.scad>;
+include <../parts/blank variable tray.scad>;
 
 dell_width = 291.0;
 dell_feet_height = 3.5;
@@ -109,7 +109,7 @@ module dell_tray(
     tray_thickness = 8,
     back_panel_chamfer = 8.0,
     back_panel_chamfer_ang = 30.0,
-    import_file             = "Dell_Logo.svg", //used for importing an SVG or STL/3MF onto the front panel face, see variable_front_panel_face_import() parameters below.
+    import_file             = "../images-logo/Dell_Logo.svg", //used for importing an SVG or STL/3MF onto the front panel face, see variable_front_panel_face_import() parameters below.
     import_type             = "svg", //"svg", "stl", or "none"
     import_width            = 20, //if 0, defaults to 50% of the front panel inner width. used for imported SVGs and STLs/3MFs.
     import_height           = 20, //if 0, defaults to 50% of the front panel inner height. used for imported SVGs and STLs/3MFs.

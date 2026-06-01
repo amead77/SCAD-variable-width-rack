@@ -15,10 +15,10 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/05/16r05";
+version = "v0.1-2026/06/01r01";
 */
 
-include <blank variable tray.scad>;
+include <../parts/blank variable tray.scad>;
 include <keystone panel.scad>;
 
 ug_tray_support_oversize = 1.0; // this is how much larger the switch support is than the switch itself.
