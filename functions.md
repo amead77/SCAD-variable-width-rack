@@ -16,9 +16,9 @@ If you are building a rack from scratch, the core structural parts are usually:
 
 Then add either:
 
-- `blank_1U_front_panel()` / `blank_2U_front_panel()` / `blank_variable_front_panel()` for blanking panels
-- `blank_1U_tray()` / `blank_2U_tray()` / `blank_variable_tray()` for trays
-- `side_panel()` for optional side panels
+- `blank_1U_front_panel()` / `blank_2U_front_panel()` / `blank_variable_tray(mode="panel")` for blanking panels
+- `blank_variable_tray()` for trays
+- `side_panel()` for optional side panels, adds +5 HP
 
 ---
 
@@ -103,7 +103,7 @@ base_joiner(doublewide = 1, supports = 3, beam_thickness = 6.0);
 ### `blank_1U_front_panel()` - Fixed 1U blanking panel
 
 Builds a standard 1U front blanking panel with the normal rack hole pattern.
-Variable tray can also built panels and is the recommended method, as there are far more options avaiable
+*Variable tray* can also built panels and is the *recommended method*, as there are far more options avaiable
 
 ```scad
 module blank_1U_front_panel(
@@ -122,7 +122,7 @@ module blank_1U_front_panel(
 
 ### `blank_2U_front_panel()` - Fixed 2U blanking panel
 
-Builds a standard 2U front blanking panel.
+Builds a standard 2U front blanking panel. As above.
 
 ```scad
 module blank_2U_front_panel(
@@ -142,6 +142,7 @@ module blank_2U_front_panel(
 ### `blank_05U_front_panel()` - Top/bottom bridging panel
 
 Builds the short panel used to bridge between posts and the base/header parts. This is not a normal half-U rack panel; it is sized from the rack hole spacing.
+This *cannot* currently be built by blank_variable_tray()
 
 ```scad
 module blank_05U_front_panel(
@@ -254,7 +255,7 @@ blank_variable_tray(panel_u_size = 2, tray_u_size = 1.5, holes = 4, import_file 
 
 ### `side_panel()` - Side panel with optional pattern and logo
 
-Builds a side panel with mounting lips and hole pattern sized to the rack, with optional cutout patterning and an optional logo insert/recess area.
+Builds a side panel with mounting lips and hole pattern sized to the rack, with optional cutout patterning and an optional logo insert/recess area. TODO: Doesn't currently cover the header/footer, or top/bottom joiner. But does look awesome.
 
 ```scad
 module side_panel(
