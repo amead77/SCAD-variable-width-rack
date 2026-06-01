@@ -1,11 +1,13 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/01r02";
+version = "v0.1-2026/06/01r03";
 */
 
 
 /*
+// Use rail_1u_holes_segment() instead.
+//
 // post(slide_side, doublewide)
 // Builds a single 1U post body with optional slide channel(s).
 // slide_side: 0=none, 1=left, 2=right, 3=both. doublewide: 0=single, 1=double.
@@ -867,10 +869,3 @@ module nut_holes(
         }
     }
 }
-/*
-// next 2 lines used only by my 'on save' script. can be ignored otherwise.
-// AUTO-V
-version = "v0.1-2026/06/01r02";
-*/
-
-

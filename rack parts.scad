@@ -94,7 +94,7 @@ hole_clearance = 0.3; //0.01
 hole_d = 6.0 + hole_clearance; 
 
 //10mm for m6
-nut_diameter = 10.0 + hole_clearance; 
+//nut_diameter = 10.0 + hole_clearance; 
 
 //5mm for m6 ** I increased this from 5 to 6 because my screws are a bit stumpy. extra 1mm embeds it deeper. (that's what she said)
 nut_thickness = 6.0 + hole_clearance; 

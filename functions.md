@@ -24,28 +24,6 @@ Then add either:
 
 ## `parts/rack posts.scad`
 
-### `post()` - Raw 1U post body
-
-Builds a single 1U post body with optional side slide channels. This is the raw body only; for a usable rack post with holes, nut traps, headers, footers, and cones, use `rail_1u_holes()`.
-
-```scad
-post(
-    slide_side = 0,          // 0=none, 1=left, 2=right, 3=both
-    doublewide = 0,          // 0=single-width, 1=double-width
-    post_width = 15.875,
-    u_height = 44.5,
-    post_slide_width = 3.0,
-    post_slide_cutout = 3.2,
-    hole_offset_z = 12.7,
-    hole_spacing = 15.875
-)
-```
-
-Example:
-
-```scad
-post(slide_side = 3, doublewide = 1);
-```
 
 ### `rail_1u_holes()` - Complete rack post
 
