@@ -17,7 +17,7 @@ front panel and can be used with or without the tray body. It is far more custom
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/01r02";
+version = "v0.1-2026/06/01r03";
 */
 
 
@@ -285,6 +285,7 @@ module blank_05U_front_panel(
 Create a compact rectangular join panel used to fasten a post footprint to a
 base or top joiner support position. It can be generated for either a single-
 width or double-width post footprint.
+You only need this if you have internal posts (e.g. more than 4 posts)
 Calling with just post_base_join_panel(); will produce the default single-width
 join panel.
 -----
