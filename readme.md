@@ -222,7 +222,7 @@ This project is licensed under **Creative Commons - Attribution - Non-Commercial
 
 &copy; 2026 Adam Mead
 
-
+All images of Raspberry Pi and Dell logos are their own. I have only included to prevent non existent file errors.
 
 
 ## THIS PIC IS NOT MY DESIGN, but I did print it and this is what it produced. It is the reason I made my design:
