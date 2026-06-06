@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/06r01";
+version = "v0.1-2026/06/06r09";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -288,18 +288,18 @@ module variable_side_slide(
     tray_w                = undef,
     front_panel_thickness = 3.0,
     u_height              = 44.5,
-    post_slide_cutout     = 3.2,
-    hole_clearance        = 0.3,
+    post_slide_cutout     = 3.6,
+    hole_clearance        = 0.0,
     hole_offset_z         = 12.7,
     tray_side_thickness   = 2.0,
-    post_slide_width      = 3.0,
+    post_slide_width      = 2.8,
     post_width            = 15.875,
     tray_post_clearance   = 0.5,
     hole_spacing          = 15.875,
     rack_width            = 350
 ) {
-    tray_height    = max((u_height * tray_u_size) - 1, post_slide_cutout - hole_clearance);
-    tab_height     = post_slide_cutout - hole_clearance;
+    tray_height    = max((u_height * tray_u_size) - 1, post_slide_cutout);
+    tab_height     = post_slide_cutout;
     z_base         = (hole_offset_z / 2) - (post_slide_cutout / 2.1);
     max_u_segments = ceil(tray_u_size) + 1;
 
@@ -360,10 +360,10 @@ module variable_tray_front_gusset(
     support_thickness     = 2.0,
     front_panel_thickness = 3.0,
     u_height              = 44.5,
-    post_slide_cutout     = 3.2,
-    hole_clearance        = 0.3,
+    post_slide_cutout     = 3.6,
+    hole_clearance        = 0.0,
     post_width            = 15.875,
-    post_slide_width      = 3.0,
+    post_slide_width      = 2.8,
     tray_post_clearance   = 0.5,
     rack_width            = 350
 ) {
@@ -590,7 +590,7 @@ module blank_variable_tray(
 
 */
 module blank_variable_tray(
-    mode                    = "tray", //"tray" or "panel"
+    mode                    = "tray", //"tray", "panel", "split_panel_show", "split_panel_tray", "split_panel_panel"
     panel_u_size            = 1, // front panel height in U
     front_panel_top_reinforce_mm     = 0, //a reinforcing lip at the top of the panel
     front_panel_bottom_reinforce_mm  = 0, //same but bottom. these are on the back of the panel
@@ -636,12 +636,13 @@ module blank_variable_tray(
     tray_side_slides        = 1,   //0 or 1 to add side slides that go into the posts. these are designed to fit into the post 
                                     //cutouts defined by post_slide_cutout/width, so adjust those dimensions if you change the slide design.
 
-    post_slide_width        = 3.0, //*these next 2 are for the slides that go into the posts on the rack.
-    post_slide_cutout       = 3.2, //*ideally you should create a 1U post for testing the fit of these before printing everything.
+    post_slide_width        = 2.8, //*these next 2 are for the slides that go into the posts on the rack.
+    post_slide_cutout       = 3.6, //*ideally you should create a 1U post for testing the fit of these before printing everything.
                                    //*you would be better off adjusting the post dimensions, rather than changing the tray dimensions, 
                                    //and create posts to fit the trays. making the side slides smaller to fit would make them weaker. 
                                    //So make the post cutouts bigger instead.
-    hole_clearance          = 0.3 //clearance around the panel holes, for screwing into the posts.
+    post_slide_clearance    = 0.4, //clearance for the fit of the tray side slides into the post cutouts. adjust as needed for fit; this is separate from the tray_post_clearance to allow for different clearances on the sides vs the back of the tray if needed.
+    hole_clearance          = 0.0 //clearance around the panel holes, for screwing into the posts.
 ) {
     mode_resolved = (mode == "panel") ? "panel" : "tray";
     slides_enabled = (tray_side_slides == 1) ? 1 : 0;
@@ -703,7 +704,7 @@ module blank_variable_tray(
             tray_w            = tray_w,
             front_panel_thickness = front_panel_thickness,
             u_height          = u_height,
-            post_slide_cutout = post_slide_cutout,
+            post_slide_cutout = post_slide_cutout - post_slide_clearance,
             hole_clearance    = hole_clearance,
             hole_offset_z     = hole_offset_z,
             tray_side_thickness = tray_side_thickness,
@@ -722,7 +723,7 @@ module blank_variable_tray(
             tray_w            = tray_w,
             front_panel_thickness = front_panel_thickness,
             u_height          = u_height,
-            post_slide_cutout = post_slide_cutout,
+            post_slide_cutout = post_slide_cutout - post_slide_clearance,
             hole_clearance    = hole_clearance,
             hole_offset_z     = hole_offset_z,
             tray_side_thickness = tray_side_thickness,
@@ -775,7 +776,7 @@ module blank_variable_tray(
                 support_thickness = side_support_thickness,
                 front_panel_thickness = front_panel_thickness,
                 u_height          = u_height,
-                post_slide_cutout = post_slide_cutout,
+                post_slide_cutout = post_slide_cutout - post_slide_clearance,
                 hole_clearance    = hole_clearance,
                 post_width        = post_width,
                 post_slide_width  = post_slide_width,
@@ -792,7 +793,7 @@ module blank_variable_tray(
                 support_thickness = side_support_thickness,
                 front_panel_thickness = front_panel_thickness,
                 u_height          = u_height,
-                post_slide_cutout = post_slide_cutout,
+                post_slide_cutout = post_slide_cutout - post_slide_clearance,
                 hole_clearance    = hole_clearance,
                 post_width        = post_width,
                 post_slide_width  = post_slide_width,
