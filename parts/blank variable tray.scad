@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.2-2026/06/06r78";
+version = "v0.2-2026/06/06r83";
 */
 
 use <../../SCAD-lib/mainlib.scad>;
@@ -984,7 +984,15 @@ module blank_variable_tray(
             union() {
                 // Tray base floor
                 translate([tray_x0, 0, front_panel_undersizing]) {
-                    cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
+                    //cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
+                    chamfered_cube([
+                        tray_w, 
+                        tray_depth + front_panel_thickness, 
+                        tray_thickness
+                        ], 
+                        edge_selection = [3],
+                        chamfer_size = 1
+                    );
                 }
 
                 variable_side_slide(

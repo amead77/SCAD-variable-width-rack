@@ -7,14 +7,14 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/06r46";
+version = "v0.1-2026/06/06r47";
 */
 
 
 include <../parts/blank variable tray.scad>;
 include <flex_psu.scad>;
 include <../parts/odd_parts.scad>;
-use <../../SCAD-lib/mainlib.scad>;
+//use <../../SCAD-lib/mainlib.scad>;
 
 $fn = 64;
 
