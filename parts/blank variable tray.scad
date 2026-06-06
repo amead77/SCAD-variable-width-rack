@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.2-2026/06/06r87";
+version = "v0.2-2026/06/07r05";
 */
 
 use <../../SCAD-lib/mainlib.scad>;
@@ -575,7 +575,7 @@ module variable_split_panel_joiner(
 
     // Start joiner above the tray base floor AND above any bottom reinforce lip.
     bot_z   = max(tray_thickness, front_panel_bottom_reinforce_mm);
-    join_h  = max(join_top_z - bot_z, 0.01) - 5;
+    join_h  = max(join_top_z - bot_z, 0.01) - 5; // added -5mm to lower the to joiner.
 
     y0      = front_panel_thickness;
     hole_offset_y = min(max(panel_join_offset_from_edge, 0.5), max((join_y / 2) - 0.5, 0.5));
@@ -683,6 +683,7 @@ module variable_split_tray_side_holes(
     // Countersink hole rows through the side walls / gusset area.
     z_first  = hole_offset_z / 2;
     z_base   = -0.01;
+    // Base holes through the tray floor. spaced 1/3 and 2/3 across.
     base_x_a = left_x + jd + ((right_x - left_x - (2 * jd)) / 3);
     base_x_b = left_x + jd + ((right_x - left_x - (2 * jd)) * 2 / 3);
 
@@ -694,7 +695,7 @@ module variable_split_tray_side_holes(
     //for (y_h = [y_hole_a, y_hole_b]) {
     y_h = y_hole_b;
     {
-        for (z_h = [z_first : hole_spacing : join_top_z + 0.001 - 5]) {
+        for (z_h = [z_first : hole_spacing : join_top_z + 0.001 - 5]) { // added -5mm to lower the holes.
             if (z_h > bot_z - 0.001) {
                 // Left wall — screw enters from outside left, travels in +X direction.
                 translate([tray_x0 - 0.01, y_h, z_h]) {
@@ -722,6 +723,7 @@ module variable_split_tray_side_holes(
         // on the standard rail spacing increment.
         //
         // Note: don't do this. makes a weird part hole, due to clipping the edge of the gusset.
+        // Note Note: Maybe it would work now I've lowered the holes by 5mm?
         /*
         z_last = z_first + floor(max(join_top_z - z_first, 0) / hole_spacing) * hole_spacing;
         if ((join_top_z - z_last) > 0.5 && join_top_z > bot_z - 0.001) {
@@ -739,6 +741,7 @@ module variable_split_tray_side_holes(
             }
         }
         */
+        
         // Base holes through the tray floor so the panel can also be joined from underneath.
         // I chose 2 holes, maybe i'll look at more later.
         for (x_h = [base_x_a, base_x_b]) {
@@ -985,7 +988,7 @@ module blank_variable_tray(
                 // Tray base floor
                 translate([tray_x0, 0, front_panel_undersizing]) {
                     //cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
-                    chamfer_size = (mode == "tray") ? 0 : 1; // no chamfers in full tray mode, to save time and material, but add chamfers in split modes to help with alignment and reduce sharp edges.
+                    chamfer_size = (mode == "tray") ? 0 : 1; // no chamfers in full tray mode, add when split tray/panel to help avoid corners interferring
                     chamfered_cube([
                         tray_w, 
                         tray_depth + front_panel_thickness, 
