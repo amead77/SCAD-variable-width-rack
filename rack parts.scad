@@ -35,7 +35,7 @@
 /**
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/06/06r04";
+version = "v0.1-2026/06/06r05";
 **/
 
 include <parts/rack posts.scad>;
@@ -78,8 +78,8 @@ post_width = 15.875; //0.001
 u_height = 44.5; //0.1
 hole_offset_z = 12.7; //0.1
 hole_spacing = 15.875; //0.001
-post_slide_width = 3.0; //0.1
-post_slide_cutout = 3.2; //0.1
+post_slide_width = 2.8; //0.1
+post_slide_cutout = 3.6; //0.1
 footer_height = 12.7; //0.1
 header_height = 12.7; //0.1
 post_cone_base_diameter = 10.0; //0.1

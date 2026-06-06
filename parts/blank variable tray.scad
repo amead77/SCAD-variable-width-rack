@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/06r09";
+version = "v0.1-2026/06/06r13";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -583,8 +583,12 @@ module blank_variable_tray(
     front_panel_edge_radius = 2.0,           // Corner radius on the front panel.
     tray_post_clearance = 0.5,               // Clearance gap between tray sides and posts.
     tray_side_slides = 1,                    // 1 adds tray side slides that engage the rack posts.
-    post_slide_width = 3.0,                  // Width of the tray side slide tabs.
-    post_slide_cutout = 3.2,                 // Height of the matching slide cutout profile.
+    post_slide_width        = 2.8, //*these next 2 are for the slides that go into the posts on the rack.
+    post_slide_cutout       = 3.6, //*ideally you should create a 1U post for testing the fit of these before printing everything.
+                                   //*you would be better off adjusting the post dimensions, rather than changing the tray dimensions, 
+                                   //and create posts to fit the trays. making the side slides smaller to fit would make them weaker. 
+                                   //So make the post cutouts bigger instead.
+    post_slide_clearance    = 0.4, //clearance for the fit of the tray side slides into the post cutouts. adjust as needed for fit; this is separate from the tray_post_clearance to allow for different clearances on the sides vs the back of the tray if needed.
     hole_clearance = 0.3                     // Clearance value used in slide and hole fit calculations.
 ) {
 
@@ -632,10 +636,9 @@ module blank_variable_tray(
     hole_spacing            = 15.875, //spacing between holes in mm, standard U spacing.
     front_panel_undersizing = 0.1, //mm the front panel is undersized by on each edge to ensure it doesn't interfere with other panels
     front_panel_edge_radius = 2.0, //mm radius for front panel edges. set to 0 for sharp edges.
-    tray_post_clearance     = 0.5, //0.5mm clearance, this makes 1mm total tray clearance. adjust as needed. modifying this might require tweaking the post_slide_cutout and hole_clearance to ensure the holes still clear properly.
+    tray_post_clearance     = 0.6, //0.5mm clearance, this makes 1mm total tray clearance. adjust as needed. modifying this might require tweaking the post_slide_cutout and hole_clearance to ensure the holes still clear properly.
     tray_side_slides        = 1,   //0 or 1 to add side slides that go into the posts. these are designed to fit into the post 
                                     //cutouts defined by post_slide_cutout/width, so adjust those dimensions if you change the slide design.
-
     post_slide_width        = 2.8, //*these next 2 are for the slides that go into the posts on the rack.
     post_slide_cutout       = 3.6, //*ideally you should create a 1U post for testing the fit of these before printing everything.
                                    //*you would be better off adjusting the post dimensions, rather than changing the tray dimensions, 
