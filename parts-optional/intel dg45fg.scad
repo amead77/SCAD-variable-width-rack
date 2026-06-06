@@ -7,7 +7,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/06r26";
+version = "v0.1-2026/06/06r33";
 */
 
 
@@ -69,6 +69,26 @@ itx_split_join_cs_dia = 7.0; //0.1
 itx_split_join_hole_offset_z = 15.875; //0.001
 itx_split_panel_join_length = 25.0; //0.1
 itx_split_panel_join_offset_from_edge = 7.0; //0.1
+itx_side_support_single = true; //[true, false] 
+//0 or 1 to add gussets between front panel and sides when panel is taller than sides
+itx_side_support            = 1; 
+//how far back the gussets extend (mm)
+itx_side_support_back       = 140; 
+//normally the same as tray_side_thickness, but can be different if you want thinner gussets
+itx_side_support_thickness  = 2.0; //0.1
+//thickness of the tray side walls in mm.
+itx_tray_side_thickness     = 2.0; //0.1
+//0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
+itx_back_panel              = 1; 
+//the rear wall thickness, if you have back_panel=1.
+itx_back_panel_thickness    = 6.0; //0.1
+//in U units, converted to mm internally
+itx_back_panel_height       = 0.19; //0.01
+//mm front edge chamfer on the rear wall. primary purpose is for printing overhang angle reduction.
+itx_back_panel_chamfer      = 10.0; //0.1
+//degrees for the rear wall chamfer angle. 45 degrees is a good starting point, but you can adjust as needed. this is only used if back_panel_chamfer > 0.
+itx_back_panel_chamfer_ang  = 30.0; //0.1
+
 
 
 module board_front_panel_cutout() {
@@ -185,13 +205,14 @@ render() {
                 side_support            = 1, //0 or 1 to add gussets between front panel and sides when panel is taller than sides
                 side_support_back       = 140, //how far back the gussets extend (mm)
                 side_support_thickness  = 2.0, //normally the same as tray_side_thickness, but can be different if you want thinner gussets
-                tray_side_thickness     = 2.0, //thickness of the tray side walls in mm.
+                side_support_single = itx_side_support_single, //if true, only creates a single gusset on each side at the lowest position
+                tray_side_thickness     = itx_tray_side_thickness, //thickness of the tray side walls in mm.
                 front_panel_thickness   = front_panel_thickness, //consider your screw lengths. 3mm is usually fine for m6x16 screws.
-                back_panel              = 1, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
-                back_panel_thickness    = 6.0, //the rear wall thickness, if you have back_panel=1.
-                back_panel_height       = 0.19, //in U units, converted to mm internally
-                back_panel_chamfer      = 10.0, //mm front edge chamfer on the rear wall. primary purpose is for printing overhang angle reduction.
-                back_panel_chamfer_ang  = 30.0, //degrees for the rear wall chamfer angle. 45 degrees is a good starting point, but you can adjust as needed. this is only used if back_panel_chamfer > 0.
+                back_panel              = itx_back_panel, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
+                back_panel_thickness    = itx_back_panel_thickness, //the rear wall thickness, if you have back_panel=1.
+                back_panel_height       = itx_back_panel_height, //in U units, converted to mm internally
+                back_panel_chamfer      = itx_back_panel_chamfer, //mm front edge chamfer on the rear wall. primary purpose is for printing overhang angle reduction.
+                back_panel_chamfer_ang  = itx_back_panel_chamfer_ang, //degrees for the rear wall chamfer angle. 45 degrees is a good starting point, but you can adjust as needed. this is only used if back_panel_chamfer > 0.
                 tray_thickness          = tray_thickness, //thickness of the tray base in mm.
                 rack_width              = 350, //this is the external width of the rack, if single-width, using this and post_width is what determines the panel and tray widths and depths.
                 rack_depth              = 330, //this can be different than the width
@@ -206,12 +227,6 @@ render() {
                 tray_side_slides        = 1,   //0 or 1 to add side slides that go into the posts. these are designed to fit into the post 
                                                 //cutouts defined by post_slide_cutout/width, so adjust those dimensions if you change the slide design.
 
-                post_slide_width        = 3.0, //*these next 2 are for the slides that go into the posts on the rack.
-                post_slide_cutout       = 3.2, //*ideally you should create a 1U post for testing the fit of these before printing everything.
-                                            //*you would be better off adjusting the post dimensions, rather than changing the tray dimensions, 
-                                            //and create posts to fit the trays. making the side slides smaller to fit would make them weaker. 
-                                            //So make the post cutouts bigger instead.
-                hole_clearance          = 0.0, //clearance around the panel holes, for screwing into the posts.
                 panel_join_clearance    = 0.3, //clearance for the side parts of the tray to panel join.
                 panel_join_thickness    = itx_split_join_thickness, //thickness of the panel joiner.
                 panel_join_hole_dia     = itx_split_join_hole_dia, //diameter of the screw holes for the panel to tray join.

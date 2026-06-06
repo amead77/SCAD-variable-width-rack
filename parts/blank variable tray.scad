@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.2-2026/06/06r23";
+version = "v0.2-2026/06/06r47";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -283,6 +283,7 @@ module variable_side_slide(
     tray_u_size           = 1,
     side                  = 0,
     add_slides            = 1,
+    side_support_single   = false,
     tray_depth            = 330,
     tray_x0               = undef,
     tray_w                = undef,
@@ -301,8 +302,12 @@ module variable_side_slide(
     tray_height    = max((u_height * tray_u_size) - 1, post_slide_cutout);
     tab_height     = post_slide_cutout;
     z_base         = (hole_offset_z / 2) - (post_slide_cutout / 2.1);
-    max_u_segments = ceil(tray_u_size) + 1;
-
+    // OpenSCAD variable scope is lexical; compute this in one expression so it is always defined.
+    // side_support_single=true means exactly one (lowest) slide row.
+    max_u_segments = (ceil(tray_u_size) + 1);
+    //max_u_segments = side_support_single ? 1 : (ceil(tray_u_size) + 1);
+    railcount = side_support_single ? 0 : 2;
+    
     left_side_x  = is_undef(tray_x0) ? (post_width + post_slide_width + tray_post_clearance) : tray_x0;
     right_side_x = is_undef(tray_w)
         ? (rack_width - post_width - post_slide_width - tray_post_clearance - tray_side_thickness)
@@ -316,7 +321,8 @@ module variable_side_slide(
         }
         if (add_slides == 1) {
             for (u_seg = [0 : max_u_segments - 1]) {
-                for (slot = [0 : 2]) {
+                for (slot = [0 : railcount]) {
+                //for (slot = [0 : 2]) {
                     z_pos = (u_seg * u_height) + z_base + (slot * hole_spacing);
                     if (z_pos + tab_height <= tray_height + 0.001) {
                         translate([left_slide_x, front_panel_thickness, z_pos]) {
@@ -332,7 +338,7 @@ module variable_side_slide(
         }
         if (add_slides == 1) {
             for (u_seg = [0 : max_u_segments - 1]) {
-                for (slot = [0 : 2]) {
+                for (slot = [0 : railcount]) {
                     z_pos = (u_seg * u_height) + z_base + (slot * hole_spacing);
                     if (z_pos + tab_height <= tray_height + 0.001) {
                         translate([right_slide_x, front_panel_thickness, z_pos]) {
@@ -589,7 +595,10 @@ module variable_split_panel_joiner(
                     cube([right_x - left_x + jd, join_y, jd]);
         }
         // Side join holes. Their spacing is controlled in Y so it stays within the rails.
-        for (y_h = [y_hole_a, y_hole_b]) {
+        //for (y_h = [y_hole_a, y_hole_b]) {
+        //echo("y_h: ", y_h);
+        y_h = y_hole_b;
+        {
             if (y_h > y0 && y_h < y0 + join_y + 0.001) {
                 for (z_h = [z_first : hole_spacing : join_top_z + 0.001]) {
                     if (z_h > bot_z - 0.001) {
@@ -665,7 +674,9 @@ module variable_split_tray_side_holes(
     // Total reach: through tray wall + clearance gap + through joiner strip + 1 mm safety.
     reach   = tray_side_thickness + panel_join_clearance + jd + 1;
 
-    for (y_h = [y_hole_a, y_hole_b]) {
+    //for (y_h = [y_hole_a, y_hole_b]) {
+    y_h = y_hole_b;
+    {
         for (z_h = [z_first : hole_spacing : join_top_z + 0.001]) {
             if (z_h > bot_z - 0.001) {
                 // Left wall — screw enters from outside left, travels in +X direction.
@@ -812,6 +823,7 @@ module blank_variable_tray(
     side_support            = 1, //0 or 1 to add gussets between front panel and sides when panel is taller than sides
     side_support_back       = 40, //how far back the gussets extend (mm)
     side_support_thickness  = 2.0, //normally the same as tray_side_thickness, but can be different if you want thinner gussets
+    side_support_single     = false, // if true, only add a single side support rail, at the lowest position.
     tray_side_thickness     = 2.0, //thickness of the tray side walls in mm.
     front_panel_thickness   = 3.0, //consider your screw lengths. 3mm is usually fine for m6x16 screws.
     back_panel              = 0, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
@@ -955,6 +967,7 @@ module blank_variable_tray(
                     tray_w            = tray_w,
                     front_panel_thickness = front_panel_thickness,
                     u_height          = u_height,
+                    side_support_single = side_support_single,
                     post_slide_cutout = post_slide_cutout - post_slide_clearance,
                     hole_clearance    = hole_clearance,
                     hole_offset_z     = hole_offset_z,
@@ -974,6 +987,7 @@ module blank_variable_tray(
                     tray_w            = tray_w,
                     front_panel_thickness = front_panel_thickness,
                     u_height          = u_height,
+                    side_support_single = side_support_single,
                     post_slide_cutout = post_slide_cutout - post_slide_clearance,
                     hole_clearance    = hole_clearance,
                     hole_offset_z     = hole_offset_z,
