@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/06r13";
+version = "v0.1-2026/06/06r14";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -383,9 +383,15 @@ module variable_tray_front_gusset(
 
     if ((panel_top > tray_top + 0.01) && (support_back > 0) && (support_thickness > 0)) {
         hull() {
-            translate([x0, y0, panel_top - eps]) { cube([support_thickness, eps, eps]); }
-            translate([x0, y0, tray_top])        { cube([support_thickness, eps, eps]); }
-            translate([x0, y1, tray_top])        { cube([support_thickness, eps, eps]); }
+            translate([x0, y0, panel_top - eps]) { 
+                cube([support_thickness, eps, eps]); 
+            }
+            translate([x0, y0, tray_top]) { 
+                cube([support_thickness, eps, eps]); 
+            }
+            translate([x0, y1, tray_top]) { 
+                cube([support_thickness, eps, eps]); 
+            }
         }
     }
 }
