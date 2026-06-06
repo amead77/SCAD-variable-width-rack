@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.2-2026/06/06r11";
+version = "v0.2-2026/06/06r23";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -553,8 +553,9 @@ module variable_split_panel_joiner(
     panel_join_clearance,
     panel_join_hole_dia,
     panel_join_offset_from_edge,
+    hole_offset_z,
+    hole_spacing,
     join_top_z,
-    gusset_hole_z = undef,
     front_panel_bottom_reinforce_mm = 0,
     front_panel_top_reinforce_mm    = 0
 ) {
@@ -571,9 +572,8 @@ module variable_split_panel_joiner(
     hole_offset_y = min(max(panel_join_offset_from_edge, 0.5), max((join_y / 2) - 0.5, 0.5));
     y_hole_a = y0 + hole_offset_y;
     y_hole_b = y0 + join_y - hole_offset_y;
-    z_side   = bot_z + (join_h / 2);
+    z_first  = hole_offset_z / 2;
     z_base   = bot_z + (jd / 2);
-    z_gusset = is_undef(gusset_hole_z) ? undef : gusset_hole_z;
     base_x_a = left_x + jd + ((right_x - left_x - (2 * jd)) / 3);
     base_x_b = left_x + jd + ((right_x - left_x - (2 * jd)) * 2 / 3);
 
@@ -591,14 +591,21 @@ module variable_split_panel_joiner(
         // Side join holes. Their spacing is controlled in Y so it stays within the rails.
         for (y_h = [y_hole_a, y_hole_b]) {
             if (y_h > y0 && y_h < y0 + join_y + 0.001) {
-                translate([left_x  - 0.01, y_h, z_side]) rotate([0,  90, 0])
-                    cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
-                translate([right_x - 0.01, y_h, z_side]) rotate([0,  90, 0])
-                    cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
-                if (!is_undef(z_gusset) && z_gusset > z_side + 0.001) {
-                    translate([left_x  - 0.01, y_h, z_gusset]) rotate([0,  90, 0])
+                for (z_h = [z_first : hole_spacing : join_top_z + 0.001]) {
+                    if (z_h > bot_z - 0.001) {
+                        translate([left_x  - 0.01, y_h, z_h]) rotate([0,  90, 0])
+                            cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                        translate([right_x - 0.01, y_h, z_h]) rotate([0,  90, 0])
+                            cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                    }
+                }
+                // Ensure a top hole exists in the gusset region when join_top_z does not land
+                // on the standard rail spacing increment.
+                z_last = z_first + floor(max(join_top_z - z_first, 0) / hole_spacing) * hole_spacing;
+                if ((join_top_z - z_last) > 0.5) {
+                    translate([left_x  - 0.01, y_h, join_top_z]) rotate([0,  90, 0])
                         cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
-                    translate([right_x - 0.01, y_h, z_gusset]) rotate([0,  90, 0])
+                    translate([right_x - 0.01, y_h, join_top_z]) rotate([0,  90, 0])
                         cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
                 }
             }
@@ -632,7 +639,9 @@ module variable_split_tray_side_holes(
     panel_join_hole_dia,
     panel_join_cs_dia,
     panel_join_offset_from_edge,
-    gusset_hole_z = undef,
+    hole_offset_z,
+    hole_spacing,
+    join_top_z,
     front_panel_bottom_reinforce_mm = 0
 ) {
     jd      = panel_join_thickness;
@@ -646,9 +655,8 @@ module variable_split_tray_side_holes(
     y_hole_b = front_panel_thickness + join_y - hole_offset_y;
 
     // Countersink hole rows through the side walls / gusset area.
-    z_side   = bot_z + max((tray_height - bot_z) / 2, 1);
+    z_first  = hole_offset_z / 2;
     z_base   = -0.01;
-    z_gusset = is_undef(gusset_hole_z) ? undef : gusset_hole_z;
     base_x_a = left_x + jd + ((right_x - left_x - (2 * jd)) / 3);
     base_x_b = left_x + jd + ((right_x - left_x - (2 * jd)) * 2 / 3);
 
@@ -658,8 +666,8 @@ module variable_split_tray_side_holes(
     reach   = tray_side_thickness + panel_join_clearance + jd + 1;
 
     for (y_h = [y_hole_a, y_hole_b]) {
-        for (z_h = [z_side, z_gusset]) {
-            if (!is_undef(z_h) && z_h > bot_z - 0.001 && z_h < tray_height + 0.001) {
+        for (z_h = [z_first : hole_spacing : join_top_z + 0.001]) {
+            if (z_h > bot_z - 0.001) {
                 // Left wall — screw enters from outside left, travels in +X direction.
                 translate([tray_x0 - 0.01, y_h, z_h]) rotate([0, 90, 0]) {
                     cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
@@ -676,8 +684,29 @@ module variable_split_tray_side_holes(
                 }
             }
         }
-
+        // Ensure a top hole exists in the gusset region when join_top_z does not land
+        // on the standard rail spacing increment.
+        //
+        // Note: don't do this. makes a weird part hole, due to clipping the edge of the gusset.
+        /*
+        z_last = z_first + floor(max(join_top_z - z_first, 0) / hole_spacing) * hole_spacing;
+        if ((join_top_z - z_last) > 0.5 && join_top_z > bot_z - 0.001) {
+            translate([tray_x0 - 0.01, y_h, join_top_z]) rotate([0, 90, 0]) {
+                cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
+                         h = cs_d + 0.01, $fn = 32);
+                translate([0, 0, cs_d])
+                    cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+            }
+            translate([tray_x0 + tray_w + 0.01, y_h, join_top_z]) rotate([0, -90, 0]) {
+                cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
+                         h = cs_d + 0.01, $fn = 32);
+                translate([0, 0, cs_d])
+                    cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+            }
+        }
+        */
         // Base holes through the tray floor so the panel can also be joined from underneath.
+        // I chose 2 holes, maybe i'll look at more later.
         for (x_h = [base_x_a, base_x_b]) {
             translate([x_h, front_panel_thickness + (join_y / 2), z_base]) {
                 cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
@@ -813,6 +842,7 @@ module blank_variable_tray(
     panel_join_clearance    = 0.3, //clearance for the side parts of the tray to panel join.
     panel_join_thickness    = 5.0, //thickness of the panel joiner.
     panel_join_hole_dia     = 3.5, //diameter of the screw holes for the panel to tray join.
+    panel_join_hole_offset_z = 15.875, //offset of the first panel join hole from the bottom of the front panel, in mm.
     panel_join_cs_dia       = 7.0, //countersink the panel join holes on the outer faces.
     panel_join_length       = 15.0, //length of the panel join in the Y direction.
     panel_join_offset_from_edge = 10.0 //distance from the front/back edge of the joiner length to the center of the panel join holes.
@@ -894,10 +924,9 @@ module blank_variable_tray(
             panel_join_clearance            = panel_join_clearance,
             panel_join_hole_dia             = panel_join_hole_dia,
             panel_join_offset_from_edge     = panel_join_offset_from_edge,
+            hole_offset_z                   = hole_offset_z + panel_join_hole_offset_z,
+            hole_spacing                    = hole_spacing,
             join_top_z                      = split_joiner_top_z,
-            gusset_hole_z                   = (side_support == 1 && panel_height_mm > tray_height)
-                ? max(split_joiner_top_z - 1, tray_thickness + 1)
-                : undef,
             front_panel_bottom_reinforce_mm = front_panel_bottom_reinforce_mm,
             front_panel_top_reinforce_mm    = front_panel_top_reinforce_mm
         );
@@ -906,8 +935,8 @@ module blank_variable_tray(
     // -------------------------------------------------------------------------
     // Tray body — floor, side walls (with slides), optional rear wall.
     // In split modes the side walls get countersunk joining holes subtracted.
-    // Gussets are omitted in split modes: the joiner + screws provide that
-    // structural role, and gussets cannot span two separate printed pieces.
+    // Gussets can still be included in split modes; side-hole rows continue into
+    // the gusset region so panel and tray fastening remains aligned.
     // -------------------------------------------------------------------------
     if (show_tray_body) {
         difference() {
@@ -985,8 +1014,8 @@ module blank_variable_tray(
                     }
                 }
 
-                // Gussets — only for standard (non-split) tray mode.
-                if (side_support == 1 && !is_split_mode) {
+                // Gussets on tray side (including split modes).
+                if (side_support == 1) {
                     variable_tray_front_gusset(
                         panel_u_size,
                         tray_u_size_resolved,
@@ -1039,9 +1068,9 @@ module blank_variable_tray(
                     panel_join_hole_dia             = panel_join_hole_dia,
                     panel_join_cs_dia               = panel_join_cs_dia,
                     panel_join_offset_from_edge     = panel_join_offset_from_edge,
-                    gusset_hole_z                   = (side_support == 1 && panel_height_mm > tray_height)
-                        ? max(split_joiner_top_z - 1, tray_thickness + 1)
-                        : undef,
+                    hole_offset_z                   = hole_offset_z + panel_join_hole_offset_z,
+                    hole_spacing                    = hole_spacing,
+                    join_top_z                      = split_joiner_top_z,
                     front_panel_bottom_reinforce_mm = front_panel_bottom_reinforce_mm
                 );
             }

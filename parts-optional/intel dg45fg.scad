@@ -7,7 +7,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/06r16";
+version = "v0.1-2026/06/06r26";
 */
 
 
@@ -60,6 +60,16 @@ flex_itx_position_x = 270;
 flex_itx_position_y = 333;
 flex_itx_position_z = tray_thickness+0.1; //add a tiny bit because i have no idea why the model sits that much higher
 flex_itx_psu_rotated = true; //[true, false] set to true to rotate the flex psu 180 deg to have the power in the rear
+
+//"tray", "panel", "split_panel_show", "split_panel_tray", "split_panel_panel"
+itx_split = "split_panel_show"; //["tray", "panel", "split_panel_show", "split_panel_tray", "split_panel_panel"]
+itx_split_join_thickness = 5.0; //0.1
+itx_split_join_hole_dia = 3.5; //0.1
+itx_split_join_cs_dia = 7.0; //0.1
+itx_split_join_hole_offset_z = 15.875; //0.001
+itx_split_panel_join_length = 25.0; //0.1
+itx_split_panel_join_offset_from_edge = 7.0; //0.1
+
 
 module board_front_panel_cutout() {
     translate([board_front_panel_cutout_offset_x, -0.1, board_front_panel_cutout_offset_z]) {
@@ -125,30 +135,31 @@ module itx_standoff(incl_board = true) {
 
 render() {
     union() {
-        if (flex_itx_psu) {
-            color("green") {
+        if (itx_split == "split_panel_show" || itx_split == "split_panel_tray" || itx_split == "tray") {
+            if (flex_itx_psu) {
+                color("green") {
 
-                translate([flex_itx_position_x, flex_itx_position_y, flex_itx_position_z]) {
-                    if (flex_itx_psu_rotated) {
-                        rotate([0, 0, 180]) {
+                    translate([flex_itx_position_x, flex_itx_position_y, flex_itx_position_z]) {
+                        if (flex_itx_psu_rotated) {
+                            rotate([0, 0, 180]) {
+                                flex_itx_mount();
+                            }
+                        } else {
                             flex_itx_mount();
                         }
-                    } else {
-                        flex_itx_mount();
                     }
                 }
             }
-        }
 
-        color("lightgray") {
-            translate([actual_board_position_x, actual_board_position_y, 0]) {
-                itx_standoff(incl_board = false);
+            color("lightgray") {
+                translate([actual_board_position_x, actual_board_position_y, 0]) {
+                    itx_standoff(incl_board = false);
+                }
             }
         }
-
         difference() {
             blank_variable_tray(
-                mode                    = "split_panel_show", //"tray", "panel", "split_panel_show", "split_panel_tray", "split_panel_panel"
+                mode                    = itx_split, //"tray", "panel", "split_panel_show", "split_panel_tray", "split_panel_panel"
                 panel_u_size            = 2, // front panel height in U
                 front_panel_top_reinforce_mm     = 8, //a reinforcing lip at the top of the panel
                 front_panel_bottom_reinforce_mm  = 0, //same but bottom. these are on the back of the panel
@@ -202,11 +213,12 @@ render() {
                                             //So make the post cutouts bigger instead.
                 hole_clearance          = 0.0, //clearance around the panel holes, for screwing into the posts.
                 panel_join_clearance    = 0.3, //clearance for the side parts of the tray to panel join.
-                panel_join_thickness    = 5.0, //thickness of the panel joiner.
-                panel_join_hole_dia     = 3.5, //diameter of the screw holes for the panel to tray join.
-                panel_join_cs_dia       = 7.0, //countersink the panel join holes on the outer faces.
-                panel_join_length       = 25.0, //length of the panel join in the Y direction.
-                panel_join_offset_from_edge = 7.0 //distance from the front/back edge of the joiner length to the center of the panel join holes.
+                panel_join_thickness    = itx_split_join_thickness, //thickness of the panel joiner.
+                panel_join_hole_dia     = itx_split_join_hole_dia, //diameter of the screw holes for the panel to tray join.
+                panel_join_cs_dia       = itx_split_join_cs_dia, //countersink the panel join holes on the outer faces.
+                panel_join_hole_offset_z = itx_split_join_hole_offset_z, //offset of the first panel join hole from the bottom of the front panel, in mm.
+                panel_join_length       = itx_split_panel_join_length, //length of the panel join in the Y direction.
+                panel_join_offset_from_edge = itx_split_panel_join_offset_from_edge //distance from the front/back edge of the joiner length to the center of the panel join holes.
             );
             //color("green") {
             //    board_front_panel_cutout();
