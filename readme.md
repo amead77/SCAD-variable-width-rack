@@ -85,6 +85,13 @@ More info on how to use later.
 
 ![Variable tray](images-info/blank-tray.png)
 
+You can also split the trays for easier printing.
+
+![ts1](images-info/traysplit1.png)
+
+![ts2](images-info/traysplit2.png)
+
+![ts3](images-info/traysplit3.png)
 
 ### Panels (Blanking Panels)
 

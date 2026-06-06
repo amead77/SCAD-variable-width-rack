@@ -186,57 +186,71 @@ That way you get all the options.
 
 ### `blank_variable_tray()` - Variable tray or variable panel
 
-Builds either a tray or a panel using the same front-panel geometry. This is the preferred module for most new trays and custom panels.
+Builds either a tray or a panel using the same front-panel geometry. This is the preferred module for most new trays and custom panels. Can also create a tray/panel split, so you can print both parts and screw together.
 
 ```scad
 module blank_variable_tray(
-    mode = "tray",                          // "tray" builds a tray, "panel" builds only the front panel.
-    panel_u_size = 1,                        // Front panel height in U, can be fractional.
-    front_panel_top_reinforce_mm = 0,        // Height of the top reinforcement lip behind the panel.
-    front_panel_bottom_reinforce_mm = 0,     // Height of the bottom reinforcement lip behind the panel.
-    tray_u_size = undef,                     // Tray side height in U; undef makes it match panel_u_size.
-    tray_depth_scale = 1,                    // Tray depth as a fraction of rack_depth.
-    holes = 2,                               // Mounting holes per side: typically 2, 3, 4, or 6.
-    import_file = "",                       // Optional SVG/STL/3MF artwork file for the front panel.
-    import_type = "none",                   // Artwork type: "svg", "stl", or "none".
-    import_width = 0,                        // Target width for imported artwork; 0 uses auto sizing.
-    import_height = 0,                       // Target height for imported artwork; 0 uses auto sizing.
-    import_depth = 0.8,                      // Emboss or engrave depth for imported artwork.
-    import_offset_x = 0,                     // X offset for imported artwork from panel centre.
-    import_offset_z = 0,                     // Z offset for imported artwork from panel centre.
-    import_mode = "emboss",                 // "emboss" raises the artwork, "engrave" cuts it in.
-    panel_text = "",                        // Optional text placed on the front panel.
-    panel_text_font = "Liberation Mono:style=Bold", // Font used for the front-panel text.
-    panel_text_size = 10,                    // Font size for the front-panel text.
-    panel_text_depth = 0.8,                  // Emboss or engrave depth for the front-panel text.
-    panel_text_offset_x = 0,                 // X offset for the text from panel centre.
-    panel_text_offset_z = 0,                 // Z offset for the text from panel centre.
-    panel_text_mode = "engrave",            // "emboss" or "engrave" for the panel text.
-    side_support = 1,                        // 1 adds front gussets when the panel is taller than the tray sides.
-    side_support_back = 40,                  // How far back the front gussets extend.
-    side_support_thickness = 2.0,            // Thickness of the front gussets.
-    tray_side_thickness = 2.0,               // Thickness of the tray side walls.
-    front_panel_thickness = 3.0,             // Thickness of the front panel face.
-    back_panel = 0,                          // 1 adds a rear wall, turning the tray into more of a drawer.
-    back_panel_thickness = 2.0,              // Thickness of the rear wall.
-    back_panel_height = 1.0,                 // Rear wall height in U.
-    back_panel_chamfer = 0.0,                // Chamfer amount on the front-top edge of the rear wall.
-    back_panel_chamfer_ang = 45.0,           // Chamfer angle for the rear wall.
-    tray_thickness = 5.0,                    // Thickness of the tray base.
-    rack_width = 350,                        // External rack width used to derive tray and panel width.
-    rack_depth = 330,                        // External rack depth used to derive tray depth.
-    post_width = 15.875,                     // Width of one rack post.
-    hole_d = 6.4,                            // Diameter of the panel mounting holes.
-    u_height = 44.5,                         // Height of one rack unit in mm.
-    hole_offset_z = 12.7,                    // Height from the bottom to the first hole centre.
-    hole_spacing = 15.875,                   // Vertical spacing between hole centres.
-    front_panel_undersizing = 0.1,           // Amount trimmed from panel edges for fit clearance.
-    front_panel_edge_radius = 2.0,           // Corner radius on the front panel.
-    tray_post_clearance = 0.5,               // Clearance gap between tray sides and posts.
-    tray_side_slides = 1,                    // 1 adds tray side slides that engage the rack posts.
-    post_slide_width = 3.0,                  // Width of the tray side slide tabs.
-    post_slide_cutout = 3.2,                 // Height of the matching slide cutout profile.
-    hole_clearance = 0.3                     // Clearance value used in slide and hole fit calculations.
+    mode                    = "tray", //"tray", "panel", "split_panel_show", "split_panel_tray", "split_panel_panel"
+    panel_u_size            = 1, // front panel height in U
+    front_panel_top_reinforce_mm     = 0, //a reinforcing lip at the top of the panel
+    front_panel_bottom_reinforce_mm  = 0, //same but bottom. these are on the back of the panel
+    tray_u_size             = undef, // side/base height in U. if undef, defaults to panel_u_size. if 0.6 is used, you can get 2 slides per side, 0.5 would only make the sides high enough for 1 slide
+    tray_depth_scale        = 1, // 0 to 1, fraction of rack_width. 1 = full rack_width depth (330mm), 0.5 = rack_width/2 depth (165mm), etc.
+    holes                   = 2, // mounting holes PER SIDE (2, 3, 4, or 6). I need to revisit this, as '2' would put 4 holes in each side of a 2U panel, but you might only want 2 each side (top/bottom)
+    import_file             = "", //used for importing an SVG or STL/3MF onto the front panel face, see variable_front_panel_face_import() parameters below.
+    import_type             = "none", //"svg", "stl", or "none"
+    import_width            = 0, //if 0, defaults to 50% of the front panel inner width. used for imported SVGs and STLs/3MFs.
+    import_height           = 0, //if 0, defaults to 50% of the front panel inner height. used for imported SVGs and STLs/3MFs.
+    import_depth            = 0.8, //how far the imported design is embossed (positive) or engraved (negative). if 0, defaults to 0.8mm for SVGs, and 50% of the target width for STLs/3MFs.
+    import_offset_x         = 0, //X offset for imported design from exact center of front panel. positive values move right, negative values move left.
+    import_offset_z         = 0, //Z offset for imported design from exact center of front panel. positive values move up, negative values move down.
+    import_mode             = "emboss", // "emboss" (raised from front face) or "engrave" (cut into front face)
+    panel_text              = "", //optional text to add to the front panel
+    panel_text_font         = "Liberation Mono:style=Bold", //font for the panel text, using the format "FontName:style=Style". you can use any font installed on your system, and specify the style if needed. check the OpenSCAD documentation for details on font naming and styles.
+    panel_text_size         = 10, //font size for the panel text
+    panel_text_depth        = 0.8, //depth for engraving the panel text. ignored if panel_text is empty.
+    panel_text_offset_x     = 0, //X offset for panel text from exact center. positive values move right, negative values move left.
+    panel_text_offset_z     = 0, //Z offset for panel text from exact center. positive values move up, negative values move down.
+    panel_text_mode         = "engrave", // "emboss" or "engrave" for the panel text
+    side_support            = 1, //0 or 1 to add gussets between front panel and sides when panel is taller than sides
+    side_support_back       = 40, //how far back the gussets extend (mm)
+    side_support_thickness  = 2.0, //normally the same as tray_side_thickness, but can be different if you want thinner gussets
+    side_support_single     = false, // if true, only add a single side support rail per-U, at the lowest position.
+    tray_side_thickness     = 2.0, //thickness of the tray side walls in mm.
+    front_panel_thickness   = 3.0, //consider your screw lengths. 3mm is usually fine for m6x16 screws.
+    back_panel              = 0, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
+    back_panel_thickness    = 2.0, //the rear wall thickness, if you have back_panel=1.
+    back_panel_height       = 1.0, //in U units, converted to mm internally
+    back_panel_chamfer      = 0.0, //mm front edge chamfer on the rear wall. primary purpose is for printing overhang angle reduction.
+    back_panel_chamfer_ang  = 45.0, //degrees for the rear wall chamfer angle. 45 degrees is a good starting point, but you can adjust as needed. this is only used if back_panel_chamfer > 0.
+    tray_thickness          = 5.0, //thickness of the tray base in mm.
+    rack_width              = 350, //this is the external width of the rack, if single-width, using this and post_width is what determines the panel and tray widths and depths.
+    rack_depth              = 330, //this can be different than the width
+    post_width              = 15.875, //a normal single-width rack. If using double-width and/or sliders, this will be wider, but calculated automatically based on this.
+    hole_d                  = 6.4, //holes sized for m6 screws, but slightly oversized for clearance.
+    u_height                = 44.5, //standard U height in mm.
+    hole_offset_z           = 12.7, //initial hole offset from the bottom panel/rack post in mm.
+    hole_spacing            = 15.875, //spacing between holes in mm, standard U spacing.
+    front_panel_undersizing = 0.1, //mm the front panel is undersized by on each edge to ensure it doesn't interfere with other panels
+    front_panel_edge_radius = 2.0, //mm radius for front panel edges. set to 0 for sharp edges.
+    tray_post_clearance     = 0.6, //0.5mm clearance, this makes 1mm total tray clearance. adjust as needed. modifying this might require tweaking the post_slide_cutout and hole_clearance to ensure the holes still clear properly.
+    tray_side_slides        = 1,   //0 or 1 to add side slides that go into the posts. these are designed to fit into the post 
+                                    //cutouts defined by post_slide_cutout/width, so adjust those dimensions if you change the slide design.
+    post_slide_width        = 2.8, //*these next 2 are for the slides that go into the posts on the rack.
+    post_slide_cutout       = 3.6, //*ideally you should create a 1U post for testing the fit of these before printing everything.
+                                   //*you would be better off adjusting the post dimensions, rather than changing the tray dimensions, 
+                                   //and create posts to fit the trays. making the side slides smaller to fit would make them weaker. 
+                                   //So make the post cutouts bigger instead.
+    post_slide_clearance    = 0.4, //clearance for the fit of the tray side slides into the post cutouts. adjust as needed for fit; this is separate from the tray_post_clearance to allow for different clearances on the sides vs the back of the tray if needed.
+    hole_clearance          = 0.0, //clearance around the panel holes, for screwing into the posts.
+    panel_join_clearance    = 0.3, //clearance for the side parts of the tray to panel join.
+    panel_join_thickness    = 5.0, //thickness of the panel joiner.
+    panel_join_hole_dia     = 3.5, //diameter of the screw holes for the panel to tray join.
+    panel_join_hole_offset_z = 15.875, //offset of the first panel join hole from the bottom of the front panel, in mm.
+    panel_join_cs_dia       = 7.0, //countersink the panel join holes on the outer faces.
+    panel_join_length       = 15.0, //length of the panel join in the Y direction.
+    panel_join_offset_from_edge = 10.0 //distance from the front/back edge of the joiner length to the center of the panel join holes.
+
 )
 ```
 
