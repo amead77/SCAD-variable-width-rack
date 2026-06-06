@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/01r05";
+version = "v0.1-2026/06/06r01";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -57,7 +57,7 @@ module variable_front_panel_holes(
     hole_offset_z = 12.7,
     hole_spacing = 15.875,
     post_width   = 15.875,
-    rack_width   = 330,
+    rack_width   = 350,
     hole_d       = 6.3
 ) {
     holes_per_u    = variable_holes_per_u(holes);
@@ -94,7 +94,7 @@ module variable_front_panel_holes(
 module variable_front_panel_body(
     panel_height,
     front_panel_thickness            = 3.0,
-    rack_width                       = 330,
+    rack_width                       = 350,
     post_width                       = 15.875,
     front_panel_undersizing          = 0.1,
     front_panel_edge_radius          = 2.0,
@@ -166,7 +166,7 @@ module variable_front_panel_face_import(
     import_offset_x         = 0,
     import_offset_z         = 0,
     import_mode             = "emboss",
-    rack_width              = 330,
+    rack_width              = 350,
     front_panel_undersizing = 0.1
 ) {
     if ((import_type != "none") && (import_file != "")) {
@@ -230,7 +230,7 @@ module variable_front_panel_face_text(
     panel_text_offset_x     = 0,
     panel_text_offset_z     = 0,
     panel_text_mode         = "engrave",
-    rack_width              = 330,
+    rack_width              = 350,
     front_panel_undersizing = 0.1
 ) {
     if ((panel_text != "") && (panel_text_size > 0) && (panel_text_depth > 0)) {
@@ -296,7 +296,7 @@ module variable_side_slide(
     post_width            = 15.875,
     tray_post_clearance   = 0.5,
     hole_spacing          = 15.875,
-    rack_width            = 330
+    rack_width            = 350
 ) {
     tray_height    = max((u_height * tray_u_size) - 1, post_slide_cutout - hole_clearance);
     tab_height     = post_slide_cutout - hole_clearance;
@@ -365,7 +365,7 @@ module variable_tray_front_gusset(
     post_width            = 15.875,
     post_slide_width      = 3.0,
     tray_post_clearance   = 0.5,
-    rack_width            = 330
+    rack_width            = 350
 ) {
     panel_top = (u_height * panel_u_size) - 1;
     tray_top  = max((u_height * tray_u_size) - 1, post_slide_cutout - hole_clearance);
@@ -422,7 +422,7 @@ module blank_variable_front_panel(
     panel_text_offset_z     = 0,
     panel_text_mode         = "engrave",
     front_panel_thickness   = 3.0,
-    rack_width              = 330,
+    rack_width              = 350,
     post_width              = 15.875,
     hole_d                  = 6.3,
     u_height                = 44.5,
