@@ -4,10 +4,10 @@
 // ***        To create custom trays, look at the other scads for an example           ***
 // ***************************************************************************************
 //
-// 330mm / 13 inch rack parts (by default) This is for larger format printers, such as Creality K2 plus, Prusa XL etc
-// This is 330mm from the left edge of the left post, to the right edge of the right post, assuming single posts.
+// 350mm / 14 inch rack parts (by default) This is for larger format printers, such as Creality K2 plus, Prusa XL etc
+// This is 350mm from the left edge of the left post, to the right edge of the right post, assuming single posts.
 //
-// THERE IS NO REQUIREMENT FOR IT TO BE 330mm. You can override all of the defaults.
+// THERE IS NO REQUIREMENT FOR IT TO BE 350mm x 330mm. You can override all of the defaults.
 //
 // I designed this specifically to allow the rear of the tray to slide into the post.
 // This is for added support on the rear, and because other designs with front and rear attachment
@@ -35,7 +35,7 @@
 /**
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/06/01r14";
+version = "v0.1-2026/06/06r02";
 **/
 
 include <parts/rack posts.scad>;
@@ -553,3 +553,4 @@ if (part == "dell optiplex 3080") {
         );
     }
 }
+
