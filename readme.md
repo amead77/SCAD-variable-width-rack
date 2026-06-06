@@ -22,7 +22,7 @@ A quick overview
 
 Below is a screenshot of OpenSCAD with a assembly view. This is just to show an example of some of what is possible. Everything is customisable.
 
-For API reference see [functions.md](functions.md)
+## For API reference see [functions.md](functions.md)
 
 I've numbered some arrows so you can see:
 
@@ -60,7 +60,7 @@ Now the side panel. You don't have to have honeycomb, you can have a few differe
 
 ## Design Goals
 
-- **Rear-slide tray support** — trays slide into a slot in the rear post rather than bolting front and rear. This means trays can be removed without dismantling the rack.
+- **Rear-slide tray support** — trays slide into a slot in the rear post rather than bolting front and rear. This means trays can be removed without dismantling the rack. This was my biggest gripe with the 10" rack designs.
 - **Fully parametric** — all dimensions, hole counts, heights and clearances are driven by variables. Use the OpenSCAD Customizer to configure parts without editing code.
 - **Modular** — mix single/double-wide posts, variable-height trays and panels, and optional joiners.
 
@@ -222,7 +222,7 @@ This project is licensed under **Creative Commons - Attribution - Non-Commercial
 
 &copy; 2026 Adam Mead
 
-
+All images of Raspberry Pi and Dell logos are their own. I have only included to prevent non existent file errors.
 
 
 ## THIS PIC IS NOT MY DESIGN, but I did print it and this is what it produced. It is the reason I made my design:
