@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.2-2026/06/06r06";
+version = "v0.2-2026/06/06r11";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -549,45 +549,65 @@ module variable_split_panel_joiner(
     front_panel_thickness,
     tray_side_thickness,
     panel_join_thickness,
+    panel_join_length,
     panel_join_clearance,
     panel_join_hole_dia,
     panel_join_offset_from_edge,
+    join_top_z,
+    gusset_hole_z = undef,
     front_panel_bottom_reinforce_mm = 0,
     front_panel_top_reinforce_mm    = 0
 ) {
-    jd      = panel_join_thickness;   // joiner strip cross-section (both depth Y and width X)
+    jd      = panel_join_thickness;
+    join_y  = max(panel_join_length, jd);
     left_x  = tray_x0 + tray_side_thickness + panel_join_clearance;
     right_x = tray_x0 + tray_w - tray_side_thickness - panel_join_clearance - jd;
 
     // Start joiner above the tray base floor AND above any bottom reinforce lip.
     bot_z   = max(tray_thickness, front_panel_bottom_reinforce_mm);
-    join_h  = max(tray_height - bot_z, 0.01);
+    join_h  = max(join_top_z - bot_z, 0.01);
 
     y0      = front_panel_thickness;
-    y_hole  = y0 + jd / 2;
-
-    // Screw hole Z positions — guard so both fall within the usable joiner height.
-    hole_z1 = bot_z + panel_join_offset_from_edge;
-    hole_z2 = tray_height - panel_join_offset_from_edge;
+    hole_offset_y = min(max(panel_join_offset_from_edge, 0.5), max((join_y / 2) - 0.5, 0.5));
+    y_hole_a = y0 + hole_offset_y;
+    y_hole_b = y0 + join_y - hole_offset_y;
+    z_side   = bot_z + (join_h / 2);
+    z_base   = bot_z + (jd / 2);
+    z_gusset = is_undef(gusset_hole_z) ? undef : gusset_hole_z;
+    base_x_a = left_x + jd + ((right_x - left_x - (2 * jd)) / 3);
+    base_x_b = left_x + jd + ((right_x - left_x - (2 * jd)) * 2 / 3);
 
     difference() {
         union() {
             // Left vertical strip
-            translate([left_x, y0, bot_z]) cube([jd, jd, join_h]);
+            translate([left_x, y0, bot_z]) cube([jd, join_y, join_h]);
             // Right vertical strip
-            translate([right_x, y0, bot_z]) cube([jd, jd, join_h]);
+            translate([right_x, y0, bot_z]) cube([jd, join_y, join_h]);
             // Bottom connecting bar of the U (rests on tray base floor when assembled)
             if (right_x > left_x + jd + 0.01)
                 translate([left_x, y0, bot_z])
-                    cube([right_x - left_x + jd, jd, jd]);
+                    cube([right_x - left_x + jd, join_y, jd]);
         }
-        // Screw clearance holes through each strip in the X direction
-        for (z_h = [hole_z1, hole_z2]) {
-            if (z_h > bot_z - 0.001 && z_h < tray_height + 0.001) {
-                translate([left_x  - 0.01, y_hole, z_h]) rotate([0,  90, 0])
+        // Side join holes. Their spacing is controlled in Y so it stays within the rails.
+        for (y_h = [y_hole_a, y_hole_b]) {
+            if (y_h > y0 && y_h < y0 + join_y + 0.001) {
+                translate([left_x  - 0.01, y_h, z_side]) rotate([0,  90, 0])
                     cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
-                translate([right_x - 0.01, y_hole, z_h]) rotate([0,  90, 0])
+                translate([right_x - 0.01, y_h, z_side]) rotate([0,  90, 0])
                     cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                if (!is_undef(z_gusset) && z_gusset > z_side + 0.001) {
+                    translate([left_x  - 0.01, y_h, z_gusset]) rotate([0,  90, 0])
+                        cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                    translate([right_x - 0.01, y_h, z_gusset]) rotate([0,  90, 0])
+                        cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                }
+            }
+        }
+        // Underside joining holes through the tray base / joiner base.
+        for (x_h = [base_x_a, base_x_b]) {
+            if (x_h > left_x + jd && x_h < right_x - jd) {
+                translate([x_h, y0 + (join_y / 2), bot_z - 0.01])
+                    cylinder(d = panel_join_hole_dia, h = jd + 2, $fn = 32);
             }
         }
     }
@@ -607,43 +627,63 @@ module variable_split_tray_side_holes(
     front_panel_thickness,
     tray_side_thickness,
     panel_join_thickness,
+    panel_join_length,
     panel_join_clearance,
     panel_join_hole_dia,
     panel_join_cs_dia,
     panel_join_offset_from_edge,
+    gusset_hole_z = undef,
     front_panel_bottom_reinforce_mm = 0
 ) {
     jd      = panel_join_thickness;
+    join_y  = max(panel_join_length, jd);
     left_x  = tray_x0 + tray_side_thickness + panel_join_clearance;
     right_x = tray_x0 + tray_w - tray_side_thickness - panel_join_clearance - jd;
 
     bot_z   = max(tray_thickness, front_panel_bottom_reinforce_mm);
-    hole_z1 = bot_z + panel_join_offset_from_edge;
-    hole_z2 = tray_height - panel_join_offset_from_edge;
+    hole_offset_y = min(max(panel_join_offset_from_edge, 0.5), max((join_y / 2) - 0.5, 0.5));
+    y_hole_a = front_panel_thickness + hole_offset_y;
+    y_hole_b = front_panel_thickness + join_y - hole_offset_y;
 
-    // Hole Y centre is at the mid-depth of the joiner strip.
-    y_hole  = front_panel_thickness + jd / 2;
+    // Countersink hole rows through the side walls / gusset area.
+    z_side   = bot_z + max((tray_height - bot_z) / 2, 1);
+    z_base   = -0.01;
+    z_gusset = is_undef(gusset_hole_z) ? undef : gusset_hole_z;
+    base_x_a = left_x + jd + ((right_x - left_x - (2 * jd)) / 3);
+    base_x_b = left_x + jd + ((right_x - left_x - (2 * jd)) * 2 / 3);
 
     // Countersink cone depth for a ~90° countersink.
     cs_d    = (panel_join_cs_dia - panel_join_hole_dia) / 2;
     // Total reach: through tray wall + clearance gap + through joiner strip + 1 mm safety.
     reach   = tray_side_thickness + panel_join_clearance + jd + 1;
 
-    for (z_h = [hole_z1, hole_z2]) {
-        if (z_h > bot_z - 0.001 && z_h < tray_height + 0.001) {
-            // Left wall — screw enters from outside left, travels in +X direction.
-            translate([tray_x0 - 0.01, y_hole, z_h]) rotate([0, 90, 0]) {
-                cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
-                         h = cs_d + 0.01, $fn = 32);
-                translate([0, 0, cs_d])
-                    cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+    for (y_h = [y_hole_a, y_hole_b]) {
+        for (z_h = [z_side, z_gusset]) {
+            if (!is_undef(z_h) && z_h > bot_z - 0.001 && z_h < tray_height + 0.001) {
+                // Left wall — screw enters from outside left, travels in +X direction.
+                translate([tray_x0 - 0.01, y_h, z_h]) rotate([0, 90, 0]) {
+                    cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
+                             h = cs_d + 0.01, $fn = 32);
+                    translate([0, 0, cs_d])
+                        cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+                }
+                // Right wall — screw enters from outside right, travels in -X direction.
+                translate([tray_x0 + tray_w + 0.01, y_h, z_h]) rotate([0, -90, 0]) {
+                    cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
+                             h = cs_d + 0.01, $fn = 32);
+                    translate([0, 0, cs_d])
+                        cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+                }
             }
-            // Right wall — screw enters from outside right, travels in -X direction.
-            translate([tray_x0 + tray_w + 0.01, y_hole, z_h]) rotate([0, -90, 0]) {
+        }
+
+        // Base holes through the tray floor so the panel can also be joined from underneath.
+        for (x_h = [base_x_a, base_x_b]) {
+            translate([x_h, front_panel_thickness + (join_y / 2), z_base]) {
                 cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
                          h = cs_d + 0.01, $fn = 32);
                 translate([0, 0, cs_d])
-                    cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+                    cylinder(d = panel_join_hole_dia, h = tray_thickness + jd + 2, $fn = 32);
             }
         }
     }
@@ -775,7 +815,7 @@ module blank_variable_tray(
     panel_join_hole_dia     = 3.5, //diameter of the screw holes for the panel to tray join.
     panel_join_cs_dia       = 7.0, //countersink the panel join holes on the outer faces.
     panel_join_length       = 15.0, //length of the panel join in the Y direction.
-    panel_join_offset_from_edge = 10.0 //distance from the edge of the panel to the center of the panel join holes.
+    panel_join_offset_from_edge = 10.0 //distance from the front/back edge of the joiner length to the center of the panel join holes.
 ) {
     // Derived flags — drive what geometry gets rendered.
     is_split_mode  = (mode == "split_panel_show" || mode == "split_panel_panel" || mode == "split_panel_tray");
@@ -791,8 +831,12 @@ module blank_variable_tray(
     tray_depth            = max(rack_depth * tray_depth_scale, 0.01);
     back_panel_depth      = min(back_panel_thickness, tray_depth);
     back_panel_height_mm  = max((u_height * back_panel_height) - 1, post_slide_cutout - hole_clearance);
+    panel_height_mm       = u_height * panel_u_size;
     tray_x0          = post_width + tray_post_clearance + slide_allowance;
     tray_w           = rack_width - (2 * tray_x0);
+    split_joiner_top_z = (side_support == 1 && panel_height_mm > tray_height)
+        ? max(tray_height, panel_height_mm - front_panel_top_reinforce_mm - 1)
+        : tray_height;
 
     // -------------------------------------------------------------------------
     // Front panel — shown in every mode except split_panel_tray.
@@ -846,9 +890,14 @@ module blank_variable_tray(
             front_panel_thickness           = front_panel_thickness,
             tray_side_thickness             = tray_side_thickness,
             panel_join_thickness            = panel_join_thickness,
+            panel_join_length               = panel_join_length,
             panel_join_clearance            = panel_join_clearance,
             panel_join_hole_dia             = panel_join_hole_dia,
             panel_join_offset_from_edge     = panel_join_offset_from_edge,
+            join_top_z                      = split_joiner_top_z,
+            gusset_hole_z                   = (side_support == 1 && panel_height_mm > tray_height)
+                ? max(split_joiner_top_z - 1, tray_thickness + 1)
+                : undef,
             front_panel_bottom_reinforce_mm = front_panel_bottom_reinforce_mm,
             front_panel_top_reinforce_mm    = front_panel_top_reinforce_mm
         );
@@ -985,10 +1034,14 @@ module blank_variable_tray(
                     front_panel_thickness           = front_panel_thickness,
                     tray_side_thickness             = tray_side_thickness,
                     panel_join_thickness            = panel_join_thickness,
+                    panel_join_length               = panel_join_length,
                     panel_join_clearance            = panel_join_clearance,
                     panel_join_hole_dia             = panel_join_hole_dia,
                     panel_join_cs_dia               = panel_join_cs_dia,
                     panel_join_offset_from_edge     = panel_join_offset_from_edge,
+                    gusset_hole_z                   = (side_support == 1 && panel_height_mm > tray_height)
+                        ? max(split_joiner_top_z - 1, tray_thickness + 1)
+                        : undef,
                     front_panel_bottom_reinforce_mm = front_panel_bottom_reinforce_mm
                 );
             }

@@ -7,7 +7,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/06r12";
+version = "v0.1-2026/06/06r16";
 */
 
 
@@ -202,10 +202,11 @@ render() {
                                             //So make the post cutouts bigger instead.
                 hole_clearance          = 0.0, //clearance around the panel holes, for screwing into the posts.
                 panel_join_clearance    = 0.3, //clearance for the side parts of the tray to panel join.
-                panel_join_thickness    = 6.0, //thickness of the panel joiner.
+                panel_join_thickness    = 5.0, //thickness of the panel joiner.
                 panel_join_hole_dia     = 3.5, //diameter of the screw holes for the panel to tray join.
                 panel_join_cs_dia       = 7.0, //countersink the panel join holes on the outer faces.
-                panel_join_offset_from_edge = 12.0 //distance from the edge of the panel to the center of the panel join holes.
+                panel_join_length       = 25.0, //length of the panel join in the Y direction.
+                panel_join_offset_from_edge = 7.0 //distance from the front/back edge of the joiner length to the center of the panel join holes.
             );
             //color("green") {
             //    board_front_panel_cutout();
