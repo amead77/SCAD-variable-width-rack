@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.2-2026/06/06r83";
+version = "v0.2-2026/06/06r87";
 */
 
 use <../../SCAD-lib/mainlib.scad>;
@@ -985,13 +985,14 @@ module blank_variable_tray(
                 // Tray base floor
                 translate([tray_x0, 0, front_panel_undersizing]) {
                     //cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
+                    chamfer_size = (mode == "tray") ? 0 : 1; // no chamfers in full tray mode, to save time and material, but add chamfers in split modes to help with alignment and reduce sharp edges.
                     chamfered_cube([
                         tray_w, 
                         tray_depth + front_panel_thickness, 
                         tray_thickness
                         ], 
                         edge_selection = [3],
-                        chamfer_size = 1
+                        chamfer_size = chamfer_size
                     );
                 }
 
