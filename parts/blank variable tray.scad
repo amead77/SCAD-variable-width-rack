@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/06r14";
+version = "v0.2-2026/06/06r06";
 */
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
@@ -535,6 +535,121 @@ module blank_variable_front_panel(
 }
 
 
+// variable_split_panel_joiner(...)
+// Builds the square-edged U-shaped bracket on the back face of the front panel for split-print
+// mode. The bracket fits inside the tray cavity (between the tray side walls) with clearance, and
+// carries screw holes that align with the countersunk holes in the tray side walls.
+// The U opens upward; its base rests on the tray floor when the two pieces are assembled.
+// Called automatically by blank_variable_tray() for split_panel_show / split_panel_panel modes.
+module variable_split_panel_joiner(
+    tray_height,
+    tray_x0,
+    tray_w,
+    tray_thickness,
+    front_panel_thickness,
+    tray_side_thickness,
+    panel_join_thickness,
+    panel_join_clearance,
+    panel_join_hole_dia,
+    panel_join_offset_from_edge,
+    front_panel_bottom_reinforce_mm = 0,
+    front_panel_top_reinforce_mm    = 0
+) {
+    jd      = panel_join_thickness;   // joiner strip cross-section (both depth Y and width X)
+    left_x  = tray_x0 + tray_side_thickness + panel_join_clearance;
+    right_x = tray_x0 + tray_w - tray_side_thickness - panel_join_clearance - jd;
+
+    // Start joiner above the tray base floor AND above any bottom reinforce lip.
+    bot_z   = max(tray_thickness, front_panel_bottom_reinforce_mm);
+    join_h  = max(tray_height - bot_z, 0.01);
+
+    y0      = front_panel_thickness;
+    y_hole  = y0 + jd / 2;
+
+    // Screw hole Z positions — guard so both fall within the usable joiner height.
+    hole_z1 = bot_z + panel_join_offset_from_edge;
+    hole_z2 = tray_height - panel_join_offset_from_edge;
+
+    difference() {
+        union() {
+            // Left vertical strip
+            translate([left_x, y0, bot_z]) cube([jd, jd, join_h]);
+            // Right vertical strip
+            translate([right_x, y0, bot_z]) cube([jd, jd, join_h]);
+            // Bottom connecting bar of the U (rests on tray base floor when assembled)
+            if (right_x > left_x + jd + 0.01)
+                translate([left_x, y0, bot_z])
+                    cube([right_x - left_x + jd, jd, jd]);
+        }
+        // Screw clearance holes through each strip in the X direction
+        for (z_h = [hole_z1, hole_z2]) {
+            if (z_h > bot_z - 0.001 && z_h < tray_height + 0.001) {
+                translate([left_x  - 0.01, y_hole, z_h]) rotate([0,  90, 0])
+                    cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                translate([right_x - 0.01, y_hole, z_h]) rotate([0,  90, 0])
+                    cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+            }
+        }
+    }
+}
+
+
+// variable_split_tray_side_holes(...)
+// Subtracts countersunk screw holes through both tray side walls for the split-print join.
+// Countersinks face outward so assembled screw heads sit flush with (or below) the outer wall
+// surface and do not catch on the rack side rails when the tray is installed.
+// Called automatically by blank_variable_tray() when is_split_mode is true.
+module variable_split_tray_side_holes(
+    tray_height,
+    tray_x0,
+    tray_w,
+    tray_thickness,
+    front_panel_thickness,
+    tray_side_thickness,
+    panel_join_thickness,
+    panel_join_clearance,
+    panel_join_hole_dia,
+    panel_join_cs_dia,
+    panel_join_offset_from_edge,
+    front_panel_bottom_reinforce_mm = 0
+) {
+    jd      = panel_join_thickness;
+    left_x  = tray_x0 + tray_side_thickness + panel_join_clearance;
+    right_x = tray_x0 + tray_w - tray_side_thickness - panel_join_clearance - jd;
+
+    bot_z   = max(tray_thickness, front_panel_bottom_reinforce_mm);
+    hole_z1 = bot_z + panel_join_offset_from_edge;
+    hole_z2 = tray_height - panel_join_offset_from_edge;
+
+    // Hole Y centre is at the mid-depth of the joiner strip.
+    y_hole  = front_panel_thickness + jd / 2;
+
+    // Countersink cone depth for a ~90° countersink.
+    cs_d    = (panel_join_cs_dia - panel_join_hole_dia) / 2;
+    // Total reach: through tray wall + clearance gap + through joiner strip + 1 mm safety.
+    reach   = tray_side_thickness + panel_join_clearance + jd + 1;
+
+    for (z_h = [hole_z1, hole_z2]) {
+        if (z_h > bot_z - 0.001 && z_h < tray_height + 0.001) {
+            // Left wall — screw enters from outside left, travels in +X direction.
+            translate([tray_x0 - 0.01, y_hole, z_h]) rotate([0, 90, 0]) {
+                cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
+                         h = cs_d + 0.01, $fn = 32);
+                translate([0, 0, cs_d])
+                    cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+            }
+            // Right wall — screw enters from outside right, travels in -X direction.
+            translate([tray_x0 + tray_w + 0.01, y_hole, z_h]) rotate([0, -90, 0]) {
+                cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
+                         h = cs_d + 0.01, $fn = 32);
+                translate([0, 0, cs_d])
+                    cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+            }
+        }
+    }
+}
+
+
 /*
 Create a configurable tray or blanking panel using the same variable front-panel
 geometry. This can build a plain panel, an open tray, or a tray with rear wall,
@@ -545,7 +660,10 @@ standard rack dimensions. (default = 350mm wide, 330mm deep, 44.5mm U height,
 15.875mm posts, etc.)
 -----
 module blank_variable_tray(
-    mode = "tray",                          // "tray" builds a tray, "panel" builds only the front panel.
+    mode = "tray",                          // "tray" = one-piece panel+tray. "panel" = panel only.
+                                            // "split_panel_show"  = both pieces together (fitment check).
+                                            // "split_panel_panel" = front panel + U-shaped joining bracket (print separately).
+                                            // "split_panel_tray"  = tray body with countersunk joining holes (print separately).
     panel_u_size = 1,                        // Front panel height in U, can be fractional.
     front_panel_top_reinforce_mm = 0,        // Height of the top reinforcement lip behind the panel.
     front_panel_bottom_reinforce_mm = 0,     // Height of the bottom reinforcement lip behind the panel.
@@ -651,9 +769,20 @@ module blank_variable_tray(
                                    //and create posts to fit the trays. making the side slides smaller to fit would make them weaker. 
                                    //So make the post cutouts bigger instead.
     post_slide_clearance    = 0.4, //clearance for the fit of the tray side slides into the post cutouts. adjust as needed for fit; this is separate from the tray_post_clearance to allow for different clearances on the sides vs the back of the tray if needed.
-    hole_clearance          = 0.0 //clearance around the panel holes, for screwing into the posts.
+    hole_clearance          = 0.0, //clearance around the panel holes, for screwing into the posts.
+    panel_join_clearance    = 0.3, //clearance for the side parts of the tray to panel join.
+    panel_join_thickness    = 5.0, //thickness of the panel joiner.
+    panel_join_hole_dia     = 3.5, //diameter of the screw holes for the panel to tray join.
+    panel_join_cs_dia       = 7.0, //countersink the panel join holes on the outer faces.
+    panel_join_length       = 15.0, //length of the panel join in the Y direction.
+    panel_join_offset_from_edge = 10.0 //distance from the edge of the panel to the center of the panel join holes.
 ) {
-    mode_resolved = (mode == "panel") ? "panel" : "tray";
+    // Derived flags — drive what geometry gets rendered.
+    is_split_mode  = (mode == "split_panel_show" || mode == "split_panel_panel" || mode == "split_panel_tray");
+    show_panel     = (mode != "split_panel_tray");
+    show_joiner    = (mode == "split_panel_show" || mode == "split_panel_panel");
+    show_tray_body = (mode == "tray" || mode == "split_panel_show" || mode == "split_panel_tray");
+
     slides_enabled = (tray_side_slides == 1) ? 1 : 0;
     slide_allowance = slides_enabled ? post_slide_width : 0;
 
@@ -665,150 +794,204 @@ module blank_variable_tray(
     tray_x0          = post_width + tray_post_clearance + slide_allowance;
     tray_w           = rack_width - (2 * tray_x0);
 
-    blank_variable_front_panel(
-        panel_u_size,
-        front_panel_top_reinforce_mm,
-        front_panel_bottom_reinforce_mm,
-        holes,
-        import_file,
-        import_type,
-        import_width,
-        import_height,
-        import_depth,
-        import_offset_x,
-        import_offset_z,
-        import_mode,
-        panel_text,
-        panel_text_font,
-        panel_text_size,
-        panel_text_depth,
-        panel_text_offset_x,
-        panel_text_offset_z,
-        panel_text_mode,
-        front_panel_thickness,
-        rack_width,
-        post_width,
-        hole_d,
-        u_height,
-        hole_offset_z,
-        hole_spacing,
-        front_panel_undersizing,
-        front_panel_edge_radius,
-        tray_post_clearance,
-        reinforce_x_override = tray_x0,
-        reinforce_w_override = tray_w
-    );
-
-    if (mode_resolved == "tray") {
-        translate([tray_x0, 0, front_panel_undersizing]) {
-            cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
-        }
-
-        variable_side_slide(
-            tray_u_size_resolved,
-            side              = 0,
-            add_slides        = slides_enabled,
-            tray_depth        = tray_depth,
-            tray_x0           = tray_x0,
-            tray_w            = tray_w,
-            front_panel_thickness = front_panel_thickness,
-            u_height          = u_height,
-            post_slide_cutout = post_slide_cutout - post_slide_clearance,
-            hole_clearance    = hole_clearance,
-            hole_offset_z     = hole_offset_z,
-            tray_side_thickness = tray_side_thickness,
-            post_width        = post_width,
-            post_slide_width  = post_slide_width,
-            tray_post_clearance = tray_post_clearance,
-            hole_spacing      = hole_spacing,
-            rack_width        = rack_width
+    // -------------------------------------------------------------------------
+    // Front panel — shown in every mode except split_panel_tray.
+    // -------------------------------------------------------------------------
+    if (show_panel) {
+        blank_variable_front_panel(
+            panel_u_size,
+            front_panel_top_reinforce_mm,
+            front_panel_bottom_reinforce_mm,
+            holes,
+            import_file,
+            import_type,
+            import_width,
+            import_height,
+            import_depth,
+            import_offset_x,
+            import_offset_z,
+            import_mode,
+            panel_text,
+            panel_text_font,
+            panel_text_size,
+            panel_text_depth,
+            panel_text_offset_x,
+            panel_text_offset_z,
+            panel_text_mode,
+            front_panel_thickness,
+            rack_width,
+            post_width,
+            hole_d,
+            u_height,
+            hole_offset_z,
+            hole_spacing,
+            front_panel_undersizing,
+            front_panel_edge_radius,
+            tray_post_clearance,
+            reinforce_x_override = tray_x0,
+            reinforce_w_override = tray_w
         );
-        variable_side_slide(
-            tray_u_size_resolved,
-            side              = 1,
-            add_slides        = slides_enabled,
-            tray_depth        = tray_depth,
-            tray_x0           = tray_x0,
-            tray_w            = tray_w,
-            front_panel_thickness = front_panel_thickness,
-            u_height          = u_height,
-            post_slide_cutout = post_slide_cutout - post_slide_clearance,
-            hole_clearance    = hole_clearance,
-            hole_offset_z     = hole_offset_z,
-            tray_side_thickness = tray_side_thickness,
-            post_width        = post_width,
-            post_slide_width  = post_slide_width,
-            tray_post_clearance = tray_post_clearance,
-            hole_spacing      = hole_spacing,
-            rack_width        = rack_width
+    }
+
+    // -------------------------------------------------------------------------
+    // Split-mode joiner — U-shaped bracket on the back of the panel.
+    // Fits inside the tray and carries screws that clamp the two pieces together.
+    // -------------------------------------------------------------------------
+    if (show_joiner) {
+        variable_split_panel_joiner(
+            tray_height                     = tray_height,
+            tray_x0                         = tray_x0,
+            tray_w                          = tray_w,
+            tray_thickness                  = tray_thickness,
+            front_panel_thickness           = front_panel_thickness,
+            tray_side_thickness             = tray_side_thickness,
+            panel_join_thickness            = panel_join_thickness,
+            panel_join_clearance            = panel_join_clearance,
+            panel_join_hole_dia             = panel_join_hole_dia,
+            panel_join_offset_from_edge     = panel_join_offset_from_edge,
+            front_panel_bottom_reinforce_mm = front_panel_bottom_reinforce_mm,
+            front_panel_top_reinforce_mm    = front_panel_top_reinforce_mm
         );
+    }
 
-        if (back_panel == 1) {
-            // Rear wall to connect side panels; height controlled by back_panel_height (in U).
-            translate([tray_x0, front_panel_thickness + tray_depth - back_panel_depth, 0]) {
-                chamfer_ang = min(max(back_panel_chamfer_ang, 1), 89);
-                back_panel_chamfer_h = min(max(back_panel_chamfer, 0), min(back_panel_height_mm, back_panel_depth * tan(chamfer_ang)));
-                back_panel_chamfer_d = back_panel_chamfer_h / tan(chamfer_ang);
+    // -------------------------------------------------------------------------
+    // Tray body — floor, side walls (with slides), optional rear wall.
+    // In split modes the side walls get countersunk joining holes subtracted.
+    // Gussets are omitted in split modes: the joiner + screws provide that
+    // structural role, and gussets cannot span two separate printed pieces.
+    // -------------------------------------------------------------------------
+    if (show_tray_body) {
+        difference() {
+            union() {
+                // Tray base floor
+                translate([tray_x0, 0, front_panel_undersizing]) {
+                    cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
+                }
 
-                if (back_panel_chamfer_h > 0.001) {
-                    difference() {
-                        cube([tray_w, back_panel_depth, back_panel_height_mm]);
+                variable_side_slide(
+                    tray_u_size_resolved,
+                    side              = 0,
+                    add_slides        = slides_enabled,
+                    tray_depth        = tray_depth,
+                    tray_x0           = tray_x0,
+                    tray_w            = tray_w,
+                    front_panel_thickness = front_panel_thickness,
+                    u_height          = u_height,
+                    post_slide_cutout = post_slide_cutout - post_slide_clearance,
+                    hole_clearance    = hole_clearance,
+                    hole_offset_z     = hole_offset_z,
+                    tray_side_thickness = tray_side_thickness,
+                    post_width        = post_width,
+                    post_slide_width  = post_slide_width,
+                    tray_post_clearance = tray_post_clearance,
+                    hole_spacing      = hole_spacing,
+                    rack_width        = rack_width
+                );
+                variable_side_slide(
+                    tray_u_size_resolved,
+                    side              = 1,
+                    add_slides        = slides_enabled,
+                    tray_depth        = tray_depth,
+                    tray_x0           = tray_x0,
+                    tray_w            = tray_w,
+                    front_panel_thickness = front_panel_thickness,
+                    u_height          = u_height,
+                    post_slide_cutout = post_slide_cutout - post_slide_clearance,
+                    hole_clearance    = hole_clearance,
+                    hole_offset_z     = hole_offset_z,
+                    tray_side_thickness = tray_side_thickness,
+                    post_width        = post_width,
+                    post_slide_width  = post_slide_width,
+                    tray_post_clearance = tray_post_clearance,
+                    hole_spacing      = hole_spacing,
+                    rack_width        = rack_width
+                );
 
-                        // Remove a triangular prism to chamfer the front-top edge of the rear wall.
-                        eps = 0.01;
-                        translate([tray_w + eps, 0, 0]) {
-                            rotate([0, -90, 0]) {
-                                linear_extrude(height = tray_w + (eps * 2)) {
-                                    polygon(points = [
-                                        [back_panel_height_mm - back_panel_chamfer_h, -eps],
-                                        [back_panel_height_mm + eps, back_panel_chamfer_d + eps],
-                                        [back_panel_height_mm + eps, -eps]
-                                    ]);
+                if (back_panel == 1) {
+                    // Rear wall; height controlled by back_panel_height (in U).
+                    translate([tray_x0, front_panel_thickness + tray_depth - back_panel_depth, 0]) {
+                        chamfer_ang = min(max(back_panel_chamfer_ang, 1), 89);
+                        back_panel_chamfer_h = min(max(back_panel_chamfer, 0), min(back_panel_height_mm, back_panel_depth * tan(chamfer_ang)));
+                        back_panel_chamfer_d = back_panel_chamfer_h / tan(chamfer_ang);
+
+                        if (back_panel_chamfer_h > 0.001) {
+                            difference() {
+                                cube([tray_w, back_panel_depth, back_panel_height_mm]);
+                                eps = 0.01;
+                                translate([tray_w + eps, 0, 0]) {
+                                    rotate([0, -90, 0]) {
+                                        linear_extrude(height = tray_w + (eps * 2)) {
+                                            polygon(points = [
+                                                [back_panel_height_mm - back_panel_chamfer_h, -eps],
+                                                [back_panel_height_mm + eps, back_panel_chamfer_d + eps],
+                                                [back_panel_height_mm + eps, -eps]
+                                            ]);
+                                        }
+                                    }
                                 }
                             }
+                        } else {
+                            cube([tray_w, back_panel_depth, back_panel_height_mm]);
                         }
                     }
-                } else {
-                    cube([tray_w, back_panel_depth, back_panel_height_mm]);
+                }
+
+                // Gussets — only for standard (non-split) tray mode.
+                if (side_support == 1 && !is_split_mode) {
+                    variable_tray_front_gusset(
+                        panel_u_size,
+                        tray_u_size_resolved,
+                        side              = 0,
+                        tray_x0           = tray_x0,
+                        tray_w            = tray_w,
+                        support_back      = side_support_back,
+                        support_thickness = side_support_thickness,
+                        front_panel_thickness = front_panel_thickness,
+                        u_height          = u_height,
+                        post_slide_cutout = post_slide_cutout - post_slide_clearance,
+                        hole_clearance    = hole_clearance,
+                        post_width        = post_width,
+                        post_slide_width  = post_slide_width,
+                        tray_post_clearance = tray_post_clearance,
+                        rack_width        = rack_width
+                    );
+                    variable_tray_front_gusset(
+                        panel_u_size,
+                        tray_u_size_resolved,
+                        side              = 1,
+                        tray_x0           = tray_x0,
+                        tray_w            = tray_w,
+                        support_back      = side_support_back,
+                        support_thickness = side_support_thickness,
+                        front_panel_thickness = front_panel_thickness,
+                        u_height          = u_height,
+                        post_slide_cutout = post_slide_cutout - post_slide_clearance,
+                        hole_clearance    = hole_clearance,
+                        post_width        = post_width,
+                        post_slide_width  = post_slide_width,
+                        tray_post_clearance = tray_post_clearance,
+                        rack_width        = rack_width
+                    );
                 }
             }
-        }
 
-        if (side_support == 1) {
-            variable_tray_front_gusset(
-                panel_u_size,
-                tray_u_size_resolved,
-                side              = 0,
-                tray_x0           = tray_x0,
-                tray_w            = tray_w,
-                support_back      = side_support_back,
-                support_thickness = side_support_thickness,
-                front_panel_thickness = front_panel_thickness,
-                u_height          = u_height,
-                post_slide_cutout = post_slide_cutout - post_slide_clearance,
-                hole_clearance    = hole_clearance,
-                post_width        = post_width,
-                post_slide_width  = post_slide_width,
-                tray_post_clearance = tray_post_clearance,
-                rack_width        = rack_width
-            );
-            variable_tray_front_gusset(
-                panel_u_size,
-                tray_u_size_resolved,
-                side              = 1,
-                tray_x0           = tray_x0,
-                tray_w            = tray_w,
-                support_back      = side_support_back,
-                support_thickness = side_support_thickness,
-                front_panel_thickness = front_panel_thickness,
-                u_height          = u_height,
-                post_slide_cutout = post_slide_cutout - post_slide_clearance,
-                hole_clearance    = hole_clearance,
-                post_width        = post_width,
-                post_slide_width  = post_slide_width,
-                tray_post_clearance = tray_post_clearance,
-                rack_width        = rack_width
-            );
+            // In split modes, subtract countersunk joining holes from both side walls.
+            if (is_split_mode) {
+                variable_split_tray_side_holes(
+                    tray_height                     = tray_height,
+                    tray_x0                         = tray_x0,
+                    tray_w                          = tray_w,
+                    tray_thickness                  = tray_thickness,
+                    front_panel_thickness           = front_panel_thickness,
+                    tray_side_thickness             = tray_side_thickness,
+                    panel_join_thickness            = panel_join_thickness,
+                    panel_join_clearance            = panel_join_clearance,
+                    panel_join_hole_dia             = panel_join_hole_dia,
+                    panel_join_cs_dia               = panel_join_cs_dia,
+                    panel_join_offset_from_edge     = panel_join_offset_from_edge,
+                    front_panel_bottom_reinforce_mm = front_panel_bottom_reinforce_mm
+                );
+            }
         }
     }
 }

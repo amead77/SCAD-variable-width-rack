@@ -7,7 +7,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/01r01";
+version = "v0.1-2026/06/06r12";
 */
 
 
@@ -148,7 +148,7 @@ render() {
 
         difference() {
             blank_variable_tray(
-                mode                    = "tray", //"tray" or "panel"
+                mode                    = "split_panel_show", //"tray", "panel", "split_panel_show", "split_panel_tray", "split_panel_panel"
                 panel_u_size            = 2, // front panel height in U
                 front_panel_top_reinforce_mm     = 8, //a reinforcing lip at the top of the panel
                 front_panel_bottom_reinforce_mm  = 0, //same but bottom. these are on the back of the panel
@@ -200,7 +200,12 @@ render() {
                                             //*you would be better off adjusting the post dimensions, rather than changing the tray dimensions, 
                                             //and create posts to fit the trays. making the side slides smaller to fit would make them weaker. 
                                             //So make the post cutouts bigger instead.
-                hole_clearance          = 0.3 //clearance around the panel holes, for screwing into the posts.
+                hole_clearance          = 0.0, //clearance around the panel holes, for screwing into the posts.
+                panel_join_clearance    = 0.3, //clearance for the side parts of the tray to panel join.
+                panel_join_thickness    = 6.0, //thickness of the panel joiner.
+                panel_join_hole_dia     = 3.5, //diameter of the screw holes for the panel to tray join.
+                panel_join_cs_dia       = 7.0, //countersink the panel join holes on the outer faces.
+                panel_join_offset_from_edge = 12.0 //distance from the edge of the panel to the center of the panel join holes.
             );
             //color("green") {
             //    board_front_panel_cutout();
