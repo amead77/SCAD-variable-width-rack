@@ -35,7 +35,7 @@
 /**
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/06/06r02";
+version = "v0.1-2026/06/06r05";
 **/
 
 include <parts/rack posts.scad>;
@@ -78,8 +78,8 @@ post_width = 15.875; //0.001
 u_height = 44.5; //0.1
 hole_offset_z = 12.7; //0.1
 hole_spacing = 15.875; //0.001
-post_slide_width = 3.0; //0.1
-post_slide_cutout = 3.2; //0.1
+post_slide_width = 2.8; //0.1
+post_slide_cutout = 3.6; //0.1
 footer_height = 12.7; //0.1
 header_height = 12.7; //0.1
 post_cone_base_diameter = 10.0; //0.1
@@ -210,11 +210,29 @@ As you scroll down you'll see all the parts being created and positioned.
                         // Rear posts face the opposite way so nut traps are on the rack-inside face.
                         translate([post_span_x, post_width, 0]) {
                             rotate([0, 0, 180]) {
-                                rail_1u_holes(slide_side = 2, doublewide = post_doublewide, post_u_height, cones);
+                                rail_1u_holes(
+                                    slide_side = 2, 
+                                    doublewide = post_doublewide, 
+                                    post_u_height, 
+                                    cones,
+                                    post_slide_width = post_slide_width,
+                                    post_slide_cutout = post_slide_cutout,
+                                    hole_d = hole_d,
+                                    nut_thickness = nut_thickness
+                                );
                             }
                         }
                     } else {
-                        rail_1u_holes(slide_side = 1, doublewide = post_doublewide, post_u_height, cones);
+                        rail_1u_holes(
+                            slide_side = 1, 
+                            doublewide = post_doublewide, 
+                            post_u_height, 
+                            cones,
+                            post_slide_width = post_slide_width,
+                            post_slide_cutout = post_slide_cutout,
+                            hole_d = hole_d,
+                            nut_thickness = nut_thickness
+                        );
                     }
                 }
             } else {
@@ -222,11 +240,29 @@ As you scroll down you'll see all the parts being created and positioned.
                     if (is_rear_post) {
                         translate([post_span_x, post_width, 0]) {
                             rotate([0, 0, 180]) {
-                                rail_1u_holes(slide_side = 2, doublewide = post_doublewide, post_u_height, cones);
+                                rail_1u_holes(
+                                    slide_side = 2, 
+                                    doublewide = post_doublewide, 
+                                    post_u_height, 
+                                    cones,
+                                    post_slide_width = post_slide_width,
+                                    post_slide_cutout = post_slide_cutout,
+                                    hole_d = hole_d,
+                                    nut_thickness = nut_thickness
+                                );
                             }
                         }
                     } else {
-                        rail_1u_holes(slide_side = 1, doublewide = post_doublewide, post_u_height, cones);
+                        rail_1u_holes(
+                            slide_side = 1, 
+                            doublewide = post_doublewide, 
+                            post_u_height, 
+                            cones,
+                            post_slide_width = post_slide_width,
+                            post_slide_cutout = post_slide_cutout,
+                            hole_d = hole_d,
+                            nut_thickness = nut_thickness
+                        );
                     }
                 }
             }
@@ -236,11 +272,29 @@ As you scroll down you'll see all the parts being created and positioned.
                 if (is_rear_post) {
                     translate([post_span_x, post_width, 0]) {
                         rotate([0, 0, 180]) {
-                            rail_1u_holes(slide_side = 1, doublewide = post_doublewide, post_u_height, cones);
+                            rail_1u_holes(
+                                slide_side = 1, 
+                                doublewide = post_doublewide, 
+                                post_u_height, 
+                                cones,
+                                post_slide_width = post_slide_width,
+                                post_slide_cutout = post_slide_cutout,
+                                hole_d = hole_d,
+                                nut_thickness = nut_thickness
+                            );
                         }
                     }
                 } else {
-                    rail_1u_holes(slide_side = 2, doublewide = post_doublewide, post_u_height, cones);
+                    rail_1u_holes(
+                        slide_side = 2, 
+                        doublewide = post_doublewide, 
+                        post_u_height, 
+                        cones,
+                        post_slide_width = post_slide_width,
+                        post_slide_cutout = post_slide_cutout,
+                        hole_d = hole_d,
+                        nut_thickness = nut_thickness
+                    );
                 }
             }
         }

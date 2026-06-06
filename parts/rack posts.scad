@@ -1,7 +1,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/01r15";
+version = "v0.1-2026/06/06r01";
 */
 
 
@@ -108,7 +108,7 @@ module post_slides(
     post_width = 15.875,
     u_height = 44.5,
     hole_offset_z = 12.7,
-    post_slide_cutout = 3.2,
+    post_slide_cutout = 3.6,
     hole_spacing = 15.875
 ) {
     difference() {
@@ -131,7 +131,7 @@ module post_slides(
 module post_slider_left(
     post_width = 15.875,
     post_slide_width = 3.0,
-    post_slide_cutout = 3.2,
+    post_slide_cutout = 3.6,
     u_height = 44.5,
     hole_offset_z = 12.7,
     hole_spacing = 15.875
@@ -154,7 +154,7 @@ module post_slider_left(
 module post_slider_right(
     post_slide_width = 3.0,
     post_width = 15.875,
-    post_slide_cutout = 3.2,
+    post_slide_cutout = 3.6,
     u_height = 44.5,
     hole_offset_z = 12.7,
     hole_spacing = 15.875
@@ -181,7 +181,7 @@ module rail_1u_holes_segment(
     post_width = 15.875,
     u_height = 44.5,
     post_slide_width = 3.0,
-    post_slide_cutout = 3.2,
+    post_slide_cutout = 3.6,
     hole_offset_z = 12.7,
     hole_spacing = 15.875,
     hole_d = 6.3,
@@ -686,8 +686,8 @@ module rail_1u_holes(
     hole_spacing = 15.875,                  // Vertical spacing between hole centres within a 1U segment.
     nut_thickness = 6.3,                    // Depth of the rear nut traps.
     nut_diameter_across_flats = 10.3,       // Across-flats size of the hex nut trap.
-    post_slide_width = 3.0,                 // Width of the side slide rail.
-    post_slide_cutout = 3.2,                // Size of the slide cutouts in each 1U section.
+    post_slide_width = 2.8,                 // Width of the side slide rail.
+    post_slide_cutout = 3.6,                // Size of the slide cutouts in each 1U section.
     footer_height = 12.7,                   // Height of the optional footer block.
     header_height = 12.7,                   // Height of the optional header block.
     post_cone_base_diameter = 10.0,         // Diameter at the base of the alignment cone/socket.
