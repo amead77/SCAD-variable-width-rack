@@ -25,8 +25,11 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.2-2026/06/06r49";
+version = "v0.2-2026/06/06r78";
 */
+
+use <../../SCAD-lib/mainlib.scad>;
+
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
 
@@ -572,7 +575,7 @@ module variable_split_panel_joiner(
 
     // Start joiner above the tray base floor AND above any bottom reinforce lip.
     bot_z   = max(tray_thickness, front_panel_bottom_reinforce_mm);
-    join_h  = max(join_top_z - bot_z, 0.01);
+    join_h  = max(join_top_z - bot_z, 0.01) - 5;
 
     y0      = front_panel_thickness;
     hole_offset_y = min(max(panel_join_offset_from_edge, 0.5), max((join_y / 2) - 0.5, 0.5));
@@ -586,13 +589,18 @@ module variable_split_panel_joiner(
     difference() {
         union() {
             // Left vertical strip
-            translate([left_x, y0, bot_z]) cube([jd, join_y, join_h]);
+            translate([left_x, y0, bot_z]) {
+                chamfered_cube([jd, join_y, join_h], edge_selection = [4]);
+            }
             // Right vertical strip
-            translate([right_x, y0, bot_z]) cube([jd, join_y, join_h]);
+            translate([right_x, y0, bot_z]) {
+                chamfered_cube([jd, join_y, join_h], edge_selection = [5]);
+            }
             // Bottom connecting bar of the U (rests on tray base floor when assembled)
             if (right_x > left_x + jd + 0.01)
-                translate([left_x, y0, bot_z])
-                    cube([right_x - left_x + jd, join_y, jd]);
+                translate([left_x, y0, bot_z]) {
+                    chamfered_cube([right_x - left_x + jd, join_y, jd], edge_selection = [4, 5]);
+                }
         }
         // Side join holes. Their spacing is controlled in Y so it stays within the rails.
         //for (y_h = [y_hole_a, y_hole_b]) {
@@ -602,28 +610,37 @@ module variable_split_panel_joiner(
             if (y_h > y0 && y_h < y0 + join_y + 0.001) {
                 for (z_h = [z_first : hole_spacing : join_top_z + 0.001]) {
                     if (z_h > bot_z - 0.001) {
-                        translate([left_x  - 0.01, y_h, z_h]) rotate([0,  90, 0])
-                            cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
-                        translate([right_x - 0.01, y_h, z_h]) rotate([0,  90, 0])
-                            cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                        translate([left_x  - 0.01, y_h, z_h]) {
+                            rotate([0,  90, 0])
+                                cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                        }
+                        translate([right_x - 0.01, y_h, z_h]) {
+                            rotate([0,  90, 0])
+                                cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                        }
                     }
                 }
                 // Ensure a top hole exists in the gusset region when join_top_z does not land
                 // on the standard rail spacing increment.
                 z_last = z_first + floor(max(join_top_z - z_first, 0) / hole_spacing) * hole_spacing;
                 if ((join_top_z - z_last) > 0.5) {
-                    translate([left_x  - 0.01, y_h, join_top_z]) rotate([0,  90, 0])
-                        cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
-                    translate([right_x - 0.01, y_h, join_top_z]) rotate([0,  90, 0])
-                        cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                    translate([left_x  - 0.01, y_h, join_top_z]) {
+                        rotate([0,  90, 0])
+                            cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                    }
+                    translate([right_x - 0.01, y_h, join_top_z]) {
+                        rotate([0,  90, 0])
+                            cylinder(d = panel_join_hole_dia, h = jd + 0.02, $fn = 32);
+                    }
                 }
             }
         }
         // Underside joining holes through the tray base / joiner base.
         for (x_h = [base_x_a, base_x_b]) {
             if (x_h > left_x + jd && x_h < right_x - jd) {
-                translate([x_h, y0 + (join_y / 2), bot_z - 0.01])
+                translate([x_h, y0 + (join_y / 2), bot_z - 0.01]) {
                     cylinder(d = panel_join_hole_dia, h = jd + 2, $fn = 32);
+                }
             }
         }
     }
@@ -677,21 +694,27 @@ module variable_split_tray_side_holes(
     //for (y_h = [y_hole_a, y_hole_b]) {
     y_h = y_hole_b;
     {
-        for (z_h = [z_first : hole_spacing : join_top_z + 0.001]) {
+        for (z_h = [z_first : hole_spacing : join_top_z + 0.001 - 5]) {
             if (z_h > bot_z - 0.001) {
                 // Left wall — screw enters from outside left, travels in +X direction.
-                translate([tray_x0 - 0.01, y_h, z_h]) rotate([0, 90, 0]) {
-                    cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
-                             h = cs_d + 0.01, $fn = 32);
-                    translate([0, 0, cs_d])
-                        cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+                translate([tray_x0 - 0.01, y_h, z_h]) {
+                    rotate([0, 90, 0]) {
+                        cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
+                                h = cs_d + 0.01, $fn = 32);
+                        translate([0, 0, cs_d]) {
+                            cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+                        }
+                    }
                 }
                 // Right wall — screw enters from outside right, travels in -X direction.
-                translate([tray_x0 + tray_w + 0.01, y_h, z_h]) rotate([0, -90, 0]) {
-                    cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
-                             h = cs_d + 0.01, $fn = 32);
-                    translate([0, 0, cs_d])
-                        cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+                translate([tray_x0 + tray_w + 0.01, y_h, z_h]) {
+                    rotate([0, -90, 0]) {
+                        cylinder(d1 = panel_join_cs_dia, d2 = panel_join_hole_dia,
+                                 h = cs_d + 0.01, $fn = 32);
+                        translate([0, 0, cs_d]) {
+                            cylinder(d = panel_join_hole_dia, h = reach - cs_d + 0.02, $fn = 32);
+                        }
+                    }
                 }
             }
         }
