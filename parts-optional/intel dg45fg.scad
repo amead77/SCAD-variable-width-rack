@@ -7,14 +7,14 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/06r33";
+version = "v0.1-2026/06/06r47";
 */
 
 
 include <../parts/blank variable tray.scad>;
 include <flex_psu.scad>;
 include <../parts/odd_parts.scad>;
-
+//use <../../SCAD-lib/mainlib.scad>;
 
 $fn = 64;
 
@@ -154,6 +154,11 @@ module itx_standoff(incl_board = true) {
 
 
 render() {
+    
+    //translate([400, 0, 0]) {
+    //    chamfered_cube(edge_selection = [4]);
+    //}
+    
     union() {
         if (itx_split == "split_panel_show" || itx_split == "split_panel_tray" || itx_split == "tray") {
             if (flex_itx_psu) {
@@ -183,7 +188,7 @@ render() {
                 panel_u_size            = 2, // front panel height in U
                 front_panel_top_reinforce_mm     = 8, //a reinforcing lip at the top of the panel
                 front_panel_bottom_reinforce_mm  = 0, //same but bottom. these are on the back of the panel
-                tray_u_size             = 1, // side/base height in U. if undef, defaults to panel_u_size. if 0.6 is used, you can get 2 slides per side, 0.5 would only make the sides high enough for 1 slide
+                tray_u_size             = 0.5, // side/base height in U. if undef, defaults to panel_u_size. if 0.6 is used, you can get 2 slides per side, 0.5 would only make the sides high enough for 1 slide
                 tray_depth_scale        = 1, // 0 to 1, fraction of rack_width. 1 = full rack_width depth (330mm), 0.5 = rack_width/2 depth (165mm), etc.
                 holes                   = 2, // mounting holes PER SIDE (2, 3, 4, or 6). I need to revisit this, as '2' would put 4 holes in each side of a 2U panel, but you might only want 2 each side (top/bottom)
                 import_file             = "", //used for importing an SVG or STL/3MF onto the front panel face, see variable_front_panel_face_import() parameters below.
