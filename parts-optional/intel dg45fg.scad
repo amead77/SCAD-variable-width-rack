@@ -27,8 +27,8 @@ itx_holes = [
     [157.48, 132.08]
 ];
 
-front_panel_thickness = 3.001; //add .001 so the customiser knows to use float instead of int.
-tray_thickness = 4.0; //+6.5mm the board base sits at
+front_panel_thickness = 3.0; //0.1
+tray_thickness = 4.0; //0.1
 //this is the diameter for the heat insert, not the screw itself.
 itx_heat_insert_diameter = 4.7; //6-32 UNC screw normally. But using metric here. M3.5x0.6 is equiv, but i have M3
 itx_heat_insert_outer_diameter = itx_heat_insert_diameter + 4.0;

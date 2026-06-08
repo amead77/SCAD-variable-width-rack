@@ -855,7 +855,7 @@ module blank_variable_tray(
     side_support            = 1, //0 or 1 to add gussets between front panel and sides when panel is taller than sides
     side_support_back       = 40, //how far back the gussets extend (mm)
     side_support_thickness  = 2.0, //normally the same as tray_side_thickness, but can be different if you want thinner gussets
-    side_support_single     = false, // if true, only add a single side support rail per-U, at the lowest position.
+    side_support_single     = true, // if true, only add a single side support rail per-U, at the lowest position.
     tray_side_thickness     = 2.0, //thickness of the tray side walls in mm.
     front_panel_thickness   = 3.0, //consider your screw lengths. 3mm is usually fine for m6x16 screws.
     back_panel              = 0, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
@@ -986,12 +986,13 @@ module blank_variable_tray(
         difference() {
             union() {
                 // Tray base floor
-                translate([tray_x0, 0, front_panel_undersizing]) {
+                translate([tray_x0, front_panel_thickness, front_panel_undersizing]) {
+                //translate([tray_x0, 0, front_panel_undersizing]) {
                     //cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
                     chamfer_size = (mode == "tray") ? 0 : 1; // no chamfers in full tray mode, add when split tray/panel to help avoid corners interferring
                     chamfered_cube([
                         tray_w, 
-                        tray_depth + front_panel_thickness, 
+                        tray_depth, // + front_panel_thickness, 
                         tray_thickness
                         ], 
                         edge_selection = [3],
