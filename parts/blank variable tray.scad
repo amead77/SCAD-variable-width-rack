@@ -986,12 +986,13 @@ module blank_variable_tray(
         difference() {
             union() {
                 // Tray base floor
-                translate([tray_x0, 0, front_panel_undersizing]) {
+                translate([tray_x0, front_panel_thickness, front_panel_undersizing]) {
+                //translate([tray_x0, 0, front_panel_undersizing]) {
                     //cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
                     chamfer_size = (mode == "tray") ? 0 : 1; // no chamfers in full tray mode, add when split tray/panel to help avoid corners interferring
                     chamfered_cube([
                         tray_w, 
-                        tray_depth + front_panel_thickness, 
+                        tray_depth, // + front_panel_thickness, 
                         tray_thickness
                         ], 
                         edge_selection = [3],
