@@ -21,8 +21,8 @@ module post(
     doublewide = 0,
     post_width = 15.875,
     u_height = 44.5,
-    post_slide_width = 3.0,
-    post_slide_cutout = 3.2,
+    post_slide_width = 2.8,
+    post_slide_cutout = 3.6,
     hole_offset_z = 12.7,
     hole_spacing = 15.875
 ) {
@@ -104,7 +104,7 @@ module post(
 // Internal helper — generates the slide rail geometry that attaches to a post side.
 // Not called directly; used by post_slider_left() and post_slider_right().
 module post_slides(
-    post_slide_width = 3.0,
+    post_slide_width = 2.8,
     post_width = 15.875,
     u_height = 44.5,
     hole_offset_z = 12.7,
@@ -130,7 +130,7 @@ module post_slides(
 // Internal helper — attaches a slide rail to the left side of a post.
 module post_slider_left(
     post_width = 15.875,
-    post_slide_width = 3.0,
+    post_slide_width = 2.8,
     post_slide_cutout = 3.6,
     u_height = 44.5,
     hole_offset_z = 12.7,
@@ -152,7 +152,7 @@ module post_slider_left(
 // post_slider_right()
 // Internal helper — attaches a slide rail to the right side of a post.
 module post_slider_right(
-    post_slide_width = 3.0,
+    post_slide_width = 2.8,
     post_width = 15.875,
     post_slide_cutout = 3.6,
     u_height = 44.5,
@@ -180,7 +180,7 @@ module rail_1u_holes_segment(
     doublewide = 0,
     post_width = 15.875,
     u_height = 44.5,
-    post_slide_width = 3.0,
+    post_slide_width = 2.8,
     post_slide_cutout = 3.6,
     hole_offset_z = 12.7,
     hole_spacing = 15.875,
