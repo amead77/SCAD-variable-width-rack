@@ -873,7 +873,7 @@ module blank_variable_tray(
     hole_spacing            = 15.875, //spacing between holes in mm, standard U spacing.
     front_panel_undersizing = 0.1, //mm the front panel is undersized by on each edge to ensure it doesn't interfere with other panels
     front_panel_edge_radius = 2.0, //mm radius for front panel edges. set to 0 for sharp edges.
-    tray_post_clearance     = 0.6, //0.5mm clearance, this makes 1mm total tray clearance. adjust as needed. modifying this might require tweaking the post_slide_cutout and hole_clearance to ensure the holes still clear properly.
+    tray_post_clearance     = 0.7, //0.5mm clearance, this makes 1mm total tray clearance. adjust as needed. modifying this might require tweaking the post_slide_cutout and hole_clearance to ensure the holes still clear properly.
     tray_side_slides        = 1,   //0 or 1 to add side slides that go into the posts. these are designed to fit into the post 
                                     //cutouts defined by post_slide_cutout/width, so adjust those dimensions if you change the slide design.
     post_slide_width        = 2.8, //*these next 2 are for the slides that go into the posts on the rack.

@@ -44,8 +44,8 @@ module rail_1u_holes(
     hole_spacing = 15.875,                  // Vertical spacing between hole centres within a 1U segment.
     nut_thickness = 6.3,                    // Depth of the rear nut traps.
     nut_diameter_across_flats = 10.3,       // Across-flats size of the hex nut trap.
-    post_slide_width = 3.0,                 // Width of the side slide rail.
-    post_slide_cutout = 3.2,                // Size of the slide cutouts in each 1U section.
+    post_slide_width = 2.8,                 // Width of the side slide rail.
+    post_slide_cutout = 3.6,                // Size of the slide cutouts in each 1U section.
     footer_height = 12.7,                   // Height of the optional footer block.
     header_height = 12.7,                   // Height of the optional header block.
     post_cone_base_diameter = 10.0,         // Diameter at the base of the alignment cone/socket.
@@ -215,7 +215,7 @@ module blank_variable_tray(
     side_support            = 1, //0 or 1 to add gussets between front panel and sides when panel is taller than sides
     side_support_back       = 40, //how far back the gussets extend (mm)
     side_support_thickness  = 2.0, //normally the same as tray_side_thickness, but can be different if you want thinner gussets
-    side_support_single     = false, // if true, only add a single side support rail per-U, at the lowest position.
+    side_support_single     = true, // if true, only add a single side support rail per-U, at the lowest position.
     tray_side_thickness     = 2.0, //thickness of the tray side walls in mm.
     front_panel_thickness   = 3.0, //consider your screw lengths. 3mm is usually fine for m6x16 screws.
     back_panel              = 0, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
@@ -250,8 +250,8 @@ module blank_variable_tray(
     panel_join_cs_dia       = 7.0, //countersink the panel join holes on the outer faces.
     panel_join_length       = 15.0, //length of the panel join in the Y direction.
     panel_join_offset_from_edge = 10.0 //distance from the front/back edge of the joiner length to the center of the panel join holes.
+) 
 
-)
 ```
 
 Examples:
