@@ -35,6 +35,12 @@ I've numbered some arrows so you can see:
 
 Note: For mine I used 6 posts (great for half depth trays), 4 face forward, rear 2 face backwards. Consider this when creating posts for which side you want the side-slides on.
 
+2026-06-08: For ease of printing, I've modified:
+- Tray design to default to single support rail per-U, as in practice 3 per-U was overkill.
+- Split tray into a panel and tray actual, with a joining part added to both with screw holes. I just shoved normal wood screws in mine as that's what I had. (heated them first, so they bind in when cooled)
+- Increased the tolerances as in practice printing in different directions with/without support has an effect.
+
+
 ![Assembly overview](images-info/overview.png)
 
 

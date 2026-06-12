@@ -939,7 +939,7 @@ module blank_variable_tray(
     side_support            = 1, //0 or 1 to add gussets between front panel and sides when panel is taller than sides
     side_support_back       = 40, //how far back the gussets extend (mm)
     side_support_thickness  = 2.0, //normally the same as tray_side_thickness, but can be different if you want thinner gussets
-    side_support_single     = false, // if true, only add a single side support rail per-U, at the lowest position.
+    side_support_single     = true, // if true, only add a single side support rail per-U, at the lowest position.
     tray_side_thickness     = 2.0, //thickness of the tray side walls in mm.
     front_panel_thickness   = 3.0, //consider your screw lengths. 3mm is usually fine for m6x16 screws.
     back_panel              = 0, //0 or 1 to add a rear wall to make a drawer. rear wall height controlled by back_panel_height (in U).
@@ -957,7 +957,7 @@ module blank_variable_tray(
     hole_spacing            = 15.875, //spacing between holes in mm, standard U spacing.
     front_panel_undersizing = 0.1, //mm the front panel is undersized by on each edge to ensure it doesn't interfere with other panels
     front_panel_edge_radius = 2.0, //mm radius for front panel edges. set to 0 for sharp edges.
-    tray_post_clearance     = 0.6, //0.5mm clearance, this makes 1mm total tray clearance. adjust as needed. modifying this might require tweaking the post_slide_cutout and hole_clearance to ensure the holes still clear properly.
+    tray_post_clearance     = 0.7, //0.5mm clearance, this makes 1mm total tray clearance. adjust as needed. modifying this might require tweaking the post_slide_cutout and hole_clearance to ensure the holes still clear properly.
     tray_side_slides        = 1,   //0 or 1 to add side slides that go into the posts. these are designed to fit into the post 
                                     //cutouts defined by post_slide_cutout/width, so adjust those dimensions if you change the slide design.
     post_slide_width        = 2.8, //*these next 2 are for the slides that go into the posts on the rack.
@@ -1070,12 +1070,13 @@ module blank_variable_tray(
         difference() {
             union() {
                 // Tray base floor
-                translate([tray_x0, 0, front_panel_undersizing]) {
+                translate([tray_x0, front_panel_thickness, front_panel_undersizing]) {
+                //translate([tray_x0, 0, front_panel_undersizing]) {
                     //cube([tray_w, tray_depth + front_panel_thickness, tray_thickness]);
                     chamfer_size = (mode == "tray") ? 0 : 1; // no chamfers in full tray mode, add when split tray/panel to help avoid corners interferring
                     chamfered_cube([
                         tray_w, 
-                        tray_depth + front_panel_thickness, 
+                        tray_depth, // + front_panel_thickness, 
                         tray_thickness
                         ], 
                         edge_selection = [3],
