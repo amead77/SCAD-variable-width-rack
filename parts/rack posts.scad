@@ -1,7 +1,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.1-2026/06/06r01";
+version = "v0.1-2026/06/12r00";
 */
 
 
@@ -687,7 +687,7 @@ module rail_1u_holes(
     nut_thickness = 6.3,                    // Depth of the rear nut traps.
     nut_diameter_across_flats = 10.3,       // Across-flats size of the hex nut trap.
     post_slide_width = 2.8,                 // Width of the side slide rail.
-    post_slide_cutout = 3.6,                // Size of the slide cutouts in each 1U section.
+    post_slide_cutout = 4.6,                // Size of the slide cutouts in each 1U section.
     footer_height = 12.7,                   // Height of the optional footer block.
     header_height = 12.7,                   // Height of the optional header block.
     post_cone_base_diameter = 10.0,         // Diameter at the base of the alignment cone/socket.

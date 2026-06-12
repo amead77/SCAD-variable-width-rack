@@ -35,7 +35,7 @@
 /**
 //next 2 lines used only by my 'on save' script. can be ignored otherwise.
 //AUTO-V
-version = "v0.1-2026/06/06r05";
+version = "v0.1-2026/06/12r01";
 **/
 
 include <parts/rack posts.scad>;
@@ -79,7 +79,7 @@ u_height = 44.5; //0.1
 hole_offset_z = 12.7; //0.1
 hole_spacing = 15.875; //0.001
 post_slide_width = 2.8; //0.1
-post_slide_cutout = 3.6; //0.1
+post_slide_cutout = 4.6; //0.1
 footer_height = 12.7; //0.1
 header_height = 12.7; //0.1
 post_cone_base_diameter = 10.0; //0.1
@@ -195,7 +195,7 @@ this is used to render/see all the bits together, as an example build.
 As you scroll down you'll see all the parts being created and positioned.
 */
     render() {
-
+        color("steelblue") {
         //POST CREATION
         support_count = (base_support_count < 2) ? 2 : base_support_count;
         for (i = [0:support_count-1]) {
@@ -301,7 +301,7 @@ As you scroll down you'll see all the parts being created and positioned.
         //END POST CREATION
 
         // the base joins
-
+        }
         if (base_join == 1) {
             color("blue") {
                 if (post_doublewide == 0) {

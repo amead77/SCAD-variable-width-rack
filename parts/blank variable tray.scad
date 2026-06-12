@@ -25,7 +25,7 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.2-2026/06/12r02";
+version = "v0.2-2026/06/12r03";
 */
 
 // Inlined from mainlib.scad to keep this file self-contained.
@@ -45,14 +45,17 @@ module chamfered_cube(
         "chamfer_size must be smaller than the cube dimensions");
 
     module prism_x() {
-        translate([sx + eps, 0, 0])
-            rotate([0, -90, 0])
-                linear_extrude(height = sx + 2 * eps)
+        translate([sx + eps, 0, 0]) {
+            rotate([0, -90, 0]) {
+                linear_extrude(height = sx + 2 * eps) {
                     polygon([
                         [-eps, -eps],
                         [chamfer_size + eps, -eps],
                         [-eps, chamfer_size + eps]
                     ]);
+                }
+            }
+        }
     }
 
     module prism_y() {
