@@ -25,10 +25,94 @@
 /*
 // next 2 lines used only by my 'on save' script. can be ignored otherwise.
 // AUTO-V
-version = "v0.2-2026/06/07r05";
+version = "v0.2-2026/06/12r02";
 */
 
-use <../../SCAD-lib/mainlib.scad>;
+// Inlined from mainlib.scad to keep this file self-contained.
+module chamfered_cube(
+    size = [10, 10, 10],
+    chamfer_size = 2,
+    edge_selection = []
+) {
+    resolved_size = is_list(size) ? size : [size, size, size];
+    sx = resolved_size[0];
+    sy = resolved_size[1];
+    sz = resolved_size[2];
+    eps = 0.01;
+
+    assert(chamfer_size >= 0, "chamfer_size must be >= 0");
+    assert(chamfer_size <= min(sx, sy, sz),
+        "chamfer_size must be smaller than the cube dimensions");
+
+    module prism_x() {
+        translate([sx + eps, 0, 0])
+            rotate([0, -90, 0])
+                linear_extrude(height = sx + 2 * eps)
+                    polygon([
+                        [-eps, -eps],
+                        [chamfer_size + eps, -eps],
+                        [-eps, chamfer_size + eps]
+                    ]);
+    }
+
+    module prism_y() {
+        translate([0, sy + eps, 0])
+            rotate([90, 0, 0])
+                linear_extrude(height = sy + 2 * eps)
+                    polygon([
+                        [-eps, -eps],
+                        [chamfer_size + eps, -eps],
+                        [-eps, chamfer_size + eps]
+                    ]);
+    }
+
+    module prism_z() {
+        translate([0, 0, -eps])
+            linear_extrude(height = sz + 2 * eps)
+                polygon([
+                    [-eps, -eps],
+                    [chamfer_size + eps, -eps],
+                    [-eps, chamfer_size + eps]
+                ]);
+    }
+
+    module edge_chamfer(edge) {
+        if (edge == 0)
+            prism_x();
+        else if (edge == 1)
+            translate([0, sy, 0]) mirror([0, 1, 0]) prism_x();
+        else if (edge == 2)
+            translate([0, sy, sz]) mirror([0, 1, 1]) prism_x();
+        else if (edge == 3)
+            translate([0, 0, sz]) mirror([0, 0, 1]) prism_x();
+        else if (edge == 4)
+            prism_y();
+        else if (edge == 5)
+            translate([sx, 0, 0]) mirror([1, 0, 0]) prism_y();
+        else if (edge == 6)
+            translate([sx, 0, sz]) mirror([1, 0, 1]) prism_y();
+        else if (edge == 7)
+            translate([0, 0, sz]) mirror([0, 0, 1]) prism_y();
+        else if (edge == 8)
+            prism_z();
+        else if (edge == 9)
+            translate([sx, 0, 0]) mirror([1, 0, 0]) prism_z();
+        else if (edge == 10)
+            translate([sx, sy, 0]) mirror([1, 1, 0]) prism_z();
+        else if (edge == 11)
+            translate([0, sy, 0]) mirror([0, 1, 0]) prism_z();
+        else
+            echo(str("Unknown edge index for chamfered_cube(): ", edge));
+    }
+
+    difference() {
+        cube(resolved_size);
+
+        if (chamfer_size > 0)
+            for (edge = edge_selection)
+                edge_chamfer(edge);
+    }
+}
 
 
 function variable_holes_per_u(holes) = (holes >= 6) ? 3 : ((holes >= 4) ? 2 : holes);
